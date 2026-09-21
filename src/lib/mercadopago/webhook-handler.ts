@@ -1,0 +1,708 @@
+import crypto from 'crypto';
+import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import prisma from '@/lib/prisma';
+import { opsLog } from '@/lib/ops-log';
+import { sendGa4PurchaseServerEvent } from '@/lib/ga4-measurement';
+
+type MercadoPagoWebhookBody = {
+    type?: string;
+    data?: { id?: string | number };
+};
+
+function validateSignature(params: {
+    signature: string | null;
+    requestId: string | null;
+    webhookSecret: string | undefined;
+    paymentId: string;
+}) {
+    const { signature, requestId, webhookSecret, paymentId } = params;
+    if (!webhookSecret) return { ok: true as const };
+    if (!signature || !requestId) return { ok: false as const, reason: 'Missing signature headers' };
+
+    const parts = signature.split(',');
+    let ts = '';
+    let hash = '';
+
+    for (const part of parts) {
+        const [key, value] = part.trim().split('=');
+        if (key === 'ts') ts = value;
+        if (key === 'v1') hash = value;
+    }
+
+    if (!ts || !hash) return { ok: false as const, reason: 'Invalid signature format' };
+
+    const manifest = `id:${paymentId};request-id:${requestId};ts:${ts};`;
+    const hmac = crypto.createHmac('sha256', webhookSecret).update(manifest).digest('hex');
+    if (hmac !== hash) return { ok: false as const, reason: 'Invalid signature' };
+    return { ok: true as const };
+}
+
+function normalizeInstallments(value: unknown) {
+    const parsed = Number.parseInt(String(value ?? ''), 10);
+    if (!Number.isFinite(parsed) || parsed <= 0) return null;
+    return parsed;
+}
+
+function normalizeCardBrand(params: {
+    paymentMethodId: unknown;
+    paymentTypeId: unknown;
+}) {
+    const paymentMethodId = String(params.paymentMethodId || '').trim().toLowerCase();
+    const paymentTypeId = String(params.paymentTypeId || '').trim().toLowerCase();
+
+    if (!paymentMethodId) return null;
+    if (paymentTypeId !== 'credit_card' && paymentTypeId !== 'debit_card') return null;
+    if (paymentMethodId === 'credit_card' || paymentMethodId === 'debit_card') return null;
+
+    return paymentMethodId.toUpperCase();
+}
+
+function normalizePaymentMethod(params: {
+    paymentMethodId: unknown;
+    paymentTypeId: unknown;
+    installments: number | null;
+}) {
+    const paymentMethodId = String(params.paymentMethodId || '').trim().toLowerCase();
+    const paymentTypeId = String(params.paymentTypeId || '').trim().toLowerCase();
+    const installments = params.installments;
+
+    if (paymentMethodId === 'pix') return 'PIX';
+    if (paymentTypeId === 'debit_card' || paymentMethodId === 'debit_card') return 'DEBIT_CARD';
+    if (paymentTypeId === 'credit_card' || paymentMethodId === 'credit_card' || (installments !== null && installments >= 1)) {
+        return 'CREDIT_CARD';
+    }
+    if (paymentTypeId === 'account_money' || paymentMethodId === 'account_money') return 'ACCOUNT_MONEY';
+    return paymentMethodId ? paymentMethodId.toUpperCase() : null;
+}
+
+function mapPaymentStatus(mpStatus: string | null | undefined) {
+    const s = (mpStatus || '').toLowerCase();
+    if (s === 'approved') {
+        return { bookingStatus: 'CONFIRMED', paymentStatus: 'APPROVED' } as const;
+    }
+    if (s === 'rejected' || s === 'cancelled') {
+        return { bookingStatus: 'CANCELLED', paymentStatus: 'REJECTED' } as const;
+    }
+    if (s === 'refunded' || s === 'charged_back') {
+        return { bookingStatus: 'CANCELLED', paymentStatus: 'REFUNDED' } as const;
+    }
+    return { bookingStatus: 'PENDING', paymentStatus: 'PENDING' } as const;
+}
+
+function normalizeFinancialSnapshot(params: {
+    totalPrice: number;
+    subtotalPrice: number | null;
+    discountAmount: number | null;
+    appliedCouponCode: string | null;
+    redemptionDiscountAmount: number;
+    redemptionCodePrefix?: string | null;
+}) {
+    const {
+        totalPrice,
+        subtotalPrice,
+        discountAmount,
+        appliedCouponCode,
+        redemptionDiscountAmount,
+        redemptionCodePrefix,
+    } = params;
+
+    const safeTotal = Math.max(0, Number.isFinite(totalPrice) ? totalPrice : 0);
+    const discountCandidate = discountAmount === null ? redemptionDiscountAmount : discountAmount;
+    const safeDiscountCandidate = Math.max(0, Number.isFinite(discountCandidate) ? discountCandidate : 0);
+
+    const subtotalCandidate = subtotalPrice === null
+        ? safeTotal + safeDiscountCandidate
+        : subtotalPrice;
+    const safeSubtotalCandidate = Math.max(0, Number.isFinite(subtotalCandidate) ? subtotalCandidate : 0);
+    const safeSubtotal = Math.max(safeTotal, safeSubtotalCandidate);
+    const safeDiscount = Math.max(0, Math.min(safeDiscountCandidate, safeSubtotal));
+
+    let safeAppliedCouponCode = appliedCouponCode;
+    if (!safeAppliedCouponCode && safeDiscount > 0 && redemptionCodePrefix) {
+        safeAppliedCouponCode = `${String(redemptionCodePrefix).toUpperCase()}******`;
+    }
+
+    return {
+        subtotalPrice: safeSubtotal,
+        discountAmount: safeDiscount,
+        appliedCouponCode: safeAppliedCouponCode,
+    };
+}
+
+export async function handleMercadoPagoWebhook(request: Request) {
+    let ctxPaymentId: string | undefined;
+    let ctxBookingId: string | undefined;
+    try {
+        const rawBody = await request.text();
+        if (!rawBody) return NextResponse.json({ error: 'Empty body' }, { status: 400 });
+
+        const body = JSON.parse(rawBody) as MercadoPagoWebhookBody;
+        const type = body.type;
+        const paymentIdRaw = body.data?.id;
+
+        if (type !== 'payment') {
+            opsLog('info', 'MP_WEBHOOK_IGNORED', { type });
+            return NextResponse.json({ status: 'ignored', type });
+        }
+        if (!paymentIdRaw) {
+            opsLog('warn', 'MP_WEBHOOK_INVALID', { reason: 'MISSING_PAYMENT_ID' });
+            return NextResponse.json({ error: 'ID de pagamento ausente' }, { status: 400 });
+        }
+
+        const paymentId = String(paymentIdRaw);
+        ctxPaymentId = paymentId;
+
+        const signature = request.headers.get('x-signature');
+        const requestId = request.headers.get('x-request-id');
+        const sigResult = validateSignature({
+            signature,
+            requestId,
+            webhookSecret: process.env.MP_WEBHOOK_SECRET,
+            paymentId,
+        });
+        if (!sigResult.ok) {
+            opsLog('warn', 'MP_WEBHOOK_INVALID', { reason: 'INVALID_SIGNATURE', paymentId });
+            return NextResponse.json({ error: 'Assinatura inválida' }, { status: 401 });
+        }
+
+        const accessToken = process.env.MP_ACCESS_TOKEN;
+        if (!accessToken) {
+            opsLog('error', 'MP_WEBHOOK_CONFIG_ERROR', { reason: 'MISSING_MP_ACCESS_TOKEN', paymentId });
+            return NextResponse.json({ error: 'Mercado Pago não configurado' }, { status: 500 });
+        }
+
+        const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (!paymentResponse.ok) {
+            opsLog('error', 'MP_WEBHOOK_MP_FETCH_FAILED', { paymentId, status: paymentResponse.status });
+            return NextResponse.json(
+                { error: 'Falha ao buscar pagamento', status: paymentResponse.status },
+                { status: 502 }
+            );
+        }
+
+        const paymentData = await paymentResponse.json();
+        const mpStatus = paymentData?.status as string | undefined;
+        const paymentInstallments = normalizeInstallments(paymentData?.installments);
+        const paymentCardBrand = normalizeCardBrand({
+            paymentMethodId: paymentData?.payment_method_id,
+            paymentTypeId: paymentData?.payment_type_id,
+        });
+        const paymentMethod = normalizePaymentMethod({
+            paymentMethodId: paymentData?.payment_method_id,
+            paymentTypeId: paymentData?.payment_type_id,
+            installments: paymentInstallments,
+        });
+        const bookingId = paymentData?.external_reference as string | undefined;
+        ctxBookingId = bookingId;
+
+        if (!bookingId) {
+            opsLog('warn', 'MP_WEBHOOK_INVALID', { reason: 'MISSING_BOOKING_REFERENCE', paymentId });
+            return NextResponse.json({ error: 'Referência de reserva ausente' }, { status: 400 });
+        }
+
+        const mapped = mapPaymentStatus(mpStatus);
+        const normalizedMpStatus = String(mpStatus || '').toLowerCase();
+
+        const result = await prisma.$transaction(async (tx) => {
+            const booking = await tx.booking.findUnique({
+                where: { id: bookingId },
+                include: {
+                    payment: true,
+                    guest: true,
+                    roomType: true,
+                    couponRedemption: {
+                        include: {
+                            coupon: {
+                                select: { codePrefix: true },
+                            },
+                        },
+                    },
+                },
+            });
+            if (!booking) return { kind: 'not_found' as const };
+
+            const currentBookingStatus = booking.status;
+            const currentPaymentStatus = booking.payment?.status;
+
+            let bookingStatus = currentBookingStatus;
+            let paymentStatus = currentPaymentStatus || 'PENDING';
+            let emailQueued = false;
+            let couponReleased = false;
+            let couponConfirmed = false;
+            let financialSnapshotUpdated = false;
+            const paymentMethodValue = paymentMethod || booking.payment?.method || null;
+            let paymentInstallmentsValue = paymentInstallments ?? booking.payment?.installments ?? null;
+            const paymentModeValue = booking.payment?.paymentMode || 'FULL';
+            const paidAmountValue = Number(booking.payment?.amount ?? paymentData?.transaction_amount ?? booking.totalPrice);
+            const remainingAmountValue = Number(booking.payment?.remainingAmount ?? 0);
+            const balanceDueAtValue = booking.payment?.balanceDueAt ?? null;
+            const balanceDueDateValue = booking.payment?.balanceDueDate ?? null;
+            let purchaseEventQueued = false;
+            let bookingConfirmedNow = false;
+
+            if (mapped.bookingStatus === 'CONFIRMED') {
+                if (currentBookingStatus === 'PENDING') {
+                    const update = await tx.booking.updateMany({
+                        where: { id: bookingId, status: 'PENDING' },
+                        data: {
+                            status: 'CONFIRMED',
+                            funnelStage: 'BOOKING_CONFIRMED',
+                            funnelUpdatedAt: new Date(),
+                            lastErrorMessage: null,
+                        },
+                    });
+                    if (update.count === 1) {
+                        bookingStatus = 'CONFIRMED';
+                        emailQueued = true;
+                        bookingConfirmedNow = true;
+                    }
+                }
+                if (currentBookingStatus === 'CONFIRMED') {
+                    bookingStatus = 'CONFIRMED';
+                }
+            }
+
+            if (mapped.bookingStatus === 'CANCELLED') {
+                if (currentBookingStatus === 'PENDING') {
+                    const update = await tx.booking.updateMany({
+                        where: { id: bookingId, status: 'PENDING' },
+                        data: {
+                            status: 'CANCELLED',
+                            funnelStage: 'PAYMENT_REJECTED',
+                            funnelUpdatedAt: new Date(),
+                            lastErrorMessage: normalizedMpStatus || 'cancelled',
+                        },
+                    });
+                    if (update.count === 1) {
+                        bookingStatus = 'CANCELLED';
+                        const release = await tx.couponRedemption.updateMany({
+                            where: {
+                                bookingId,
+                                status: { in: ['RESERVED', 'CONFIRMED'] },
+                            },
+                            data: {
+                                status: 'RELEASED',
+                                releasedAt: new Date(),
+                            },
+                        });
+                        couponReleased = release.count > 0;
+                    }
+                }
+                if (mapped.paymentStatus === 'REFUNDED' && currentBookingStatus === 'CONFIRMED') {
+                    const update = await tx.booking.updateMany({
+                        where: { id: bookingId, status: 'CONFIRMED' },
+                        data: {
+                            status: 'CANCELLED',
+                            funnelStage: 'BOOKING_CANCELLED',
+                            funnelUpdatedAt: new Date(),
+                            lastErrorMessage: normalizedMpStatus || 'refunded',
+                        },
+                    });
+                    if (update.count === 1) {
+                        bookingStatus = 'CANCELLED';
+                        const release = await tx.couponRedemption.updateMany({
+                            where: {
+                                bookingId,
+                                status: { in: ['RESERVED', 'CONFIRMED'] },
+                            },
+                            data: {
+                                status: 'RELEASED',
+                                releasedAt: new Date(),
+                            },
+                        });
+                        couponReleased = release.count > 0;
+                    }
+                }
+                if (currentBookingStatus === 'CANCELLED') {
+                    bookingStatus = 'CANCELLED';
+                }
+                if (currentBookingStatus === 'CONFIRMED' && mapped.paymentStatus !== 'REFUNDED') {
+                    bookingStatus = 'CONFIRMED';
+                }
+            }
+
+            if (booking.payment) {
+                if (mapped.paymentStatus === 'APPROVED' && currentPaymentStatus !== 'APPROVED') {
+                    emailQueued = true;
+                    purchaseEventQueued = true;
+                }
+
+                if (mapped.paymentStatus === 'APPROVED') {
+                    if (booking.payment.status !== 'APPROVED') {
+                        await tx.payment.updateMany({
+                            where: { id: booking.payment.id, status: { not: 'APPROVED' } },
+                            data: {
+                                status: 'APPROVED',
+                                providerId: paymentId,
+                                method: paymentMethod || booking.payment?.method || undefined,
+                                cardBrand: paymentCardBrand ?? booking.payment?.cardBrand ?? undefined,
+                                installments: paymentInstallments ?? booking.payment?.installments ?? undefined,
+                            },
+                        });
+                    } else if (booking.payment.providerId !== paymentId) {
+                        await tx.payment.updateMany({
+                            where: { id: booking.payment.id },
+                            data: {
+                                providerId: paymentId,
+                                method: paymentMethod || booking.payment?.method || undefined,
+                                cardBrand: paymentCardBrand ?? booking.payment?.cardBrand ?? undefined,
+                                installments: paymentInstallments ?? booking.payment?.installments ?? undefined,
+                            },
+                        });
+                    }
+                    paymentInstallmentsValue = paymentInstallments ?? booking.payment?.installments ?? null;
+                    paymentStatus = 'APPROVED';
+                    await tx.booking.updateMany({
+                        where: { id: bookingId },
+                        data: {
+                            funnelStage: 'BOOKING_CONFIRMED',
+                            funnelUpdatedAt: new Date(),
+                            lastErrorMessage: null,
+                        },
+                    });
+                } else if (mapped.paymentStatus === 'REJECTED') {
+                    if (booking.payment.status !== 'APPROVED' && booking.payment.status !== 'REJECTED') {
+                        await tx.payment.updateMany({
+                            where: { id: booking.payment.id, status: { notIn: ['APPROVED', 'REJECTED'] } },
+                            data: {
+                                status: 'REJECTED',
+                                providerId: paymentId,
+                                method: paymentMethod || booking.payment?.method || undefined,
+                                cardBrand: paymentCardBrand ?? booking.payment?.cardBrand ?? undefined,
+                                installments: paymentInstallments ?? booking.payment?.installments ?? undefined,
+                            },
+                        });
+                        paymentStatus = 'REJECTED';
+                    } else {
+                        paymentStatus = booking.payment.status;
+                    }
+                    paymentInstallmentsValue = paymentInstallments ?? booking.payment?.installments ?? null;
+                    await tx.booking.updateMany({
+                        where: { id: bookingId },
+                        data: {
+                            funnelStage: 'PAYMENT_REJECTED',
+                            funnelUpdatedAt: new Date(),
+                            lastErrorMessage: normalizedMpStatus || 'rejected',
+                        },
+                    });
+                } else if (mapped.paymentStatus === 'REFUNDED') {
+                    if (booking.payment.status !== 'REFUNDED') {
+                        await tx.payment.updateMany({
+                            where: { id: booking.payment.id, status: { not: 'REFUNDED' } },
+                            data: {
+                                status: 'REFUNDED',
+                                providerId: paymentId,
+                                method: paymentMethod || booking.payment?.method || undefined,
+                                cardBrand: paymentCardBrand ?? booking.payment?.cardBrand ?? undefined,
+                                installments: paymentInstallments ?? booking.payment?.installments ?? undefined,
+                            },
+                        });
+                    }
+                    paymentInstallmentsValue = paymentInstallments ?? booking.payment?.installments ?? null;
+                    paymentStatus = 'REFUNDED';
+                    await tx.booking.updateMany({
+                        where: { id: bookingId },
+                        data: {
+                            funnelStage: 'BOOKING_CANCELLED',
+                            funnelUpdatedAt: new Date(),
+                            lastErrorMessage: normalizedMpStatus || 'refunded',
+                        },
+                    });
+                } else {
+                    if (booking.payment.providerId !== paymentId) {
+                        await tx.payment.updateMany({
+                            where: { id: booking.payment.id },
+                            data: {
+                                providerId: paymentId,
+                                method: paymentMethod || booking.payment?.method || undefined,
+                                cardBrand: paymentCardBrand ?? booking.payment?.cardBrand ?? undefined,
+                                installments: paymentInstallments ?? booking.payment?.installments ?? undefined,
+                            },
+                        });
+                    }
+                    paymentInstallmentsValue = paymentInstallments ?? booking.payment?.installments ?? null;
+                    paymentStatus = booking.payment.status;
+                    await tx.booking.updateMany({
+                        where: { id: bookingId },
+                        data: {
+                            funnelStage: 'PAYMENT_PENDING',
+                            funnelUpdatedAt: new Date(),
+                            lastErrorMessage: null,
+                        },
+                    });
+                }
+            } else {
+                const initialStatus = mapped.paymentStatus;
+                await tx.payment.create({
+                    data: {
+                        bookingId,
+                        amount: booking.totalPrice,
+                        totalAmount: booking.totalPrice,
+                        remainingAmount: 0,
+                        paymentMode: 'FULL',
+                        provider: 'MERCADOPAGO',
+                        providerId: paymentId,
+                        method: paymentMethod,
+                        cardBrand: paymentCardBrand,
+                        installments: paymentInstallments,
+                        status: initialStatus,
+                    },
+                });
+                paymentInstallmentsValue = paymentInstallments;
+                paymentStatus = initialStatus;
+                purchaseEventQueued = initialStatus === 'APPROVED';
+                await tx.booking.updateMany({
+                    where: { id: bookingId },
+                    data: {
+                        funnelStage: initialStatus === 'APPROVED'
+                            ? 'BOOKING_CONFIRMED'
+                            : initialStatus === 'REJECTED'
+                                ? 'PAYMENT_REJECTED'
+                                : 'PAYMENT_PENDING',
+                        funnelUpdatedAt: new Date(),
+                        lastErrorMessage: initialStatus === 'REJECTED' ? (normalizedMpStatus || 'rejected') : null,
+                    },
+                });
+            }
+
+            if (mapped.paymentStatus === 'APPROVED') {
+                const normalized = normalizeFinancialSnapshot({
+                    totalPrice: Number(booking.totalPrice),
+                    subtotalPrice: booking.subtotalPrice === null ? null : Number(booking.subtotalPrice),
+                    discountAmount: booking.discountAmount === null ? null : Number(booking.discountAmount),
+                    appliedCouponCode: booking.appliedCouponCode,
+                    redemptionDiscountAmount: Number(booking.couponRedemption?.discountAmount || 0),
+                    redemptionCodePrefix: booking.couponRedemption?.coupon?.codePrefix,
+                });
+
+                const shouldUpdateSnapshot =
+                    booking.subtotalPrice === null ||
+                    booking.discountAmount === null ||
+                    (booking.appliedCouponCode === null && normalized.appliedCouponCode !== null);
+
+                if (shouldUpdateSnapshot) {
+                    await tx.booking.updateMany({
+                        where: { id: bookingId },
+                        data: {
+                            subtotalPrice: normalized.subtotalPrice,
+                            discountAmount: normalized.discountAmount,
+                            appliedCouponCode: normalized.appliedCouponCode,
+                        },
+                    });
+                    financialSnapshotUpdated = true;
+                }
+
+                if (booking.couponRedemption?.status === 'RESERVED') {
+                    const confirm = await tx.couponRedemption.updateMany({
+                        where: {
+                            id: booking.couponRedemption.id,
+                            status: 'RESERVED',
+                        },
+                        data: {
+                            status: 'CONFIRMED',
+                            confirmedAt: new Date(),
+                            bookingId,
+                        },
+                    });
+                    couponConfirmed = confirm.count > 0;
+                }
+            }
+
+            return {
+                kind: 'ok' as const,
+                booking,
+                bookingStatus,
+                paymentStatus,
+                paymentMethod: paymentMethodValue,
+                paymentInstallments: paymentInstallmentsValue,
+                paymentMode: paymentModeValue,
+                paidAmount: paidAmountValue,
+                remainingAmount: remainingAmountValue,
+                balanceDueAt: balanceDueAtValue,
+                balanceDueDate: balanceDueDateValue,
+                emailQueued,
+                couponReleased,
+                couponConfirmed,
+                financialSnapshotUpdated,
+                purchaseEventQueued,
+                bookingConfirmedNow,
+            };
+        });
+
+        if (result.kind === 'not_found') {
+            opsLog('warn', 'MP_WEBHOOK_BOOKING_NOT_FOUND', {
+                bookingId,
+                bookingIdShort: bookingId.slice(0, 8),
+                paymentId,
+            });
+            return NextResponse.json({ error: 'Reserva não encontrada' }, { status: 404 });
+        }
+        let emailSent = false;
+        let emailErrorMessage: string | undefined;
+        let adminAlertSent = false;
+        let adminAlertErrorMessage: string | undefined;
+        let gaPurchaseSent = false;
+        let gaPurchaseSkipped: string | undefined;
+        let gaPurchaseError: string | undefined;
+        const { sendBookingConfirmationEmail, sendBookingCreatedAlertEmail } = await import('@/lib/email');
+
+        if (result.emailQueued && mpStatus === 'approved') {
+            const emailResult = await sendBookingConfirmationEmail({
+                guestName: result.booking.guest.name,
+                guestEmail: result.booking.guest.email,
+                guestPhone: result.booking.guest.phone || null,
+                bookingId: result.booking.id,
+                roomName: result.booking.roomType.name,
+                checkIn: result.booking.checkIn,
+                checkOut: result.booking.checkOut,
+                totalPrice: Number(result.booking.totalPrice),
+                paymentMethod: result.paymentMethod,
+                paymentInstallments: result.paymentInstallments,
+                paymentMode: result.paymentMode,
+                paidAmount: result.paidAmount,
+                remainingAmount: result.remainingAmount,
+                balanceDueAt: result.balanceDueAt,
+                balanceDueDate: result.balanceDueDate,
+                adults: result.booking.adults,
+                children: result.booking.children,
+                childrenAges: result.booking.childrenAges,
+                bookingStatus: result.bookingStatus,
+                paymentStatus: result.paymentStatus,
+                bookingCreatedAt: result.booking.createdAt,
+            });
+
+            emailSent = Boolean(emailResult?.success);
+            if (emailSent) {
+                await prisma.booking.updateMany({
+                    where: { id: bookingId, confirmationEmailSentAt: null },
+                    data: { confirmationEmailSentAt: new Date() },
+                });
+            } else {
+                emailErrorMessage =
+                    emailResult?.error instanceof Error
+                        ? emailResult.error.message
+                        : typeof emailResult?.error === 'string'
+                            ? emailResult.error
+                            : 'email_send_failed';
+
+                opsLog('error', 'MP_WEBHOOK_EMAIL_FAILED', {
+                    bookingId,
+                    bookingIdShort: bookingId.slice(0, 8),
+                    paymentId,
+                    mpStatus,
+                    error: emailErrorMessage,
+                });
+            }
+        }
+
+        const shouldSendAdminAlert =
+            (normalizedMpStatus === 'approved' && result.emailQueued) ||
+            ['rejected', 'refunded', 'cancelled', 'charged_back'].includes(normalizedMpStatus);
+
+        if (shouldSendAdminAlert) {
+            const adminAlertResult = await sendBookingCreatedAlertEmail({
+                guestName: result.booking.guest.name,
+                guestEmail: result.booking.guest.email,
+                guestPhone: result.booking.guest.phone || null,
+                bookingId: result.booking.id,
+                roomName: result.booking.roomType.name,
+                checkIn: result.booking.checkIn,
+                checkOut: result.booking.checkOut,
+                totalPrice: Number(result.booking.totalPrice),
+                paymentMethod: result.paymentMethod,
+                paymentInstallments: result.paymentInstallments,
+                paymentMode: result.paymentMode,
+                paidAmount: result.paidAmount,
+                remainingAmount: result.remainingAmount,
+                balanceDueAt: result.balanceDueAt,
+                balanceDueDate: result.balanceDueDate,
+                adults: result.booking.adults,
+                children: result.booking.children,
+                childrenAges: result.booking.childrenAges,
+                bookingStatus: result.bookingStatus,
+                paymentStatus: result.paymentStatus,
+                bookingCreatedAt: result.booking.createdAt,
+            });
+
+            adminAlertSent = Boolean(adminAlertResult?.success);
+            if (!adminAlertSent) {
+                adminAlertErrorMessage =
+                    adminAlertResult?.error instanceof Error
+                        ? adminAlertResult.error.message
+                        : typeof adminAlertResult?.error === 'string'
+                            ? adminAlertResult.error
+                            : 'admin_alert_send_failed';
+            }
+        }
+
+        if (result.purchaseEventQueued && result.paymentStatus === 'APPROVED') {
+            const gaResult = await sendGa4PurchaseServerEvent({
+                transactionId: result.booking.id,
+                value: Number(result.booking.totalPrice),
+                currency: 'BRL',
+                itemId: result.booking.roomType?.id || result.booking.roomTypeId,
+                itemName: result.booking.roomType?.name || 'Hospedagem',
+                userId: result.booking.guest?.id || result.booking.guestId,
+                source: 'mp_webhook',
+            });
+
+            gaPurchaseSent = gaResult.ok;
+            gaPurchaseSkipped = gaResult.skipped;
+            gaPurchaseError = gaResult.error;
+        }
+
+        opsLog('info', 'MP_WEBHOOK_PROCESSED', {
+            bookingId,
+            bookingIdShort: bookingId.slice(0, 8),
+            paymentId,
+            mpStatus,
+            bookingStatus: result.bookingStatus,
+            paymentStatus: result.paymentStatus,
+            emailQueued: result.emailQueued,
+            emailSent,
+            emailErrorMessage,
+            couponReleased: result.couponReleased,
+            couponConfirmed: result.couponConfirmed,
+            financialSnapshotUpdated: result.financialSnapshotUpdated,
+            adminAlertSent,
+            adminAlertErrorMessage,
+            purchaseEventQueued: result.purchaseEventQueued,
+            gaPurchaseSent,
+            gaPurchaseSkipped,
+            gaPurchaseError,
+        });
+        return NextResponse.json({
+            ok: true,
+            bookingId,
+            mpStatus,
+            bookingStatus: result.bookingStatus,
+            paymentStatus: result.paymentStatus,
+            emailQueued: result.emailQueued,
+            emailSent,
+            emailErrorMessage,
+            couponReleased: result.couponReleased,
+            couponConfirmed: result.couponConfirmed,
+            financialSnapshotUpdated: result.financialSnapshotUpdated,
+            adminAlertSent,
+            adminAlertErrorMessage,
+            purchaseEventQueued: result.purchaseEventQueued,
+            gaPurchaseSent,
+            gaPurchaseSkipped,
+            gaPurchaseError,
+        });
+    } catch (error) {
+        Sentry.captureException(error);
+        opsLog('error', 'MP_WEBHOOK_ERROR', {
+            paymentId: ctxPaymentId,
+            bookingId: ctxBookingId,
+            bookingIdShort: typeof ctxBookingId === 'string' ? ctxBookingId.slice(0, 8) : undefined,
+            message: error instanceof Error ? error.message : 'Erro ao processar webhook',
+        });
+        const message = error instanceof Error ? error.message : 'Erro ao processar webhook';
+        return NextResponse.json({ error: 'Erro ao processar webhook', message }, { status: 500 });
+    }
+}
+

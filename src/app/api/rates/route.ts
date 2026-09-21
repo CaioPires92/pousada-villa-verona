@@ -1,0 +1,116 @@
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { requireAdminAuth } from '@/lib/admin-auth';
+import { assertDayKey } from '@/lib/day-key';
+import { parseISODateSafe } from '@/lib/date-utils';
+
+export async function GET(request: Request) {
+    const auth = await requireAdminAuth();
+    if (auth instanceof Response) return auth;
+
+    const { searchParams } = new URL(request.url);
+    const roomTypeId = searchParams.get('roomTypeId');
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+
+    try {
+        const where: any = {};
+        if (roomTypeId) where.roomTypeId = roomTypeId;
+        if (startDateParam && endDateParam) {
+            try {
+                assertDayKey(startDateParam, 'startDate');
+                assertDayKey(endDateParam, 'endDate');
+            } catch (e) {
+                return NextResponse.json(
+                    { error: e instanceof Error ? e.message : 'Formato de data inválido. Use YYYY-MM-DD' },
+                    { status: 400 }
+                );
+            }
+
+            const startObj = parseISODateSafe(startDateParam);
+            const endObj = parseISODateSafe(endDateParam, true);
+
+            if (startObj && endObj) {
+                where.startDate = { lte: endObj };
+                where.endDate = { gte: startObj };
+            }
+        }
+
+        const rates = await prisma.rate.findMany({
+            where,
+            include: { roomType: true },
+        });
+        return NextResponse.json(rates);
+    } catch (error) {
+        console.error('Erro ao buscar tarifas:', error);
+        return NextResponse.json(
+            { error: 'Erro ao buscar tarifas' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const auth = await requireAdminAuth();
+        if (auth instanceof Response) return auth;
+
+        const text = await request.text();
+        if (!text) {
+            return NextResponse.json(
+                { error: 'Request body is empty' },
+                { status: 400 }
+            );
+        }
+
+        const body = JSON.parse(text);
+        const {
+            roomTypeId,
+            startDate,
+            endDate,
+            price,
+            cta,
+            ctd,
+            stopSell,
+            minLos
+        } = body;
+
+        try {
+            assertDayKey(startDate, 'startDate');
+            assertDayKey(endDate, 'endDate');
+        } catch (e) {
+            return NextResponse.json(
+                { error: e instanceof Error ? e.message : 'Formato de data inválido. Use YYYY-MM-DD' },
+                { status: 400 }
+            );
+        }
+
+        const startObj = parseISODateSafe(startDate);
+        const endObj = parseISODateSafe(endDate, true);
+
+        if (!startObj || !endObj) {
+            return NextResponse.json({ error: 'Datas inválidas' }, { status: 400 });
+        }
+
+        const rate = await prisma.rate.create({
+            data: {
+                roomTypeId,
+                startDate: startObj as any, // Cast to any for schema mismatch
+                endDate: endObj as any,     // Cast to any for schema mismatch
+                price: parseFloat(price),
+                cta: cta || false,
+                ctd: ctd || false,
+                stopSell: stopSell || false,
+                minLos: minLos ? parseInt(minLos) : 1,
+            },
+        });
+
+        return NextResponse.json(rate, { status: 201 });
+    } catch (error) {
+        console.error('Erro ao criar tarifa:', error);
+        return NextResponse.json(
+            { error: 'Erro ao criar tarifa' },
+            { status: 500 }
+        );
+    }
+}

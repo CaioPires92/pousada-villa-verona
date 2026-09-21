@@ -1,0 +1,141 @@
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { requireAdminAuth } from '@/lib/admin-auth';
+import {
+    getCouponCodePrefix,
+    hashCouponCode,
+    normalizeCouponCode,
+} from '@/lib/coupons/hash';
+import { encryptCouponCode } from '@/lib/coupons/code-vault';
+import { asNullableString } from '@/lib/requestValue';
+
+function parseDate(value: unknown): Date | null {
+    const normalized = asNullableString(value);
+    if (!normalized) return null;
+    const d = new Date(normalized);
+    return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function parseNumber(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+}
+
+function parseIntNullable(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const n = Number.parseInt(String(value), 10);
+    return Number.isFinite(n) ? n : null;
+}
+
+function parseStringArray(value: unknown): string[] {
+    if (!Array.isArray(value)) return [];
+    return value.map((item) => asNullableString(item) ?? '').filter(Boolean);
+}
+
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        const auth = await requireAdminAuth();
+        if (auth instanceof Response) return auth;
+
+        const { id } = await params;
+        const body = await request.json();
+
+        const current = await prisma.coupon.findUnique({ where: { id } });
+        if (!current) return NextResponse.json({ error: 'Cupom nao encontrado' }, { status: 404 });
+
+        const name = asNullableString(body?.name) ?? '';
+        const type = (asNullableString(body?.type) ?? '').toUpperCase();
+        const value = parseNumber(body?.value);
+
+        if (!name) return NextResponse.json({ error: 'Nome obrigatorio' }, { status: 400 });
+        if (type !== 'PERCENT' && type !== 'FIXED') {
+            return NextResponse.json({ error: 'Tipo invalido' }, { status: 400 });
+        }
+        if (value === null || value <= 0) {
+            return NextResponse.json({ error: 'Valor invalido' }, { status: 400 });
+        }
+        if (type === 'PERCENT' && value > 100) {
+            return NextResponse.json({ error: 'Percentual deve ser <= 100' }, { status: 400 });
+        }
+
+        const codeInput = normalizeCouponCode(asNullableString(body?.code) ?? '');
+        const updatedCode = codeInput || undefined;
+        let codeHash: string | undefined;
+        let codePrefix: string | undefined;
+
+        if (codeInput) {
+            codeHash = hashCouponCode(codeInput);
+            const existing = await prisma.coupon.findFirst({
+                where: {
+                    codeHash,
+                    NOT: { id },
+                },
+            });
+            if (existing) {
+                return NextResponse.json({ error: 'Codigo ja existe' }, { status: 409 });
+            }
+            codePrefix = getCouponCodePrefix(codeInput);
+        }
+
+        const maxDiscountAmount = parseNumber(body?.maxDiscountAmount);
+        const minBookingValue = parseNumber(body?.minBookingValue);
+        const maxGlobalUses = parseIntNullable(body?.maxGlobalUses);
+        const startsAt = parseDate(body?.startsAt);
+        const endsAt = parseDate(body?.endsAt);
+
+        if (startsAt && endsAt && startsAt > endsAt) {
+            return NextResponse.json({ error: 'Periodo invalido' }, { status: 400 });
+        }
+
+        const updated = await prisma.coupon.update({
+            where: { id },
+            data: {
+                name,
+                ...(codeHash ? { codeHash, codePrefix, codeCiphertext: encryptCouponCode(codeInput) } : {}),
+                type,
+                value,
+                maxDiscountAmount,
+                minBookingValue,
+                active: body?.active !== undefined ? Boolean(body.active) : current.active,
+                startsAt,
+                endsAt,
+                maxGlobalUses,
+                maxUsesPerGuest: parseIntNullable(body?.maxUsesPerGuest),
+                bindEmail: (asNullableString(body?.bindEmail) ?? '').toLowerCase() || null,
+                bindPhone: (asNullableString(body?.bindPhone) ?? '').replace(/\D/g, '') || null,
+                allowedRoomTypeIds: JSON.stringify(parseStringArray(body?.allowedRoomTypeIds)),
+                allowedSources: JSON.stringify(parseStringArray(body?.allowedSources)),
+                singleUse: Boolean(body?.singleUse),
+                stackable: Boolean(body?.stackable),
+            },
+        });
+
+        return NextResponse.json({ coupon: updated, updatedCode }, { status: 200 });
+    } catch (error) {
+        console.error('[Admin Coupons] PUT error:', error);
+        return NextResponse.json({ error: 'Erro ao atualizar cupom' }, { status: 500 });
+    }
+}
+
+export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        const auth = await requireAdminAuth();
+        if (auth instanceof Response) return auth;
+
+        const { id } = await params;
+
+        const updated = await prisma.coupon.update({
+            where: { id },
+            data: {
+                active: false,
+                endsAt: new Date(),
+            },
+        });
+
+        return NextResponse.json({ coupon: updated }, { status: 200 });
+    } catch (error) {
+        console.error('[Admin Coupons] DELETE error:', error);
+        return NextResponse.json({ error: 'Erro ao desativar cupom' }, { status: 500 });
+    }
+}

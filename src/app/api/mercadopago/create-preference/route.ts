@@ -1,0 +1,101 @@
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { requireAdminAuth } from '@/lib/admin-auth';
+
+export async function POST(request: Request) {
+    try {
+        const auth = await requireAdminAuth();
+        if (auth instanceof Response) return auth;
+
+        const body = await request.json();
+        const { bookingId } = body;
+
+        const booking = await prisma.booking.findUnique({
+            where: { id: bookingId },
+            include: { roomType: true, guest: true },
+        });
+
+        if (!booking) return NextResponse.json({ error: 'Reserva não encontrada' }, { status: 404 });
+
+        const accessToken = process.env.MP_ACCESS_TOKEN;
+        
+        // Detectar a URL base dinâmica para os redirecionamentos (back_urls)
+        const host = request.headers.get('host') || 'localhost:3000';
+        const protocol = request.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
+        const dynamicBaseUrl = `${protocol}://${host}`;
+        
+        // URL base pública configurada para o Webhook (Mercado Pago exige HTTPS e URL pública)
+        const publicBaseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+            process.env.NEXT_PUBLIC_APP_URL ||
+            `https://${process.env.VERCEL_URL}`;
+
+        const phoneNumber = booking.guest.phone.replace(/\D/g, '');
+
+        const preferenceData = {
+            items: [
+                {
+                    id: booking.roomType.id,
+                    title: `Pousada Delplata - ${booking.roomType.name}`,
+                    quantity: 1,
+                    unit_price: Number(Number(booking.totalPrice).toFixed(2)),
+                    currency_id: 'BRL',
+                },
+            ],
+            payer: {
+                name: booking.guest.name,
+                email: booking.guest.email,
+                phone: {
+                    area_code: phoneNumber.substring(0, 2) || '11',
+                    number: phoneNumber.substring(2) || '999999999',
+                },
+            },
+            back_urls: {
+                success: `${dynamicBaseUrl}/reservar/confirmacao/${booking.id}`,
+                failure: `${dynamicBaseUrl}/reservar/confirmacao/${booking.id}`,
+                pending: `${dynamicBaseUrl}/reservar/confirmacao/${booking.id}`,
+            },
+            auto_return: 'approved',
+            external_reference: booking.id,
+            notification_url: publicBaseUrl.startsWith('https') ? `${publicBaseUrl}/api/webhooks/mercadopago` : undefined,
+        };
+
+        const apiResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify(preferenceData),
+        });
+
+        if (!apiResponse.ok) {
+            const errorData = await apiResponse.json().catch(() => ({ message: 'Erro desconhecido' }));
+            return NextResponse.json(
+                {
+                    error: 'Falha ao criar preferência de pagamento',
+                    details: errorData.message,
+                },
+                { status: apiResponse.status }
+            );
+        }
+        const result = await apiResponse.json();
+
+        // Registro opcional de pagamento no banco
+        try {
+            await prisma.payment.create({
+                data: {
+                    bookingId: booking.id,
+                    amount: Number(booking.totalPrice),
+                    status: 'PENDING',
+                    provider: 'MERCADOPAGO',
+                    providerId: result.id,
+                },
+            });
+        } catch { console.error('Aviso: Tabela Payment não encontrada ou erro na gravação.'); }
+
+        return NextResponse.json({ preferenceId: result.id, initPoint: result.init_point });
+
+    } catch (error: any) {
+        return NextResponse.json({ error: 'Erro ao criar preferência de pagamento', details: error.message }, { status: 500 });
+    }
+}

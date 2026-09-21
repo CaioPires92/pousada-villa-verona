@@ -1,0 +1,1038 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { GET } from './route';
+import prisma from '@/lib/prisma';
+
+// Mock Prisma module
+vi.mock('@/lib/prisma', () => ({
+  default: {
+    roomType: {
+      findMany: vi.fn(),
+    },
+    rate: {
+      findMany: vi.fn(),
+    },
+    booking: {
+      findMany: vi.fn(),
+      count: vi.fn(),
+    },
+    inventoryAdjustment: {
+      findMany: vi.fn(),
+    },
+    fourGuestInventoryAdjustment: {
+      findMany: vi.fn(),
+    },
+  },
+}));
+
+describe('Availability API - Pricing Logic', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (prisma.booking.findMany as any).mockResolvedValue([]);
+    (prisma.booking.count as any).mockResolvedValue(0);
+    (prisma.rate.findMany as any).mockResolvedValue([]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+    (prisma.fourGuestInventoryAdjustment.findMany as any).mockResolvedValue([]);
+  });
+
+  it('should return 400 if dates are missing', async () => {
+    const req = new Request('http://localhost/api/availability');
+    const res = await GET(req);
+    const json = await res.json();
+    expect(res.status).toBe(400);
+    expect(json.error).toBeDefined();
+  });
+
+  it('should apply custom rate correctly for specific dates', async () => {
+    const checkIn = '2026-01-07'; // The "today" from bug report
+    const checkOut = '2026-01-08';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Test Room',
+      basePrice: 100, // Should NOT be used
+      capacity: 4,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [
+        {
+          startDate: '2026-01-07',
+          endDate: '2026-01-07',
+          price: 200, // Custom Price
+          stopSell: false,
+          cta: false,
+          ctd: false,
+          minLos: 1
+        }
+      ]
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+    (prisma.rate.findMany as any).mockResolvedValue([
+      {
+        startDate: new Date('2026-01-07T00:00:00.000Z'),
+        endDate: new Date('2026-01-07T00:00:00.000Z'),
+        price: 200,
+        stopSell: false,
+        cta: false,
+        ctd: false,
+        minLos: 1
+      }
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.length).toBe(1);
+    expect(data[0].totalPrice).toBe(200); // Should match custom rate, not basePrice (100)
+    expect(data[0].priceBreakdown).toBeDefined();
+    expect(data[0].priceBreakdown.baseTotal).toBe(200);
+    expect(res.headers.get('x-quote-id')).toMatch(/^quote_[a-f0-9]{24}$/);
+    expect(res.headers.get('x-quote-version')).toBe('1');
+    expect(res.headers.get('x-quote-calculated-at')).toBeTruthy();
+    expect(res.headers.get('x-quote-expires-at')).toBeTruthy();
+    expect(res.headers.get('x-quote-hash')).toMatch(/^[a-f0-9]{64}$/);
+  });
+
+  it('should exclude room when InventoryAdjustment has totalUnits=0 in range', async () => {
+    const checkIn = '2026-03-08';
+    const checkOut = '2026-03-10';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0`);
+
+    const mockRoom = {
+      id: 'room-stop',
+      name: 'Blocked Room',
+      basePrice: 100,
+      capacity: 2,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [],
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([
+      { dateKey: '2026-03-08', totalUnits: 0 },
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+    expect(res.status).toBe(200);
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBe(0); // Room must be excluded
+  });
+
+  it('should include room when InventoryAdjustment has no stop sell in range', async () => {
+    const checkIn = '2026-03-08';
+    const checkOut = '2026-03-10';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0`);
+
+    const mockRoom = {
+      id: 'room-free',
+      name: 'Free Room',
+      basePrice: 100,
+      capacity: 2,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [],
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+    expect(res.status).toBe(200);
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBe(1);
+    expect(data[0].totalPrice).toBe(200);
+  });
+
+  it('should exclude room on multi-night stay when any day is stop sell', async () => {
+    const checkIn = '2026-03-10';
+    const checkOut = '2026-03-13';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0`);
+
+    const mockRoom = {
+      id: 'room-multi',
+      name: 'Multi Room',
+      basePrice: 100,
+      capacity: 2,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [],
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([
+      { dateKey: '2026-03-11', totalUnits: 0 },
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+    expect(res.status).toBe(200);
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBe(0);
+  });
+
+  it('should fallback to basePrice when no rate exists', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-02';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Test Room',
+      basePrice: 100, // Should BE used
+      capacity: 4,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [] // No rates
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(data[0].totalPrice).toBe(100);
+    expect(data[0].priceBreakdown.baseTotal).toBe(100);
+  });
+
+  it('should add extra adult fee per night for 3rd adult', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-03';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=3&children=0`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Test Room',
+      basePrice: 100,
+      capacity: 4,
+      maxGuests: 3,
+      includedAdults: 2,
+      extraAdultFee: 50,
+      child6To11Fee: 30,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: []
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data[0].priceBreakdown.extraAdults).toBe(1);
+    expect(data[0].priceBreakdown.extraAdultTotal).toBe(100);
+    expect(data[0].totalPrice).toBe(300);
+  });
+
+  it('should add child 6-11 fee per night', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-02';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=1&childrenAges=8`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Test Room',
+      basePrice: 100,
+      capacity: 4,
+      maxGuests: 3,
+      includedAdults: 2,
+      extraAdultFee: 50,
+      child6To11Fee: 30,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: []
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data[0].priceBreakdown.children6To11).toBe(1);
+    expect(data[0].priceBreakdown.childTotal).toBe(30);
+    expect(data[0].totalPrice).toBe(130);
+  });
+
+  // NEW TESTS FROM PLAN
+
+  it('should not charge for child under 6 years old', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-02';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=2&childrenAges=3,5`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Test Room',
+      basePrice: 100,
+      capacity: 4,
+      maxGuests: 4,
+      inventoryFor4Guests: 5,
+      includedAdults: 2,
+      extraAdultFee: 50,
+      child6To11Fee: 30,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: []
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data[0].priceBreakdown.children6To11).toBe(0); // No children in 6-11 range
+    expect(data[0].priceBreakdown.childTotal).toBe(0); // No child fees
+    expect(data[0].totalPrice).toBe(100); // Only base price
+  });
+
+  it('should calculate total correctly with mixed children ages', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-03'; // 2 nights
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=3&childrenAges=4,8,13`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Test Room',
+      basePrice: 200, // Per night - API loop will sum 200+200=400 for stays
+      capacity: 5,
+      maxGuests: 5,
+      inventoryFor4Guests: 5,
+      includedAdults: 2,
+      extraAdultFee: 100,
+      child6To11Fee: 80,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: []
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    // Age 13 converts to adult (3 total adults), age 8 is 6-11, age 4 is free
+    expect(data[0].priceBreakdown.effectiveAdults).toBe(3); // 2 + 1 from age 13
+    expect(data[0].priceBreakdown.children6To11).toBe(1); // Only age 8
+    expect(data[0].priceBreakdown.extraAdults).toBe(1); // 3 - 2 included
+    expect(data[0].priceBreakdown.extraAdultTotal).toBe(200); // 100 * 2 nights
+    expect(data[0].priceBreakdown.childTotal).toBe(160); // 80 * 2 nights
+    expect(data[0].totalPrice).toBe(760); // 400 base (200*2) + 200 adult + 160 child
+  });
+
+  it('should count child age 12 as adult in pricing', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-02';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=1&childrenAges=12`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Test Room',
+      basePrice: 100,
+      capacity: 4,
+      maxGuests: 3,
+      includedAdults: 2,
+      extraAdultFee: 100,
+      child6To11Fee: 30,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: []
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data[0].priceBreakdown.effectiveAdults).toBe(3); // 2 adults + 1 from age 12
+    expect(data[0].priceBreakdown.children6To11).toBe(0); // Age 12 is NOT in 6-11
+    expect(data[0].priceBreakdown.extraAdults).toBe(1);
+    expect(data[0].priceBreakdown.extraAdultTotal).toBe(100);
+    expect(data[0].totalPrice).toBe(200); // 100 base + 100 extra adult
+  });
+
+  it('should exclude room for 4 guests when special 4-guest inventory is exhausted', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-02';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=4&children=0`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Family Room',
+      basePrice: 100,
+      capacity: 3,
+      maxGuests: 4,
+      inventoryFor4Guests: 2,
+      includedAdults: 2,
+      extraAdultFee: 100,
+      child6To11Fee: 30,
+      totalUnits: 8,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: []
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+    (prisma.booking.findMany as any).mockResolvedValue([
+      {
+        checkIn: new Date('2026-02-01T00:00:00.000Z'),
+        checkOut: new Date('2026-02-02T00:00:00.000Z'),
+        adults: 4,
+        childrenAges: null,
+      },
+      {
+        checkIn: new Date('2026-02-01T00:00:00.000Z'),
+        checkOut: new Date('2026-02-02T00:00:00.000Z'),
+        adults: 2,
+        childrenAges: JSON.stringify([5, 8]),
+      }
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toEqual([]);
+  });
+
+  it('should subtract active 4-guest bookings from a manual quadruplo adjustment', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-02';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=4&children=0`);
+
+    const mockRoom = {
+      id: 'room-1',
+      name: 'Family Room',
+      basePrice: 100,
+      capacity: 3,
+      maxGuests: 4,
+      inventoryFor4Guests: 2,
+      includedAdults: 2,
+      extraAdultFee: 100,
+      child6To11Fee: 30,
+      totalUnits: 8,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: []
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+    (prisma.fourGuestInventoryAdjustment.findMany as any).mockResolvedValue([
+      { dateKey: '2026-02-01', totalUnits: 1 },
+    ]);
+    (prisma.booking.findMany as any).mockResolvedValue([
+      {
+        checkIn: new Date('2026-02-01T00:00:00.000Z'),
+        checkOut: new Date('2026-02-02T00:00:00.000Z'),
+        adults: 4,
+        childrenAges: null,
+      },
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toEqual([]);
+  });
+
+
+  it('should exclude room when stopSell is true for the check-in night', async () => {
+    const checkIn = '2026-02-11';
+    const checkOut = '2026-02-12';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0`);
+
+    const mockRoom = {
+      id: 'room-stop-sell-rate',
+      name: 'Stop Sell Room',
+      basePrice: 100,
+      capacity: 2,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [
+        {
+          startDate: '2026-02-11',
+          endDate: '2026-02-11',
+          price: 120,
+          stopSell: true,
+          cta: false,
+          ctd: false,
+          minLos: 1,
+          createdAt: new Date('2026-02-01T00:00:00.000Z'),
+        }
+      ],
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBe(0);
+  });
+
+  it('should prioritize newer overlapping rate and block when newest is stopSell', async () => {
+    const checkIn = '2026-02-11';
+    const checkOut = '2026-02-12';
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0`);
+
+    const mockRoom = {
+      id: 'room-overlap',
+      name: 'Overlap Room',
+      basePrice: 100,
+      capacity: 2,
+      totalUnits: 5,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [
+        {
+          startDate: '2026-02-01',
+          endDate: '2026-02-20',
+          price: 100,
+          stopSell: false,
+          cta: false,
+          ctd: false,
+          minLos: 1,
+          createdAt: new Date('2026-01-01T00:00:00.000Z'),
+        },
+        {
+          startDate: '2026-02-11',
+          endDate: '2026-02-11',
+          price: 100,
+          stopSell: true,
+          cta: false,
+          ctd: false,
+          minLos: 1,
+          createdAt: new Date('2026-02-10T00:00:00.000Z'),
+        }
+      ],
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBe(0);
+  });
+
+  it('should prioritize a newer open rate over an older overlapping stopSell rate', async () => {
+    const req = new Request('http://localhost/api/availability?checkIn=2026-02-11&checkOut=2026-02-12&adults=2');
+
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-overlap-open',
+      name: 'Overlap Open Room',
+      basePrice: 80,
+      maxGuests: 2,
+      totalUnits: 2,
+      photos: [],
+      rates: [
+        {
+          startDate: '2026-02-01',
+          endDate: '2026-02-20',
+          price: 90,
+          stopSell: true,
+          cta: false,
+          ctd: false,
+          minLos: 1,
+          createdAt: new Date('2026-01-01T00:00:00.000Z'),
+        },
+        {
+          startDate: '2026-02-11',
+          endDate: '2026-02-11',
+          price: 140,
+          stopSell: false,
+          cta: false,
+          ctd: false,
+          minLos: 1,
+          createdAt: new Date('2026-02-10T00:00:00.000Z'),
+        },
+      ],
+    }]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toHaveLength(1);
+    expect(data[0].totalPrice).toBe(140);
+  });
+
+  it('should apply stopSell to any occupied night but not to the checkout date', async () => {
+    const room = {
+      id: 'room-stop-sell-boundary',
+      name: 'Stop Sell Boundary Room',
+      basePrice: 100,
+      maxGuests: 2,
+      totalUnits: 2,
+      photos: [],
+      rates: [{
+        startDate: '2026-04-11',
+        endDate: '2026-04-11',
+        price: 100,
+        stopSell: true,
+        cta: false,
+        ctd: false,
+        minLos: 1,
+      }],
+    };
+    (prisma.roomType.findMany as any).mockResolvedValue([room]);
+
+    const blocked = await GET(new Request(
+      'http://localhost/api/availability?checkIn=2026-04-10&checkOut=2026-04-12&adults=2'
+    ));
+    expect(await blocked.json()).toEqual([]);
+
+    const allowed = await GET(new Request(
+      'http://localhost/api/availability?checkIn=2026-04-10&checkOut=2026-04-11&adults=2'
+    ));
+    const allowedData = await allowed.json();
+    expect(allowedData).toHaveLength(1);
+  });
+
+  it('should ignore CTA after arrival and CTD before departure', async () => {
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-arrival-departure-boundary',
+      name: 'Arrival Departure Boundary Room',
+      basePrice: 100,
+      maxGuests: 2,
+      totalUnits: 2,
+      photos: [],
+      rates: [
+        {
+          startDate: '2026-04-11',
+          endDate: '2026-04-11',
+          price: 100,
+          stopSell: false,
+          cta: true,
+          ctd: true,
+          minLos: 1,
+        },
+      ],
+    }]);
+
+    const res = await GET(new Request(
+      'http://localhost/api/availability?checkIn=2026-04-10&checkOut=2026-04-12&adults=2'
+    ));
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toHaveLength(1);
+  });
+
+  it('should enforce the highest minLos found across all occupied nights', async () => {
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-min-los-boundary',
+      name: 'Minimum Stay Boundary Room',
+      basePrice: 100,
+      maxGuests: 2,
+      totalUnits: 2,
+      photos: [],
+      rates: [
+        {
+          startDate: '2026-04-10',
+          endDate: '2026-04-10',
+          price: 100,
+          stopSell: false,
+          cta: false,
+          ctd: false,
+          minLos: 1,
+        },
+        {
+          startDate: '2026-04-11',
+          endDate: '2026-04-11',
+          price: 100,
+          stopSell: false,
+          cta: false,
+          ctd: false,
+          minLos: 4,
+        },
+      ],
+    }]);
+
+    const res = await GET(new Request(
+      'http://localhost/api/availability?checkIn=2026-04-10&checkOut=2026-04-12&adults=2'
+    ));
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ error: 'min_stay_required', minLos: 4 });
+  });
+
+  it('should return 400 for invalid date range (checkIn equals checkOut)', async () => {
+    const checkIn = '2026-02-01';
+    const checkOut = '2026-02-01'; // Same day = 0 nights
+    const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0`);
+
+    const res = await GET(req);
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ error: 'invalid_date_range' });
+  });
+
+  it('should exclude a room when arrival is closed by CTA', async () => {
+    const req = new Request('http://localhost/api/availability?checkIn=2026-04-10&checkOut=2026-04-12&adults=2');
+
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-cta',
+      name: 'CTA Room',
+      basePrice: 100,
+      maxGuests: 2,
+      totalUnits: 2,
+      photos: [],
+      rates: [{
+        startDate: '2026-04-10',
+        endDate: '2026-04-10',
+        price: 100,
+        minLos: 1,
+        stopSell: false,
+        cta: true,
+        ctd: false,
+      }],
+    }]);
+
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual([]);
+  });
+
+  it('should exclude a room when departure is closed by CTD', async () => {
+    const req = new Request('http://localhost/api/availability?checkIn=2026-04-10&checkOut=2026-04-12&adults=2');
+
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-ctd',
+      name: 'CTD Room',
+      basePrice: 100,
+      maxGuests: 2,
+      totalUnits: 2,
+      photos: [],
+      rates: [{
+        startDate: '2026-04-12',
+        endDate: '2026-04-12',
+        price: 100,
+        minLos: 1,
+        stopSell: false,
+        cta: false,
+        ctd: true,
+      }],
+    }]);
+
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual([]);
+  });
+
+  it('should return the required minimum stay when every room fails minLos', async () => {
+    const req = new Request('http://localhost/api/availability?checkIn=2026-04-10&checkOut=2026-04-11&adults=2');
+
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-min-los',
+      name: 'Minimum Stay Room',
+      basePrice: 100,
+      maxGuests: 2,
+      totalUnits: 2,
+      photos: [],
+      rates: [{
+        startDate: '2026-04-10',
+        endDate: '2026-04-10',
+        price: 100,
+        minLos: 3,
+        stopSell: false,
+        cta: false,
+        ctd: false,
+      }],
+    }]);
+
+    const res = await GET(req);
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ error: 'min_stay_required', minLos: 3 });
+  });
+
+  it('should decrement manual inventory when a new booking occupies the day', async () => {
+    const req = new Request('http://localhost/api/availability?checkIn=2026-03-08&checkOut=2026-03-09&adults=2&children=0');
+
+    const mockRoom = {
+      id: 'room-manual',
+      name: 'Manual Room',
+      basePrice: 100,
+      capacity: 2,
+      totalUnits: 2,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [],
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.booking.findMany as any).mockResolvedValue([
+      {
+        checkIn: new Date('2026-03-08T00:00:00.000Z'),
+        checkOut: new Date('2026-03-09T00:00:00.000Z'),
+        status: 'CONFIRMED',
+      },
+    ]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([
+      { dateKey: '2026-03-08', totalUnits: 2 },
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBe(1);
+    expect(data[0].remainingUnits).toBe(1);
+  });
+
+  it('should subtract booking count from adjusted inventory when physical capacity is larger', async () => {
+    const req = new Request('http://localhost/api/availability?checkIn=2026-03-08&checkOut=2026-03-09&adults=2&children=0');
+
+    const mockRoom = {
+      id: 'room-manual-large-capacity',
+      name: 'Manual Room Large Capacity',
+      basePrice: 100,
+      capacity: 2,
+      totalUnits: 8,
+      amenities: '',
+      photos: [],
+      inventory: [],
+      rates: [],
+    };
+
+    (prisma.roomType.findMany as any).mockResolvedValue([mockRoom]);
+    (prisma.booking.findMany as any).mockResolvedValue([
+      {
+        checkIn: new Date('2026-03-08T00:00:00.000Z'),
+        checkOut: new Date('2026-03-09T00:00:00.000Z'),
+        status: 'CONFIRMED',
+      },
+    ]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([
+      { dateKey: '2026-03-08', totalUnits: 2 },
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(data)).toBe(true);
+    expect(data.length).toBe(1);
+    expect(data[0].remainingUnits).toBe(1);
+  });
+
+  it('should use the lowest standard inventory across all occupied nights', async () => {
+    const req = new Request(
+      'http://localhost/api/availability?checkIn=2026-05-10&checkOut=2026-05-13&adults=2'
+    );
+
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-multi-night-inventory',
+      name: 'Multi-night Inventory Room',
+      basePrice: 100,
+      maxGuests: 2,
+      totalUnits: 5,
+      photos: [],
+      rates: [],
+    }]);
+    (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([
+      { dateKey: '2026-05-10', totalUnits: 4 },
+      { dateKey: '2026-05-11', totalUnits: 1 },
+      { dateKey: '2026-05-12', totalUnits: 3 },
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toHaveLength(1);
+    expect(data[0].remainingUnits).toBe(1);
+  });
+
+  it('should subtract every simultaneous active booking from standard inventory', async () => {
+    const req = new Request(
+      'http://localhost/api/availability?checkIn=2026-05-10&checkOut=2026-05-11&adults=2'
+    );
+
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-simultaneous-bookings',
+      name: 'Simultaneous Bookings Room',
+      basePrice: 100,
+      maxGuests: 2,
+      totalUnits: 3,
+      photos: [],
+      rates: [],
+    }]);
+    (prisma.booking.findMany as any).mockResolvedValue([
+      {
+        checkIn: new Date('2026-05-10T00:00:00.000Z'),
+        checkOut: new Date('2026-05-11T00:00:00.000Z'),
+        adults: 2,
+        childrenAges: null,
+      },
+      {
+        checkIn: new Date('2026-05-10T00:00:00.000Z'),
+        checkOut: new Date('2026-05-11T00:00:00.000Z'),
+        adults: 1,
+        childrenAges: null,
+      },
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toHaveLength(1);
+    expect(data[0].remainingUnits).toBe(1);
+  });
+
+  it('should preserve four-guest inventory when existing bookings use fewer than four places', async () => {
+    const req = new Request(
+      'http://localhost/api/availability?checkIn=2026-05-10&checkOut=2026-05-11&adults=4'
+    );
+
+    (prisma.roomType.findMany as any).mockResolvedValue([{
+      id: 'room-separated-four-guest-inventory',
+      name: 'Separated Four Guest Inventory Room',
+      basePrice: 100,
+      includedAdults: 4,
+      maxGuests: 4,
+      totalUnits: 3,
+      inventoryFor4Guests: 1,
+      photos: [],
+      rates: [],
+    }]);
+    (prisma.booking.findMany as any).mockResolvedValue([
+      {
+        checkIn: new Date('2026-05-10T00:00:00.000Z'),
+        checkOut: new Date('2026-05-11T00:00:00.000Z'),
+        adults: 2,
+        childrenAges: null,
+      },
+    ]);
+
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toHaveLength(1);
+    expect(data[0].remainingUnits).toBe(2);
+  });
+
+  it('should ignore PENDING bookings when calculating inventory', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-10T12:00:00.000Z'));
+
+    try {
+      (prisma.roomType.findMany as any).mockResolvedValue([{
+        id: 'room-pending-ttl',
+        name: 'Pending TTL Room',
+        basePrice: 100,
+        maxGuests: 2,
+        totalUnits: 2,
+        photos: [],
+        rates: [],
+      }]);
+      (prisma.booking.findMany as any).mockResolvedValue([{
+        checkIn: new Date('2026-05-10T00:00:00.000Z'),
+        checkOut: new Date('2026-05-11T00:00:00.000Z'),
+        adults: 2,
+        childrenAges: null,
+      }]);
+
+      const res = await GET(new Request(
+        'http://localhost/api/availability?checkIn=2026-05-10&checkOut=2026-05-11&adults=2'
+      ));
+      const data = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(data[0].remainingUnits).toBe(1);
+      expect(prisma.booking.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        where: expect.objectContaining({
+          status: { in: ['CONFIRMED', 'PAID'] },
+        }),
+      }));
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('should leave inventory available when an expired PENDING booking is filtered out', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-10T12:00:00.000Z'));
+
+    try {
+      (prisma.roomType.findMany as any).mockResolvedValue([{
+        id: 'room-expired-pending',
+        name: 'Expired Pending Room',
+        basePrice: 100,
+        maxGuests: 2,
+        totalUnits: 1,
+        photos: [],
+        rates: [],
+      }]);
+      (prisma.booking.findMany as any).mockResolvedValue([]);
+
+      const res = await GET(new Request(
+        'http://localhost/api/availability?checkIn=2026-05-10&checkOut=2026-05-11&adults=2'
+      ));
+      const data = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(data).toHaveLength(1);
+      expect(data[0].remainingUnits).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+

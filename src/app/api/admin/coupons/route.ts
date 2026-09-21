@@ -1,0 +1,151 @@
+import { NextResponse } from 'next/server';
+import { randomInt } from 'crypto';
+import prisma from '@/lib/prisma';
+import { requireAdminAuth } from '@/lib/admin-auth';
+import {
+    getCouponCodePrefix,
+    hashCouponCode,
+    normalizeCouponCode,
+} from '@/lib/coupons/hash';
+import { decryptCouponCode, encryptCouponCode } from '@/lib/coupons/code-vault';
+import { asNullableString } from '@/lib/requestValue';
+
+function parseDate(value: unknown): Date | null {
+    const normalized = asNullableString(value);
+    if (!normalized) return null;
+    const d = new Date(normalized);
+    return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function parseNumber(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+}
+
+function parseIntNullable(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const n = Number.parseInt(String(value), 10);
+    return Number.isFinite(n) ? n : null;
+}
+
+function parseStringArray(value: unknown): string[] {
+    if (!Array.isArray(value)) return [];
+    return value.map((v) => asNullableString(v) ?? '').filter(Boolean);
+}
+
+function generateCouponCode(len = 10): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for (let i = 0; i < len; i += 1) {
+        out += chars[randomInt(chars.length)];
+    }
+    return out;
+}
+
+export async function GET() {
+    try {
+        const auth = await requireAdminAuth();
+        if (auth instanceof Response) return auth;
+
+        const coupons = await prisma.coupon.findMany({
+            orderBy: { createdAt: 'desc' },
+            include: {
+                _count: {
+                    select: {
+                        redemptions: true,
+                        attemptLogs: true,
+                    },
+                },
+            },
+        });
+
+        return NextResponse.json(coupons.map((coupon) => ({
+            ...coupon,
+            code: decryptCouponCode(coupon.codeCiphertext),
+            codeCiphertext: undefined,
+        })));
+    } catch (error) {
+        console.error('[Admin Coupons] GET error:', error);
+        return NextResponse.json({ error: 'Erro ao carregar cupons' }, { status: 500 });
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const auth = await requireAdminAuth();
+        if (auth instanceof Response) return auth;
+
+        const body = await request.json();
+
+        const name = asNullableString(body?.name) ?? '';
+        const type = (asNullableString(body?.type) ?? '').toUpperCase();
+        const value = parseNumber(body?.value);
+
+        if (!name) return NextResponse.json({ error: 'Nome obrigatorio' }, { status: 400 });
+        if (type !== 'PERCENT' && type !== 'FIXED') {
+            return NextResponse.json({ error: 'Tipo invalido' }, { status: 400 });
+        }
+        if (value === null || value <= 0) {
+            return NextResponse.json({ error: 'Valor invalido' }, { status: 400 });
+        }
+        if (type === 'PERCENT' && value > 100) {
+            return NextResponse.json({ error: 'Percentual deve ser <= 100' }, { status: 400 });
+        }
+
+        const shouldGenerate = Boolean(body?.generateCode);
+        const providedCode = normalizeCouponCode(asNullableString(body?.code) ?? '');
+        const createdCode = shouldGenerate || !providedCode ? generateCouponCode() : providedCode;
+        const code = normalizeCouponCode(createdCode);
+
+        if (!code) {
+            return NextResponse.json({ error: 'Codigo invalido' }, { status: 400 });
+        }
+
+        const codeHash = hashCouponCode(code);
+        const existing = await prisma.coupon.findFirst({ where: { codeHash } });
+        if (existing) {
+            return NextResponse.json({ error: 'Codigo ja existe' }, { status: 409 });
+        }
+
+        const maxDiscountAmount = parseNumber(body?.maxDiscountAmount);
+        const minBookingValue = parseNumber(body?.minBookingValue);
+        const maxGlobalUses = parseIntNullable(body?.maxGlobalUses);
+        const startsAt = parseDate(asNullableString(body?.startsAt) ?? body?.startsAt);
+        const endsAt = parseDate(asNullableString(body?.endsAt) ?? body?.endsAt);
+
+        if (startsAt && endsAt && startsAt > endsAt) {
+            return NextResponse.json({ error: 'Periodo invalido' }, { status: 400 });
+        }
+
+
+        const coupon = await prisma.coupon.create({
+            data: {
+                name,
+                codeHash,
+                codePrefix: getCouponCodePrefix(code),
+                codeCiphertext: encryptCouponCode(code),
+                type,
+                value,
+                maxDiscountAmount,
+                minBookingValue,
+                active: body?.active !== undefined ? Boolean(body.active) : true,
+                startsAt,
+                endsAt,
+                maxGlobalUses,
+                maxUsesPerGuest: parseIntNullable(body?.maxUsesPerGuest),
+                bindEmail: (asNullableString(body?.bindEmail) ?? '').toLowerCase() || null,
+                bindPhone: (asNullableString(body?.bindPhone) ?? '').replace(/\D/g, '') || null,
+                allowedRoomTypeIds: JSON.stringify(parseStringArray(body?.allowedRoomTypeIds)),
+                allowedSources: JSON.stringify(parseStringArray(body?.allowedSources)),
+                singleUse: Boolean(body?.singleUse),
+                stackable: Boolean(body?.stackable),
+            },
+        });
+
+        return NextResponse.json({ coupon, createdCode: code }, { status: 201 });
+    } catch (error) {
+        console.error('[Admin Coupons] POST error:', error);
+        return NextResponse.json({ error: 'Erro ao criar cupom' }, { status: 500 });
+    }
+}

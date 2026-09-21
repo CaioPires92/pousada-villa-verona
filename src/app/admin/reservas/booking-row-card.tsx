@@ -1,0 +1,324 @@
+'use client';
+
+import { useState } from 'react';
+import { 
+    User, 
+    Calendar, 
+    Mail, 
+    Phone, 
+    Home, 
+    CreditCard, 
+    Users, 
+    MoreHorizontal,
+    Clock,
+    CheckCircle2,
+    XCircle,
+    HelpCircle,
+    MessageCircle,
+    Trash2,
+    TestTube2,
+    Tag,
+    Link2,
+    MailCheck
+} from 'lucide-react';
+import type { Booking } from './types';
+import {
+    formatFunnelStage,
+    formatCurrency,
+    formatDateSafe,
+    formatDateTimeSafe,
+    formatInstallments,
+    formatPaymentBrand,
+    formatPaymentType,
+    getBookingCheckOutDate,
+    getBookingGuestsLabel,
+    getBookingOperationalDate,
+    isBookingApproved,
+    normalizeChildrenAges,
+} from './booking-view';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from '@/lib/utils';
+import styles from './reservas.module.css';
+
+function buildBookingWhatsAppUrl(booking: Booking) {
+    const phone = String(booking.guest.phone || '').replace(/\D/g, '');
+    if (!phone) return null;
+
+    const normalizedPhone = phone.startsWith('55') ? phone : `55${phone}`;
+    const message = [
+        `Olá, ${booking.guest.name || 'tudo bem'}!`,
+        'Aqui é da Pousada Delplata.',
+        'Vimos que você tem interesse em se hospedar conosco e queremos saber se podemos ajudar com a sua reserva.',
+    ].join(' ');
+
+    return `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(message)}`;
+}
+
+type BookingRowCardProps = {
+    booking: Booking;
+    statusText: string;
+    statusClassName: string;
+    actionValue: string;
+    actionBusy: boolean;
+    showActionBusy: boolean;
+    testPaymentsEnabled: boolean;
+    onActionSelect: (booking: Booking, actionValue: string) => void;
+};
+
+export default function BookingRowCard(props: BookingRowCardProps) {
+    const {
+        booking,
+        statusText,
+        statusClassName,
+        actionValue,
+        actionBusy,
+        showActionBusy,
+        testPaymentsEnabled,
+        onActionSelect,
+    } = props;
+
+    const childrenAges = normalizeChildrenAges(booking.childrenAges);
+    const bookingApproved = isBookingApproved(booking);
+    const bookingConfirmed = String(booking.status || '').toUpperCase() === 'CONFIRMED';
+    const checkIn = formatDateSafe(getBookingOperationalDate(booking));
+    const checkOut = formatDateSafe(getBookingCheckOutDate(booking));
+    const partialPayment = String(booking.payment?.paymentMode || '').toUpperCase() === 'PARTIAL'
+        && Number(booking.payment?.remainingAmount || 0) > 0;
+    const whatsappUrl = buildBookingWhatsAppUrl(booking);
+
+    const triggerAction = (action: string) => {
+        onActionSelect(booking, action);
+    };
+
+    return (
+        <article className={styles.rowCard} data-testid={`booking-card-${booking.id}`}>
+            <div className={styles.rowMain}>
+                <div className={styles.identityBlock}>
+                    <div className={styles.identityLine}>
+                        <strong className={styles.guestName}>{booking.guest.name || 'Não informado'}</strong>
+                        <span className={cn(styles.statusBadge, statusClassName)}>
+                            {statusText}
+                        </span>
+                        <span
+                            className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-[11px] font-bold tracking-wide text-slate-500"
+                            title={booking.id}
+                        >
+                            Reserva #{booking.id.slice(0, 8).toUpperCase()}
+                        </span>
+                    </div>
+                    <div className={styles.dateLine}>
+                        <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-slate-400" />
+                            <span>Check-in: <strong className="text-slate-900">{checkIn}</strong></span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-slate-400" />
+                            <span>Check-out: <strong className="text-slate-900">{checkOut}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={styles.actionColumn}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                variant="outline" 
+                                className="rounded-xl font-bold h-10 px-4 gap-2 border-slate-200 hover:bg-slate-50 transition-all"
+                                disabled={actionBusy}
+                            >
+                                <MoreHorizontal className="w-4 h-4" />
+                                Ações
+                                {showActionBusy && <Loader2 className="w-3 h-3 animate-spin" />}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56 rounded-xl border-slate-200 shadow-xl">
+                            <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-slate-400 font-bold px-3 py-2">
+                                Comunicação
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem 
+                                onClick={() => triggerAction('assist')}
+                                className="gap-2 cursor-pointer font-semibold py-2.5"
+                            >
+                                <HelpCircle className="w-4 h-4 text-blue-500" />
+                                Enviar Ajuda
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => triggerAction('discount')}
+                                disabled={!booking.guest.email && !booking.guest.phone}
+                                className="gap-2 cursor-pointer font-semibold py-2.5 text-violet-700"
+                            >
+                                <Tag className="w-4 h-4" />
+                                Convidar para voltar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => triggerAction('payment-link')}
+                                disabled={
+                                    bookingApproved
+                                    || ['CANCELLED', 'EXPIRED', 'REFUNDED'].includes(String(booking.status || '').toUpperCase())
+                                }
+                                className="gap-2 cursor-pointer font-semibold py-2.5 text-sky-700"
+                            >
+                                <Link2 className="w-4 h-4" />
+                                Gerar link de pagamento
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    if (whatsappUrl) window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                                }}
+                                disabled={!whatsappUrl}
+                                className="gap-2 cursor-pointer font-semibold py-2.5"
+                            >
+                                <MessageCircle className="w-4 h-4 text-emerald-500" />
+                                Chamar no WhatsApp
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+                            <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-slate-400 font-bold px-3 py-2">
+                                Gerenciar reserva
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => triggerAction('confirm')}
+                                disabled={bookingConfirmed}
+                                className="gap-2 cursor-pointer font-semibold py-2.5"
+                            >
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                Confirmar Reserva
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => triggerAction('hotel-confirmation')}
+                                disabled={!bookingConfirmed}
+                                className="gap-2 cursor-pointer font-semibold py-2.5 text-emerald-700"
+                            >
+                                <MailCheck className="w-4 h-4" />
+                                Reenviar confirmação ao hotel
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => triggerAction('expire')}
+                                className="gap-2 cursor-pointer font-semibold py-2.5"
+                            >
+                                <Clock className="w-4 h-4 text-amber-500" />
+                                Marcar como Expirada
+                            </DropdownMenuItem>
+
+                            {testPaymentsEnabled && (
+                                <DropdownMenuItem
+                                        onClick={() => triggerAction('test')}
+                                        disabled={bookingApproved}
+                                        className="gap-2 cursor-pointer font-semibold py-2.5 text-indigo-600"
+                                    >
+                                        <TestTube2 className="w-4 h-4" />
+                                        Aprovar Teste
+                                    </DropdownMenuItem>
+                            )}
+                            
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                                onClick={() => triggerAction('delete')}
+                                className="gap-2 cursor-pointer font-semibold py-2.5 text-red-600 focus:text-red-700 focus:bg-red-50"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Excluir Permanentemente
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    {showActionBusy ? <small className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 text-right">Processando...</small> : null}
+                </div>
+            </div>
+
+            <div className={styles.rowMeta}>
+                <div className={styles.metaItem}>
+                    <span className={styles.metaLabel}>Hóspede</span>
+                    <div className="flex items-center gap-1.5 overflow-hidden">
+                        <Mail className="w-3 h-3 text-slate-300 shrink-0" />
+                        <span className={styles.metaValueEllipsis} title={booking.guest.email}>
+                            {booking.guest.email || '-'}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                        <Phone className="w-3 h-3 text-slate-300 shrink-0" />
+                        <span className={styles.metaSub}>{booking.guest.phone || '-'}</span>
+                    </div>
+                </div>
+                
+                <div className={styles.metaItem}>
+                    <span className={styles.metaLabel}>Ocupação</span>
+                    <div className="flex items-center gap-1.5">
+                        <Users className="w-3 h-3 text-slate-300 shrink-0" />
+                        <span className={styles.metaValue}>{getBookingGuestsLabel(booking)}</span>
+                    </div>
+                    {childrenAges.length > 0 ? (
+                        <span className={styles.metaSub}>Idades: {childrenAges.join(', ')}</span>
+                    ) : null}
+                </div>
+
+                <div className={styles.metaItem}>
+                    <span className={styles.metaLabel}>Acomodação</span>
+                    <div className="flex items-center gap-1.5">
+                        <Home className="w-3 h-3 text-slate-300 shrink-0" />
+                        <span className={styles.metaValue}>{booking.roomType.name || '-'}</span>
+                    </div>
+                </div>
+
+                <div className={styles.metaItem}>
+                    <span className={styles.metaLabel}>Pagamento</span>
+                    <div className="flex items-center gap-1.5">
+                        <CreditCard className="w-3 h-3 text-slate-300 shrink-0" />
+                        <span className={styles.metaValue}>{formatPaymentType(booking.payment?.method)}</span>
+                    </div>
+                    {partialPayment ? (
+                        <span className={styles.metaSub}>
+                            Sinal pago: {formatCurrency(booking.payment?.amount || 0)} | Saldo: {formatCurrency(booking.payment?.remainingAmount || 0)}
+                        </span>
+                    ) : (
+                        <span className={styles.metaSub}>
+                            {formatInstallments(booking.payment)} | {formatPaymentBrand(booking.payment)}
+                        </span>
+                    )}
+                </div>
+
+                <div className={styles.metaItem}>
+                    <span className={styles.metaLabel}>Última etapa</span>
+                    <span className={styles.metaValue}>{formatFunnelStage(booking.funnelStage)}</span>
+                    <span className={styles.metaSub}>
+                        {booking.lastErrorMessage
+                            ? `Ocorrência: ${booking.lastErrorMessage}`
+                            : `Atualizado em ${formatDateSafe(booking.funnelUpdatedAt || booking.createdAt)}`}
+                    </span>
+                </div>
+
+                <div className={styles.metaItem}>
+                    <span className={styles.metaLabel}>Total</span>
+                    <span className={styles.metaValueStrong}>{formatCurrency(booking.totalPrice)}</span>
+                    <span className={styles.metaSub}>Desde {formatDateTimeSafe(booking.createdAt)}</span>
+                </div>
+            </div>
+        </article>
+    );
+}
+
+function Loader2(props: any) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+        </svg>
+    )
+}

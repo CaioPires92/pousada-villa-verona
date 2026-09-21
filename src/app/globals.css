@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-playfair-display: "Bodoni Moda", "Times New Roman", Georgia, serif;
+  --brand-forest: #283223;
+  --brand-gold: #bbb863;
+  --brand-cream: #f5f5f5;
+  --brand-white: #ffffff;
+  --brand-black: #090909;
+  --brand-whatsapp: #00e676;
+  --ink-soft: rgba(9, 9, 9, 0.82);
+  --forest-soft: rgba(40, 50, 35, 0.72);
+  --gold-soft: rgba(187, 184, 99, 0.18);
+  --line-light: rgba(255, 255, 255, 0.16);
+  --line-dark: rgba(40, 50, 35, 0.12);
+  --background: 0 0% 96%;
+  --foreground: 97 18% 17%;
+  --card: 0 0% 100%;
+  --card-foreground: 97 18% 17%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 97 18% 17%;
+  --primary: 97 18% 17%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 58 39% 56%;
+  --secondary-foreground: 97 18% 17%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 24px;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  font-family: var(--font-inter);
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+}
+@layer utilities {
+  .font-hero-display {
+    font-family: var(--font-playfair-display), sans-serif;
+  }
+
+  .section-space-sm {
+    @apply py-14 md:py-20;
+  }
+
+  .section-space-md {
+    @apply py-16 md:py-24;
+  }
+
+  .section-space-lg {
+    @apply py-20 md:py-28;
+  }
+
+  .section-space-overlap {
+    @apply pb-16 pt-20 md:pb-24 md:pt-24;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

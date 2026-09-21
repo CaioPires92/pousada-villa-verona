@@ -1,0 +1,178 @@
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { compareDayKey, eachDayKeyInclusive, prevDayKey } from '@/lib/day-key';
+import { requireAdminAuth } from '@/lib/admin-auth';
+import { getEffectiveGuestCounts, normalizeChildrenAgesInput, requiresFourGuestInventory } from '@/lib/guest-capacity';
+import { asNullableString } from '@/lib/requestValue';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+export async function GET(request: Request) {
+    const auth = await requireAdminAuth();
+    if (auth instanceof Response) return auth;
+
+    const { searchParams } = new URL(request.url);
+    const roomTypeId = asNullableString(searchParams.get('roomTypeId'));
+    const startDateParam = asNullableString(searchParams.get('startDate'));
+    const endDateParam = asNullableString(searchParams.get('endDate'));
+
+    if (!roomTypeId || !startDateParam || !endDateParam) {
+        return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+    }
+
+    // Use inclusive UTC day bounds to avoid dropping 1-day records on range start.
+    const rangeStart = new Date(`${startDateParam}T00:00:00.000Z`);
+    const rangeEnd = new Date(`${endDateParam}T23:59:59.999Z`);
+
+    try {
+        // 1. Buscar detalhes do quarto
+        const roomType = await prisma.roomType.findUnique({
+            where: { id: roomTypeId }
+        });
+
+        if (!roomType) {
+            return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+        }
+
+        // 2. Buscar Tarifas (Rates) - Usando o novo tipo DateTime
+        const rates = await prisma.rate.findMany({
+            where: {
+                roomTypeId,
+                startDate: { lte: rangeEnd },
+                endDate: { gte: rangeStart }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        const normalizedRates = rates.map((r) => {
+            const sDay = r.startDate instanceof Date ? r.startDate.toISOString().split('T')[0] : String(r.startDate).slice(0, 10);
+            const eDay = r.endDate instanceof Date ? r.endDate.toISOString().split('T')[0] : String(r.endDate).slice(0, 10);
+            return {
+                ...r,
+                dayStart: sDay,
+                dayEnd: eDay,
+                __validDayRange: true
+            };
+        });
+
+        // 3. Buscar Ajustes de Inventário
+        const inventoryAdjustments = await prisma.inventoryAdjustment.findMany({
+            where: {
+                roomTypeId,
+                date: { gte: rangeStart, lte: rangeEnd }
+            }
+        });
+        const fourGuestInventoryAdjustments = await prisma.fourGuestInventoryAdjustment.findMany({
+            where: {
+                roomTypeId,
+                date: { gte: rangeStart, lte: rangeEnd }
+            }
+        });
+
+        // Mapeia usando a chave string YYYY-MM-DD para o frontend encontrar fácil
+        const inventoryByDay = new Map(
+            inventoryAdjustments.map((row) => [
+                row.date instanceof Date ? row.date.toISOString().split('T')[0] : String(row.date).slice(0, 10),
+                row
+            ])
+        );
+        const fourGuestInventoryByDay = new Map(
+            fourGuestInventoryAdjustments.map((row) => [
+                row.date instanceof Date ? row.date.toISOString().split('T')[0] : String(row.date).slice(0, 10),
+                row
+            ])
+        );
+
+        // 4. Buscar Reservas Ativas (Substituindo o $queryRaw por findMany seguro)
+        const activeBookings = await prisma.booking.findMany({
+            where: {
+                roomTypeId,
+                status: { in: ['CONFIRMED', 'PAID'] },
+                // Filtro de sobreposição
+                checkIn: { lte: rangeEnd },
+                checkOut: { gt: rangeStart }
+            }
+        });
+
+        const bookingsCountByDay = new Map<string, number>();
+        const bookingsFor4GuestsByDay = new Map<string, number>();
+        for (const b of activeBookings) {
+            const bIn = b.checkIn.toISOString().split('T')[0];
+            const bOut = b.checkOut.toISOString().split('T')[0];
+            const usesFourGuestInventory = requiresFourGuestInventory(
+                getEffectiveGuestCounts({
+                    adults: b.adults,
+                    childrenAges: normalizeChildrenAgesInput(b.childrenAges),
+                }).effectiveGuests
+            );
+
+            const rangeStartDay = compareDayKey(bIn, startDateParam) < 0 ? startDateParam : bIn;
+            const endInclusive = prevDayKey(bOut);
+            const rangeEndDay = compareDayKey(endInclusive, endDateParam) > 0 ? endDateParam : endInclusive;
+
+            if (compareDayKey(rangeStartDay, rangeEndDay) <= 0) {
+                for (const dayKey of eachDayKeyInclusive(rangeStartDay, rangeEndDay)) {
+                    bookingsCountByDay.set(dayKey, (bookingsCountByDay.get(dayKey) || 0) + 1);
+                    if (usesFourGuestInventory) {
+                        bookingsFor4GuestsByDay.set(dayKey, (bookingsFor4GuestsByDay.get(dayKey) || 0) + 1);
+                    }
+                }
+            }
+        }
+
+        // 5. Unificar dados por dia para o Calendário
+        const dayKeys = eachDayKeyInclusive(startDateParam, endDateParam);
+
+        const calendarData = dayKeys.map((dateStr) => {
+            const rate = normalizedRates.find((r) => dateStr >= r.dayStart && dateStr <= r.dayEnd);
+            const adjustment = inventoryByDay.get(dateStr);
+            const fourGuestAdjustment = fourGuestInventoryByDay.get(dateStr);
+            const capacityTotal = Number(roomType.totalUnits);
+            const fourGuestCapacityTotal = Math.max(0, Math.min(capacityTotal, Number(roomType.inventoryFor4Guests ?? 0)));
+            const adjustedTotal = adjustment ? Math.max(0, Math.min(capacityTotal, Number(adjustment.totalUnits))) : null;
+            const bookingsCount = bookingsCountByDay.get(dateStr) || 0;
+            const occupiedUnits = adjustment ? Number(adjustment.occupiedUnits || 0) : 0;
+            const totalInventory = adjustedTotal !== null
+                ? Math.max(0, adjustedTotal - bookingsCount)
+                : Math.max(0, capacityTotal - bookingsCount);
+            const fourGuestAdjustedTotal = fourGuestAdjustment
+                ? Math.max(0, Math.min(fourGuestCapacityTotal, Number(fourGuestAdjustment.totalUnits)))
+                : null;
+            const bookingsFor4GuestsCount = bookingsFor4GuestsByDay.get(dateStr) || 0;
+            const fourGuestInventory = fourGuestAdjustedTotal !== null
+                ? Math.max(0, fourGuestAdjustedTotal - bookingsFor4GuestsCount)
+                : Math.max(0, fourGuestCapacityTotal - bookingsFor4GuestsCount);
+            const available = totalInventory;
+
+            return {
+                date: dateStr,
+                price: rate ? Number(rate.price) : Number(roomType.basePrice),
+                stopSell: rate ? rate.stopSell : false,
+                cta: rate ? rate.cta : false,
+                ctd: rate ? rate.ctd : false,
+                minLos: rate ? rate.minLos : 1,
+                rateId: rate ? rate.id : null,
+                totalInventory,
+                capacityTotal,
+                bookingsCount,
+                occupiedUnits,
+                available,
+                isAdjusted: !!adjustment,
+                fourGuestInventory,
+                fourGuestCapacityTotal,
+                bookingsFor4GuestsCount,
+                isFourGuestAdjusted: !!fourGuestAdjustment,
+            };
+        });
+
+        return NextResponse.json(calendarData);
+
+    } catch (error) {
+        console.error('[Admin Calendar] ERROR:', error);
+        return NextResponse.json(
+            { error: 'Internal Server Error', details: error instanceof Error ? error.message : 'Unknown' },
+            { status: 500 }
+        );
+    }
+}
