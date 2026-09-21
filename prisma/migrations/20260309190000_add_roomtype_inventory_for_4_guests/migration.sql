@@ -1,1 +1,0 @@
-ALTER TABLE "RoomType" ADD COLUMN "inventoryFor4Guests" INTEGER NOT NULL DEFAULT 0;
