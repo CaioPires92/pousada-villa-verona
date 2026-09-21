@@ -1,0 +1,3 @@
+interface:
+  display_name: "Nova pousada"
+  short_description: "Configura uma nova pousada a partir deste motor"

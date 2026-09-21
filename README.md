@@ -2,7 +2,7 @@
 
 Base independente para criar um novo site de pousada com motor de reservas. Ela inclui o fluxo público de reservas, painel administrativo, disponibilidade, preços, cupons, pagamentos por Mercado Pago, e-mails, banco Prisma/SQLite, testes e scripts de deploy.
 
-Esta pasta não contém `node_modules`, `.next`, arquivos `.env`, bancos locais, backups, CRM/WhatsApp, histórico Git nem credenciais da Delplata.
+Esta pasta não contém `node_modules`, `.next`, arquivos `.env`, bancos locais, backups, CRM, Evolution API, n8n, histórico Git nem credenciais da Delplata.
 
 ## Começar um novo projeto
 
@@ -39,3 +39,5 @@ npm run dev:web
 ```
 
 O servidor local abre na porta `3001`.
+
+Para uma orientação assistida, use a skill local [`new-pousada-reservas`](.codex/skills/new-pousada-reservas/SKILL.md).
