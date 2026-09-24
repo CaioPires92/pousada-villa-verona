@@ -323,6 +323,9 @@ export default function HomeContent() {
       </section>
 
       {/* Special Dates Section */}
+      <ContactAndLocation />
+
+      {/* Special Dates Section */}
       <SpecialDatesSection
         dates={enabledSpecialDates}
         onDateClick={(specialDate) => handleSpecialDateClick(specialDate.id)}
