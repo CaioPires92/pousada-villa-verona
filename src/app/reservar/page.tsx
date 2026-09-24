@@ -1759,33 +1759,6 @@ function ReservarContent() {
                                     )})}
                                 </div>
 
-                                <div className="border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-4 shadow-none md:px-5">
-                                    <div className="grid gap-4 md:grid-cols-3 md:gap-0">
-                                        {PAGE_TRUST_ITEMS.map((item, index) => (
-                                            <div
-                                                key={`${item.label}-${item.value}`}
-                                                className={`flex items-center gap-3 py-1 ${index === 0 ? '' : 'md:border-l md:border-brand-brown-dark/10 md:pl-5'} ${index < PAGE_TRUST_ITEMS.length - 1 ? 'md:pr-5' : ''}`}
-                                            >
-                                                <div className="flex shrink-0 items-center justify-center text-brand-brown-dark/78">
-                                                    <item.icon className="h-7 w-7" aria-hidden />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-lg font-semibold leading-none text-brand-brown-dark">
-                                                        {item.value}
-                                                    </p>
-                                                    <p className="mt-1 text-sm font-semibold leading-5 text-foreground">
-                                                        {item.label}
-                                                    </p>
-                                                    {item.description ? (
-                                                        <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
-                                                            {item.description}
-                                                        </p>
-                                                    ) : null}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
                             </div>
                         )}
                     </div>
@@ -2504,7 +2477,7 @@ function ReservarContent() {
                     </div>
                 )}
             </div>
-            <ReservationFaq />
+            
             {roomGallery ? (
                 <div
                     className="fixed inset-0 z-[70] bg-black/90 backdrop-blur-sm p-4 flex items-center justify-center"
