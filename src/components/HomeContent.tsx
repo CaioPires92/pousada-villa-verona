@@ -18,6 +18,8 @@ import {
 } from "@/lib/analytics";
 import { formatDateBRFromYmd } from "@/lib/date";
 import SocialProofBadges from "@/components/SocialProofBadges";
+import Testimonials from "@/components/Testimonials";
+
 import type { HomeOfferSummary } from "@/components/HomeAvailabilityOffers";
 
 const HomeAvailabilityOffers = dynamic(() => import("@/components/HomeAvailabilityOffers"), {
@@ -259,6 +261,9 @@ export default function HomeContent() {
 
       <HomeAvailabilityOffers onLowestOfferChange={handleLowestOfferChange} />
 
+      {/* Depoimentos */}
+      <Testimonials />
+
       {/* Galeria */}
       <section className="section-space-md bg-[color:var(--brand-cream)] text-primary">
         <div className="container">
@@ -323,61 +328,6 @@ export default function HomeContent() {
         onDateClick={(specialDate) => handleSpecialDateClick(specialDate.id)}
       />
 
-      {/* CTA Section */}
-      <section className="section-space-lg relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src={siteImages.cta.src}
-            alt={siteImages.cta.alt}
-            fill
-            sizes="100vw"
-            quality={85}
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(40,50,35,0.78)_0%,rgba(40,50,35,0.72)_100%)]" />
-        </div>
-        <div className="container relative z-10 text-center text-white">
-          <motion.div
-            initial={false}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="mx-auto max-w-3xl space-y-8"
-          >
-            <div className="space-y-4">
-              <h2 className="font-hero-display text-4xl font-medium md:text-5xl lg:text-6xl">
-                Planeje um fim de semana tranquilo na serra
-              </h2>
-              <p className="text-lg leading-8 text-white/88 md:text-xl">
-                Consulte a disponibilidade e escolha uma acomodação para sua estadia.
-              </p>
-            </div>
-            
-            <div className="flex flex-col items-center gap-4">
-              <div className="grid w-full max-w-lg grid-cols-1 gap-4 justify-center sm:grid-cols-2">
-                <Button asChild size="lg" className="h-14 rounded-none bg-[color:var(--brand-gold)] px-8 text-base text-[color:var(--brand-forest)] shadow-none hover:bg-[color:var(--brand-gold)]/90">
-                  <Link href="/reservar" onClick={() => trackClickReservarFinal("final")}>
-                    Ver disponibilidade
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-14 rounded-none border-[color:var(--brand-gold)]/60 bg-[color:var(--forest-soft)] px-8 text-base text-[color:var(--brand-white)] shadow-none transition-all duration-200 hover:-translate-y-px hover:border-[color:var(--brand-white)]/70 hover:bg-[color:var(--brand-forest)] hover:text-[color:var(--brand-white)]">
-                  <Link
-                    href={WHATSAPP_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => trackClickWhatsAppFinal("final")}
-                  >
-                    Falar no WhatsApp
-                  </Link>
-                </Button>
-              </div>
-              <p className="text-sm font-medium text-white/70">
-                Valores e disponibilidade são confirmados no motor de reservas.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-    </main>
+          </main>
   );
 }
