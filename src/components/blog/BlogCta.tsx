@@ -29,7 +29,7 @@ export function BlogCta({
   return (
     <section
       className={cn(
-        "border border-primary/10 bg-white",
+        "border border-brand-brown-dark/10 bg-white",
         compact ? "p-6" : "p-8 md:p-10",
       )}
     >
@@ -40,12 +40,12 @@ export function BlogCta({
         )}
       >
         <div className={cn("space-y-3", compact ? "w-full" : "max-w-2xl")}>
-          <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">
+          <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-brand-gold">
             Reserva direta
           </p>
           <h2
             className={cn(
-              "font-heading font-semibold text-primary text-balance",
+              "font-heading font-semibold text-brand-brown-dark text-balance",
               compact
                 ? "max-w-[18ch] text-[1.9rem] leading-tight md:text-[2.2rem]"
                 : "text-[2rem] leading-tight md:text-[2.6rem]",

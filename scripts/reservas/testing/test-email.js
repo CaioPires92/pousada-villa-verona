@@ -11,7 +11,7 @@ if (!bookingId) {
 
 console.log(`\n🧪 Testando envio de email para reserva: ${bookingId}\n`);
 
-fetch('http://localhost:3001/api/test-email', {
+fetch('http://localhost:3005/api/test-email', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',

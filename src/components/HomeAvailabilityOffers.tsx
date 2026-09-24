@@ -357,7 +357,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
           <button
             type="button"
             onClick={openSearchModal}
-            className="inline-flex h-12 items-center justify-center gap-2 border border-primary/15 bg-white px-5 text-sm font-semibold text-brand-brown-dark transition-colors hover:bg-primary hover:text-white"
+            className="inline-flex h-12 items-center justify-center gap-2 border border-brand-brown-dark/15 bg-white px-5 text-sm font-semibold text-brand-brown-dark transition-colors hover:bg-brand-brown-dark hover:text-white"
           >
             Consultar outras datas <ArrowRight className="h-4 w-4" />
           </button>
@@ -385,7 +385,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     value={draftSearch.checkIn}
                     min={format(new Date(), "yyyy-MM-dd")}
                     onChange={(event) => updateDraftCheckIn(event.target.value)}
-                    className="h-12 w-full rounded-none border border-primary/15 bg-white px-3 font-medium text-foreground"
+                    className="h-12 w-full rounded-none border border-brand-brown-dark/15 bg-white px-3 font-medium text-foreground"
                   />
                 </label>
                 <label className="space-y-2 text-sm font-semibold text-brand-brown-dark">
@@ -395,7 +395,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     value={draftSearch.checkOut}
                     min={draftSearch.checkIn ? getNextDayKey(draftSearch.checkIn) : undefined}
                     onChange={(event) => updateDraftCheckOut(event.target.value)}
-                    className="h-12 w-full rounded-none border border-primary/15 bg-white px-3 font-medium text-foreground"
+                    className="h-12 w-full rounded-none border border-brand-brown-dark/15 bg-white px-3 font-medium text-foreground"
                   />
                 </label>
                 <label className="space-y-2 text-sm font-semibold text-brand-brown-dark">
@@ -409,7 +409,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                         return { ...current, adults, children, childrenAges: current.childrenAges.slice(0, children) };
                       });
                     }}
-                    className="h-12 w-full rounded-none border border-primary/15 bg-white px-3 font-medium text-foreground"
+                    className="h-12 w-full rounded-none border border-brand-brown-dark/15 bg-white px-3 font-medium text-foreground"
                   >
                     {[1, 2, 3, 4].map((value) => <option key={value} value={value}>{value}</option>)}
                   </select>
@@ -419,7 +419,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                   <select
                     value={draftSearch.children}
                     onChange={(event) => updateDraftChildren(Number(event.target.value))}
-                    className="h-12 w-full rounded-none border border-primary/15 bg-white px-3 font-medium text-foreground"
+                    className="h-12 w-full rounded-none border border-brand-brown-dark/15 bg-white px-3 font-medium text-foreground"
                   >
                     {Array.from({ length: Math.max(0, 4 - draftSearch.adults) + 1 }, (_, index) => (
                       <option key={index} value={index}>{index}</option>
@@ -443,7 +443,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                             return { ...current, childrenAges: nextAges };
                           });
                         }}
-                        className="h-12 w-full rounded-none border border-primary/15 bg-white px-3 font-medium text-foreground"
+                        className="h-12 w-full rounded-none border border-brand-brown-dark/15 bg-white px-3 font-medium text-foreground"
                       >
                         {Array.from({ length: 18 }, (_, value) => (
                           <option key={value} value={value}>{value} anos</option>
@@ -474,11 +474,11 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
           <div className="grid gap-5 md:grid-cols-2" aria-label="Carregando acomodações">
             {[0, 1, 2, 3].map((item) => (
               <div key={item} className="animate-pulse bg-transparent border-0">
-                <div className="aspect-[4/3] bg-primary/10" />
+                <div className="aspect-[4/3] bg-brand-brown-dark/10" />
                 <div className="space-y-3 p-5">
-                  <div className="h-6 w-2/3 bg-primary/10" />
-                  <div className="h-4 w-full bg-primary/10" />
-                  <div className="h-10 w-full bg-primary/10" />
+                  <div className="h-6 w-2/3 bg-brand-brown-dark/10" />
+                  <div className="h-4 w-full bg-brand-brown-dark/10" />
+                  <div className="h-10 w-full bg-brand-brown-dark/10" />
                 </div>
               </div>
             ))}
@@ -490,7 +490,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
               Não encontramos uma oferta para o período de referência. O motor pode consultar outras datas e a ocupação correta sem exibir um preço desatualizado.
             </p>
-            <Link href="/reservar" className="mt-5 inline-flex h-12 items-center justify-center bg-primary px-6 text-sm font-semibold text-white">
+            <Link href="/reservar" className="mt-5 inline-flex h-12 items-center justify-center bg-brand-brown-dark px-6 text-sm font-semibold text-white">
               Ver preços e disponibilidade
             </Link>
           </div>
@@ -546,7 +546,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
               return (
                 <article key={room.id} className="w-[85%] sm:w-[65%] lg:w-[48%] xl:w-[40%] shrink-0 snap-center group flex h-full flex-col overflow-hidden bg-transparent border-0">
                   <div
-                    className={`relative aspect-[4/3] overflow-hidden bg-primary/5 ${canOpenGallery ? "cursor-zoom-in" : ""}`}
+                    className={`relative aspect-[4/3] overflow-hidden bg-brand-brown-dark/5 ${canOpenGallery ? "cursor-zoom-in" : ""}`}
                     role={canOpenGallery ? "button" : undefined}
                     tabIndex={canOpenGallery ? 0 : undefined}
                     aria-label={canOpenGallery ? `Abrir galeria de fotos de ${room.name}` : undefined}
@@ -593,12 +593,12 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                       <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 text-[0.95rem] font-light text-brand-brown-dark/80">
                         {maxGuests > 0 ? (
                           <li className="flex items-center gap-3">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--brand-gold)] opacity-70"></span> Até {maxGuests} hóspedes
+                            <span className="h-1.5 w-1.5 rounded-full bg-brand-gold opacity-70"></span> Até {maxGuests} hóspedes
                           </li>
                         ) : null}
                         {amenities.map((amenity) => (
                           <li key={amenity} className="flex items-center gap-3">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--brand-gold)] opacity-70"></span> {amenity}
+                            <span className="h-1.5 w-1.5 rounded-full bg-brand-gold opacity-70"></span> {amenity}
                           </li>
                         ))}
                       </ul>

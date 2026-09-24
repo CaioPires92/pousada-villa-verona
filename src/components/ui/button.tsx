@@ -10,15 +10,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow hover:-translate-y-px hover:bg-primary/90 hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]",
+          "bg-brand-brown-dark text-brand-brown-dark-foreground shadow hover:-translate-y-px hover:bg-brand-brown-dark/90 hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:-translate-y-px hover:bg-destructive/90 hover:shadow-[0_10px_24px_rgba(127,29,29,0.14)]",
         outline:
           "border border-input bg-background shadow-sm hover:-translate-y-px hover:bg-accent hover:text-accent-foreground hover:shadow-[0_8px_18px_rgba(40,50,35,0.08)]",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:-translate-y-px hover:bg-secondary/80 hover:shadow-[0_8px_18px_rgba(40,50,35,0.08)]",
+          "bg-brand-gold text-brand-gold-foreground shadow-sm hover:-translate-y-px hover:bg-brand-gold/80 hover:shadow-[0_8px_18px_rgba(40,50,35,0.08)]",
         ghost: "hover:-translate-y-px hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: "text-brand-brown-dark underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-4 py-2",

@@ -13,7 +13,7 @@ export default function TermosECondicoesPage() {
         <main className="min-h-screen bg-muted/30 pt-28 pb-16">
             <div className="container mx-auto max-w-4xl px-4">
                 <div className="rounded-xl border border-border/60 bg-white p-6 md:p-8 shadow-sm">
-                    <h1 className="font-hero-display text-2xl font-semibold text-primary md:text-3xl">Termos e Condições</h1>
+                    <h1 className="font-hero-display text-2xl font-semibold text-brand-brown-dark md:text-3xl">Termos e Condições</h1>
                     <p className="mt-2 text-sm text-muted-foreground">Última atualização: 12/02/2026</p>
 
                     <div className="mt-6 space-y-5 text-sm leading-6 text-foreground">
@@ -61,7 +61,7 @@ export default function TermosECondicoesPage() {
                             <h2 className="font-hero-display font-semibold">6. Alterações e cancelamentos</h2>
                             <p>
                                 Alterações e cancelamentos seguem a política vigente no momento da reserva, disponível em{' '}
-                                <Link href="/politica-de-cancelamento" className="text-primary underline">
+                                <Link href="/politica-de-cancelamento" className="text-brand-brown-dark underline">
                                     Política de Cancelamento
                                 </Link>
                                 .
@@ -72,7 +72,7 @@ export default function TermosECondicoesPage() {
                             <h2 className="font-hero-display font-semibold">7. Contato</h2>
                             <p>
                                 Dúvidas podem ser enviadas para{' '}
-                                <a className="text-primary underline" href="mailto:contato@pousadadelplata.com.br">
+                                <a className="text-brand-brown-dark underline" href="mailto:contato@pousadadelplata.com.br">
                                     contato@pousadadelplata.com.br
                                 </a>{' '}
                                 ou WhatsApp (19) 99965-4866.

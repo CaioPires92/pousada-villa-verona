@@ -27,7 +27,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="container relative z-10 py-24 text-center text-white md:py-28">
-                    <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">
+                    <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-brand-gold">
                         Contato
                     </p>
                     <h1 className="font-hero-display mt-4 text-[2.9rem] font-semibold leading-[0.96] md:text-[4rem]">
@@ -44,7 +44,7 @@ export default function ContactPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
                     <div className="space-y-12">
                         <div>
-                            <h2 className="font-hero-display mb-6 text-[2.2rem] font-semibold leading-tight text-primary md:text-[3rem]">Informações de Contato</h2>
+                            <h2 className="font-hero-display mb-6 text-[2.2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">Informações de Contato</h2>
                             <p className="mb-8 leading-relaxed text-foreground/72">
                                 Você pode entrar em contato conosco através dos canais abaixo ou preencher o formulário. 
                                 Nossa equipe retornará o mais breve possível.
@@ -52,36 +52,36 @@ export default function ContactPage() {
 
                             <div className="space-y-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="shrink-0 border border-primary/10 bg-[color:var(--brand-white)] p-3 text-primary">
+                                    <div className="shrink-0 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-3 text-brand-brown-dark">
                                         <MapPin className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h3 className="font-sans font-semibold text-primary">Endereço</h3>
+                                        <h3 className="font-sans font-semibold text-brand-brown-dark">Endereço</h3>
                                         <p className="text-foreground/72">R. Vicente Frederico Leporas, 151</p>
                                         <p className="text-foreground/72">Bairro das Posses, Serra Negra - SP, 13930-000</p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="shrink-0 border border-primary/10 bg-[color:var(--brand-white)] p-3 text-primary">
+                                    <div className="shrink-0 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-3 text-brand-brown-dark">
                                         <Phone className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h3 className="font-sans font-semibold text-primary">Telefone</h3>
+                                        <h3 className="font-sans font-semibold text-brand-brown-dark">Telefone</h3>
                                         <p className="text-foreground/72">
-                                            <a href="tel:+551938422559" className="hover:text-primary transition-colors">(19) 3842-2559</a>
+                                            <a href="tel:+551938422559" className="hover:text-brand-brown-dark transition-colors">(19) 3842-2559</a>
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="shrink-0 border border-primary/10 bg-[color:var(--brand-white)] p-3 text-primary">
+                                    <div className="shrink-0 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-3 text-brand-brown-dark">
                                         <MessageCircle className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h3 className="font-sans font-semibold text-primary">WhatsApp</h3>
+                                        <h3 className="font-sans font-semibold text-brand-brown-dark">WhatsApp</h3>
                                         <p className="text-foreground/72">
-                                            <a href="https://wa.me/5519999654866" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                            <a href="https://wa.me/5519999654866" target="_blank" rel="noopener noreferrer" className="hover:text-brand-brown-dark transition-colors">
                                                 (19) 99965-4866
                                             </a>
                                         </p>
@@ -89,13 +89,13 @@ export default function ContactPage() {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="shrink-0 border border-primary/10 bg-[color:var(--brand-white)] p-3 text-primary">
+                                    <div className="shrink-0 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-3 text-brand-brown-dark">
                                         <Mail className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h3 className="font-sans font-semibold text-primary">E-mail</h3>
+                                        <h3 className="font-sans font-semibold text-brand-brown-dark">E-mail</h3>
                                         <p className="text-foreground/72">
-                                            <a href="mailto:contato@pousadadelplata.com.br" className="hover:text-primary transition-colors">
+                                            <a href="mailto:contato@pousadadelplata.com.br" className="hover:text-brand-brown-dark transition-colors">
                                                 contato@pousadadelplata.com.br
                                             </a>
                                         </p>
@@ -103,18 +103,18 @@ export default function ContactPage() {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="shrink-0 border border-primary/10 bg-[color:var(--brand-white)] p-3 text-primary">
+                                    <div className="shrink-0 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-3 text-brand-brown-dark">
                                         <Clock className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h3 className="font-sans font-semibold text-primary">Atendimento</h3>
+                                        <h3 className="font-sans font-semibold text-brand-brown-dark">Atendimento</h3>
                                         <p className="text-foreground/72">Todos os dias, das 8h às 22h</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="h-[300px] w-full overflow-hidden border border-primary/10">
+                        <div className="h-[300px] w-full overflow-hidden border border-brand-brown-dark/10">
                             <iframe 
                                 src="https://maps.google.com/maps?q=R.+Vicente+Frederico+Leporas,+151,+Bairro+das+Posses,+Serra+Negra+-+SP,+13930-000&t=&z=15&ie=UTF8&iwloc=&output=embed"
                                 width="100%" 
@@ -128,8 +128,8 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                        <div className="border border-primary/10 bg-[color:var(--brand-white)] p-6 md:p-8">
-                            <h3 className="mb-6 font-sans text-[2rem] font-semibold leading-tight text-primary">Envie uma Mensagem</h3>
+                        <div className="border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-6 md:p-8">
+                            <h3 className="mb-6 font-sans text-[2rem] font-semibold leading-tight text-brand-brown-dark">Envie uma Mensagem</h3>
                             <ContactForm />
                         </div>
                     </div>

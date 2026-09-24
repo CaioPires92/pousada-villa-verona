@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         const accessToken = process.env.MP_ACCESS_TOKEN;
         
         // Detectar a URL base dinâmica para os redirecionamentos (back_urls)
-        const host = request.headers.get('host') || 'localhost:3000';
+        const host = request.headers.get('host') || 'localhost:3005';
         const protocol = request.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
         const dynamicBaseUrl = `${protocol}://${host}`;
         

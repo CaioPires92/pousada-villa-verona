@@ -64,7 +64,7 @@ export default function RestaurantPage() {
                 </div>
 
                 <div className="container relative z-10 py-24 text-center text-white md:py-28">
-                    <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">
+                    <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-brand-gold">
                         Restaurante
                     </p>
                     <h1 className="font-hero-display mt-4 text-[2.9rem] font-semibold leading-[0.96] md:text-[4rem]">
@@ -79,11 +79,11 @@ export default function RestaurantPage() {
             <section className="section-space-md bg-[color:var(--brand-cream)]">
             <div className="container">
                 <div className="mb-12 space-y-4 text-center md:mb-16">
-                    <p className="font-sans text-[1.9rem] font-semibold leading-tight text-primary md:text-[2.4rem]">
+                    <p className="font-sans text-[1.9rem] font-semibold leading-tight text-brand-brown-dark md:text-[2.4rem]">
                         &ldquo;Preparados tudo com muito carinho para você e sua família.&rdquo;
                     </p>
-                    <div className="inline-block border border-primary/10 bg-[color:var(--brand-white)] px-6 py-3">
-                        <p className="font-sans font-medium text-primary">
+                    <div className="inline-block border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-6 py-3">
+                        <p className="font-sans font-medium text-brand-brown-dark">
                             Horário: das 8:30h às 10:30h na Ala Principal
                         </p>
                     </div>

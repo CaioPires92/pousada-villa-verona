@@ -238,7 +238,7 @@ export default function HomeContent() {
         >
           <motion.p
             variants={itemVariants}
-            className="font-sans text-xs md:text-sm font-medium uppercase tracking-[0.3em] text-[#d3b890] mb-4"
+            className="font-sans text-xs md:text-sm font-medium uppercase tracking-[0.3em] text-[var(--brand-gold)] mb-4"
           >
             SOFISTICAÇÃO & CONFORTO
           </motion.p>
@@ -265,17 +265,17 @@ export default function HomeContent() {
       <Testimonials />
 
       {/* Galeria */}
-      <section className="section-space-md bg-[color:var(--brand-cream)] text-primary">
+      <section className="section-space-md bg-[color:var(--brand-cream)] text-brand-brown-dark">
         <div className="container">
           <div className="mb-12 flex flex-col gap-6 text-center md:mb-16 md:flex-row md:items-end md:justify-between md:text-left">
             <div>
-              <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-gold)] md:text-[0.8rem]">
+              <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-brand-gold md:text-[0.8rem]">
                 Galeria
               </p>
               <h2 className="font-hero-display mt-4 text-[2.4rem] leading-tight md:text-[3.2rem]">
                 Nossa pousada em imagens
               </h2>
-              <p className="mt-3 font-sans text-[0.98rem] leading-7 text-primary/72">
+              <p className="mt-3 font-sans text-[0.98rem] leading-7 text-brand-brown-dark/72">
                 {currentGalleryPage.title}
               </p>
             </div>
@@ -288,7 +288,7 @@ export default function HomeContent() {
                     current === 0 ? siteImages.galleryPages.length - 1 : current - 1
                   )
                 }
-                className="inline-flex h-12 w-12 items-center justify-center rounded-none border border-primary/15 bg-[color:var(--brand-white)] text-primary transition-colors duration-200 hover:bg-[color:var(--brand-cream)]"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-none border border-brand-brown-dark/15 bg-[color:var(--brand-white)] text-brand-brown-dark transition-colors duration-200 hover:bg-[color:var(--brand-cream)]"
               >
                 <ArrowLeft className="h-5 w-5" strokeWidth={1.8} />
               </button>
@@ -300,7 +300,7 @@ export default function HomeContent() {
                     current === siteImages.galleryPages.length - 1 ? 0 : current + 1
                   )
                 }
-                className="inline-flex h-12 w-12 items-center justify-center rounded-none border border-primary/15 bg-[color:var(--brand-white)] text-primary transition-colors duration-200 hover:bg-[color:var(--brand-cream)]"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-none border border-brand-brown-dark/15 bg-[color:var(--brand-white)] text-brand-brown-dark transition-colors duration-200 hover:bg-[color:var(--brand-cream)]"
               >
                 <ArrowRight className="h-5 w-5" strokeWidth={1.8} />
               </button>
@@ -308,7 +308,7 @@ export default function HomeContent() {
           </div>
           <div key={currentGalleryPage.title} className="mx-auto grid max-w-[82rem] grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
             {currentGalleryPage.images.map((img) => (
-              <div key={img.src} className="relative aspect-[4/3] overflow-hidden border border-primary/10">
+              <div key={img.src} className="relative aspect-[4/3] overflow-hidden border border-brand-brown-dark/10">
                 <Image
                   src={img.src}
                   alt={img.alt}

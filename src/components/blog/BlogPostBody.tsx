@@ -26,7 +26,7 @@ export function BlogPostBody({ content }: BlogPostBodyProps) {
               key={index}
               className={
                 isLeadParagraph
-                  ? "text-[1.08rem] first-letter:float-left first-letter:mr-2 first-letter:font-heading first-letter:font-semibold first-letter:text-5xl first-letter:leading-[0.85] first-letter:text-primary"
+                  ? "text-[1.08rem] first-letter:float-left first-letter:mr-2 first-letter:font-heading first-letter:font-semibold first-letter:text-5xl first-letter:leading-[0.85] first-letter:text-brand-brown-dark"
                   : undefined
               }
             >
@@ -38,8 +38,8 @@ export function BlogPostBody({ content }: BlogPostBodyProps) {
         if (block.type === "heading") {
           const className =
             block.level === 3
-              ? "border-t border-primary/10 pt-6 font-heading text-[2rem] font-semibold leading-tight text-primary"
-              : "border-t border-primary/10 pt-8 font-heading text-[2.4rem] font-semibold leading-tight text-primary";
+              ? "border-t border-brand-brown-dark/10 pt-6 font-heading text-[2rem] font-semibold leading-tight text-brand-brown-dark"
+              : "border-t border-brand-brown-dark/10 pt-8 font-heading text-[2.4rem] font-semibold leading-tight text-brand-brown-dark";
 
           if (block.level === 3) {
             return (
@@ -59,7 +59,7 @@ export function BlogPostBody({ content }: BlogPostBodyProps) {
         if (block.type === "image") {
           return (
             <figure key={index} className="space-y-3">
-              <div className="relative overflow-hidden border border-primary/10 bg-primary/5">
+              <div className="relative overflow-hidden border border-brand-brown-dark/10 bg-brand-brown-dark/5">
                 <div className="relative aspect-[16/10]">
                   <Image
                     src={block.src}
@@ -85,12 +85,12 @@ export function BlogPostBody({ content }: BlogPostBodyProps) {
           return (
             <ListTag
               key={index}
-              className={`space-y-3 border border-primary/10 bg-[color:var(--brand-cream)] px-6 py-5 ${
+              className={`space-y-3 border border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-6 py-5 ${
                 block.ordered ? "list-decimal" : "list-disc"
               } list-inside`}
             >
               {block.items.map((item) => (
-                <li key={item} className="pl-1 text-foreground/80 marker:text-primary">
+                <li key={item} className="pl-1 text-foreground/80 marker:text-brand-brown-dark">
                   {item}
                 </li>
               ))}
@@ -106,7 +106,7 @@ export function BlogPostBody({ content }: BlogPostBodyProps) {
                 href={block.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-primary underline decoration-secondary/60 underline-offset-4 hover:text-primary/75"
+                className="font-semibold text-brand-brown-dark underline decoration-secondary/60 underline-offset-4 hover:text-brand-brown-dark/75"
               >
                 {block.label}
               </a>
@@ -117,10 +117,10 @@ export function BlogPostBody({ content }: BlogPostBodyProps) {
         return (
           <aside
             key={index}
-            className="border border-primary/10 bg-[color:var(--brand-cream)] px-5 py-4"
+            className="border border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-5 py-4"
           >
             {block.title ? (
-              <p className="mb-2 text-sm font-semibold uppercase tracking-[0.12em] text-primary">
+              <p className="mb-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-brown-dark">
                 {block.title}
               </p>
             ) : null}

@@ -72,7 +72,7 @@ export default async function RoomsPage() {
                 </div>
 
                 <div className="container relative z-10 py-24 text-center text-white md:py-28">
-                    <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">
+                    <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-brand-gold">
                         Hospedagem
                     </p>
                     <h1 className="font-hero-display mt-4 text-[2.9rem] font-semibold leading-[0.96] md:text-[4rem]">
@@ -89,8 +89,8 @@ export default async function RoomsPage() {
                 {/* Ala Principal Section */}
                 <section className="section-space-md bg-[color:var(--brand-cream)]">
                     <div className="container">
-                    <div className="mb-10 border-b border-primary/10 pb-4">
-                        <h2 className="font-hero-display text-[2.2rem] font-semibold leading-tight text-primary md:text-[3rem]">Ala Principal</h2>
+                    <div className="mb-10 border-b border-brand-brown-dark/10 pb-4">
+                        <h2 className="font-hero-display text-[2.2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">Ala Principal</h2>
                         <p className="mt-2 text-[1.02rem] leading-7 text-foreground/72">
                             Acomodações proximas a todas as dependências.
                         </p>
@@ -102,10 +102,10 @@ export default async function RoomsPage() {
                 {/* Ala Anexo Section */}
                 <section className="section-space-md bg-background">
                     <div className="container">
-                    <div className="mb-10 border-b border-primary/10 pb-4">
-                        <h2 className="font-hero-display text-[2.2rem] font-semibold leading-tight text-primary md:text-[3rem]">Ala Chalés e Anexos</h2>
+                    <div className="mb-10 border-b border-brand-brown-dark/10 pb-4">
+                        <h2 className="font-hero-display text-[2.2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">Ala Chalés e Anexos</h2>
                         <p className="mt-2 flex items-center gap-2 text-[1.02rem] leading-7 text-foreground/72">
-                            <span className="inline-block w-2 h-2 rounded-full bg-secondary"></span>
+                            <span className="inline-block w-2 h-2 rounded-full bg-brand-gold"></span>
                             Localizada a 70 metros da ala principal
                         </p>
                     </div>

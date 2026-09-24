@@ -38,6 +38,6 @@ npm ci
 npm run dev:web
 ```
 
-O servidor local abre na porta `3001`.
+O servidor local abre na porta `3005`.
 
 Para uma orientação assistida, use a skill local [`new-pousada-reservas`](.codex/skills/new-pousada-reservas/SKILL.md).

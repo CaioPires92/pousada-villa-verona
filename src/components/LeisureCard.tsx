@@ -51,7 +51,7 @@ export function LeisureCard({ title, description, images }: LeisureCardProps) {
     return (
         <Fragment key={pathname}>
             <Card
-                className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-none border border-primary/10 bg-white shadow-none transition-colors duration-200 hover:border-primary/20"
+                className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-none border border-brand-brown-dark/10 bg-white shadow-none transition-colors duration-200 hover:border-brand-brown-dark/20"
                 onClick={openGallery}
             >
                 <div className="relative h-72 overflow-hidden bg-gray-100">

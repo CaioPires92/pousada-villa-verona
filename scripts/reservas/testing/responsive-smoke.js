@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3005';
 const VIEWPORTS = [
   { name: 'mobile', width: 375, height: 667 },
   { name: 'tablet', width: 768, height: 1024 },

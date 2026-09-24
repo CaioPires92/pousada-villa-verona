@@ -113,7 +113,7 @@ export function RoomCard({ room }: RoomCardProps) {
 
     return (
         <Fragment key={pathname}>
-            <Card className="group flex h-full flex-col overflow-hidden rounded-none border border-primary/10 bg-white shadow-none transition-colors duration-200 hover:border-primary/20">
+            <Card className="group flex h-full flex-col overflow-hidden rounded-none border border-brand-brown-dark/10 bg-white shadow-none transition-colors duration-200 hover:border-brand-brown-dark/20">
                 <div
                     className="relative h-64 overflow-hidden cursor-pointer"
                     onClick={openGallery}
@@ -142,7 +142,7 @@ export function RoomCard({ room }: RoomCardProps) {
 
                 <CardHeader>
                     <div className="flex justify-between items-start">
-                        <CardTitle className="font-sans text-[2rem] font-semibold leading-tight text-primary">
+                        <CardTitle className="font-sans text-[2rem] font-semibold leading-tight text-brand-brown-dark">
                             {room.name}
                         </CardTitle>
                     </div>
@@ -159,7 +159,7 @@ export function RoomCard({ room }: RoomCardProps) {
                         </div>
                     </div>
                     {amenityIcons.length > 0 ? (
-                        <div className="mb-3 flex flex-wrap gap-3 text-[color:var(--brand-gold)]">
+                        <div className="mb-3 flex flex-wrap gap-3 text-brand-gold">
                             {amenityIcons.map(({ amenity, Icon }) => (
                                 <Icon key={`${room.id}-${amenity}`} className="w-4 h-4" aria-label={amenity} />
                             ))}
@@ -172,7 +172,7 @@ export function RoomCard({ room }: RoomCardProps) {
                     ) : null}
                 </CardContent>
 
-                <CardFooter className="mt-auto flex items-center justify-between border-t border-primary/10 bg-[color:var(--brand-cream)] pt-4">
+                <CardFooter className="mt-auto flex items-center justify-between border-t border-brand-brown-dark/10 bg-[color:var(--brand-cream)] pt-4">
                     <div>
                         <span className="text-sm font-medium text-foreground/72">
                             Valores variam conforme data e ocupação. Consulte disponibilidade.
@@ -180,7 +180,7 @@ export function RoomCard({ room }: RoomCardProps) {
                     </div>
                     <Button
                         asChild
-                        className="h-11 rounded-none bg-primary px-5 text-sm font-semibold text-white shadow-none hover:bg-primary/90 hover:shadow-[0_8px_18px_rgba(9,9,9,0.08)]"
+                        className="h-11 rounded-none bg-brand-brown-dark px-5 text-sm font-semibold text-white shadow-none hover:bg-brand-brown-dark/90 hover:shadow-[0_8px_18px_rgba(9,9,9,0.08)]"
                     >
                         <Link href={`/reservar?roomTypeId=${room.id}`} onClick={handleReservarClick}>
                             Ver disponibilidade e preços

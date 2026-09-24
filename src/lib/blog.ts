@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { blogCategories, blogPosts } from "@/data/blog-posts";
 import { BlogCategory, BlogPost } from "@/types/blog";
 
-const FALLBACK_SITE_URL = "http://localhost:3001";
+const FALLBACK_SITE_URL = "http://localhost:3005";
 const BRAZIL_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
   timeZone: "America/Sao_Paulo",
   year: "numeric",

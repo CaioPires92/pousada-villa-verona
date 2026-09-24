@@ -39,27 +39,27 @@ export function ContactForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 border border-primary/10 bg-white p-6 md:p-8">
+        <form onSubmit={handleSubmit} className="space-y-6 border border-brand-brown-dark/10 bg-white p-6 md:p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <label htmlFor="name" className="font-sans text-sm font-medium text-primary">Nome Completo</label>
+                    <label htmlFor="name" className="font-sans text-sm font-medium text-brand-brown-dark">Nome Completo</label>
                     <input
                         type="text"
                         id="name"
                         required
-                        className="w-full border border-primary/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-primary/30 focus:ring-2 focus:ring-primary/10"
+                        className="w-full border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-brand-brown-dark/30 focus:ring-2 focus:ring-brand-brown-dark/10"
                         placeholder="Seu nome"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     />
                 </div>
                 <div className="space-y-2">
-                    <label htmlFor="phone" className="font-sans text-sm font-medium text-primary">Telefone / WhatsApp</label>
+                    <label htmlFor="phone" className="font-sans text-sm font-medium text-brand-brown-dark">Telefone / WhatsApp</label>
                     <input
                         type="tel"
                         id="phone"
                         required
-                        className="w-full border border-primary/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-primary/30 focus:ring-2 focus:ring-primary/10"
+                        className="w-full border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-brand-brown-dark/30 focus:ring-2 focus:ring-brand-brown-dark/10"
                         placeholder="(00) 00000-0000"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -68,12 +68,12 @@ export function ContactForm() {
             </div>
 
             <div className="space-y-2">
-                <label htmlFor="email" className="font-sans text-sm font-medium text-primary">E-mail</label>
+                <label htmlFor="email" className="font-sans text-sm font-medium text-brand-brown-dark">E-mail</label>
                 <input
                     type="email"
                     id="email"
                     required
-                    className="w-full border border-primary/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-primary/30 focus:ring-2 focus:ring-primary/10"
+                    className="w-full border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-brand-brown-dark/30 focus:ring-2 focus:ring-brand-brown-dark/10"
                     placeholder="seu@email.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -81,10 +81,10 @@ export function ContactForm() {
             </div>
 
             <div className="space-y-2">
-                <label htmlFor="subject" className="font-sans text-sm font-medium text-primary">Assunto</label>
+                <label htmlFor="subject" className="font-sans text-sm font-medium text-brand-brown-dark">Assunto</label>
                 <select
                     id="subject"
-                    className="w-full border border-primary/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-primary/30 focus:ring-2 focus:ring-primary/10"
+                    className="w-full border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-brand-brown-dark/30 focus:ring-2 focus:ring-brand-brown-dark/10"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 >
@@ -97,12 +97,12 @@ export function ContactForm() {
             </div>
 
             <div className="space-y-2">
-                <label htmlFor="message" className="font-sans text-sm font-medium text-primary">Mensagem</label>
+                <label htmlFor="message" className="font-sans text-sm font-medium text-brand-brown-dark">Mensagem</label>
                 <textarea
                     id="message"
                     required
                     rows={5}
-                    className="w-full resize-none border border-primary/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-primary/30 focus:ring-2 focus:ring-primary/10"
+                    className="w-full resize-none border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-3 outline-none transition-all focus:border-brand-brown-dark/30 focus:ring-2 focus:ring-brand-brown-dark/10"
                     placeholder="Como podemos ajudar?"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}

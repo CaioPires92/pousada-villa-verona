@@ -115,7 +115,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
 
             <div className="space-y-4">
-              <h1 className="max-w-4xl border-l-2 border-secondary pl-5 font-heading text-[2.9rem] font-semibold leading-[0.98] text-primary md:text-[4rem]">
+              <h1 className="max-w-4xl border-l-2 border-brand-gold pl-5 font-heading text-[2.9rem] font-semibold leading-[0.98] text-brand-brown-dark md:text-[4rem]">
                 {post.title}
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-foreground/72">
@@ -124,8 +124,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
           </header>
 
-          <div className="mt-8 overflow-hidden border border-primary/10 bg-[color:var(--brand-white)]">
-            <div className="relative aspect-[16/8] bg-primary/5">
+          <div className="mt-8 overflow-hidden border border-brand-brown-dark/10 bg-[color:var(--brand-white)]">
+            <div className="relative aspect-[16/8] bg-brand-brown-dark/5">
               <Image
                 src={post.coverImage.src}
                 alt={post.coverImage.alt}
@@ -140,9 +140,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <div className="mx-auto max-w-3xl space-y-10">
                 <BlogPostBody content={post.content} />
 
-                <div className="flex flex-wrap gap-2 border-t border-primary/10 pt-6">
+                <div className="flex flex-wrap gap-2 border-t border-brand-brown-dark/10 pt-6">
                   {post.tags.map((tag) => (
-                    <span key={tag} className="bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+                    <span key={tag} className="bg-brand-brown-dark/5 px-3 py-1 text-xs font-medium text-brand-brown-dark">
                       {tag}
                     </span>
                   ))}
@@ -160,14 +160,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="mx-auto max-w-5xl space-y-6">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-primary/80">
+                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-brown-dark/80">
                   Continue navegando
                 </p>
-                <h2 className="mt-2 font-heading text-[2.2rem] font-semibold leading-tight text-primary">
+                <h2 className="mt-2 font-heading text-[2.2rem] font-semibold leading-tight text-brand-brown-dark">
                   Conteúdos relacionados
                 </h2>
               </div>
-              <Link href="/blog" className="text-sm font-semibold text-primary hover:text-primary/80">
+              <Link href="/blog" className="text-sm font-semibold text-brand-brown-dark hover:text-brand-brown-dark/80">
                 Ver todos os artigos
               </Link>
             </div>

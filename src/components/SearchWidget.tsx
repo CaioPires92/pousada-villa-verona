@@ -352,22 +352,22 @@ export default function SearchWidget({
         months: 'flex flex-col space-y-4',
         month: 'space-y-4',
         caption: 'relative flex items-center justify-center border-b border-[color:var(--line-dark)] pb-4 pt-1',
-        caption_label: 'font-accent text-base font-medium uppercase tracking-[0.18em] text-[color:var(--brand-forest)]',
+        caption_label: 'font-accent text-base font-medium uppercase tracking-[0.18em] text-brand-brown-dark',
         nav: 'flex items-center gap-2',
-        nav_button: 'inline-flex h-9 w-9 items-center justify-center rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)] p-0 text-[color:var(--brand-forest)] opacity-100 transition-colors hover:bg-[color:var(--brand-cream)] hover:text-[color:var(--brand-forest)]',
+        nav_button: 'inline-flex h-9 w-9 items-center justify-center rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)] p-0 text-brand-brown-dark opacity-100 transition-colors hover:bg-[color:var(--brand-cream)] hover:text-brand-brown-dark',
         nav_button_previous: 'absolute left-0',
         nav_button_next: 'absolute left-11',
-        head_cell: 'w-full py-2 text-center font-accent text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--brand-forest)]/75',
+        head_cell: 'w-full py-2 text-center font-accent text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-brand-brown-dark/75',
         cell: 'relative h-11 w-full p-0 text-center text-sm [&:has([aria-selected].day-range-end)]:rounded-none [&:has([aria-selected].day-range-start)]:rounded-none [&:has([aria-selected])]:bg-white/35 first:[&:has([aria-selected])]:rounded-none last:[&:has([aria-selected])]:rounded-none focus-within:relative focus-within:z-20',
-        day: 'mx-auto h-10 w-10 rounded-none p-0 font-medium text-[color:var(--brand-forest)] transition-colors hover:bg-[color:var(--brand-cream)] hover:text-[color:var(--brand-forest)]',
-        day_selected: 'bg-[color:var(--brand-gold)]/28 text-[color:var(--brand-forest)] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] hover:bg-[color:var(--brand-gold)]/38 hover:text-[color:var(--brand-forest)] focus:bg-[color:var(--brand-gold)]/38 focus:text-[color:var(--brand-forest)]',
-        day_today: 'border border-[color:var(--brand-gold)]/35 bg-[color:var(--brand-white)] text-[color:var(--brand-forest)]',
+        day: 'mx-auto h-10 w-10 rounded-none p-0 font-medium text-brand-brown-dark transition-colors hover:bg-[color:var(--brand-cream)] hover:text-brand-brown-dark',
+        day_selected: 'bg-brand-gold/28 text-brand-brown-dark shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] hover:bg-brand-gold/38 hover:text-brand-brown-dark focus:bg-brand-gold/38 focus:text-brand-brown-dark',
+        day_today: 'border border-[color:var(--brand-gold)]/35 bg-[color:var(--brand-white)] text-brand-brown-dark',
         day_outside: 'text-[#bca998] opacity-60 aria-selected:bg-white/35 aria-selected:text-[#8b755e]',
         day_disabled: 'text-[#c5b6a8] opacity-45',
         day_range_middle: 'aria-selected:bg-white/35 aria-selected:text-[#3f3428]',
     } satisfies CalendarProps['classNames'] : undefined;
-    const heroSelectContentClass = 'rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] p-2 text-[color:var(--brand-forest)] shadow-[0_16px_34px_rgba(36,28,22,0.12)]';
-    const heroSelectItemClass = 'rounded-none py-3 pl-10 pr-4 font-accent text-sm font-medium uppercase tracking-[0.14em] text-[color:var(--brand-forest)] focus:bg-[color:var(--brand-white)] focus:text-[color:var(--brand-forest)]';
+    const heroSelectContentClass = 'rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] p-2 text-brand-brown-dark shadow-[0_16px_34px_rgba(36,28,22,0.12)]';
+    const heroSelectItemClass = 'rounded-none py-3 pl-10 pr-4 font-accent text-sm font-medium uppercase tracking-[0.14em] text-brand-brown-dark focus:bg-[color:var(--brand-white)] focus:text-brand-brown-dark';
     const heroBarClass = isHeroHorizontal
         ? 'w-full overflow-hidden bg-white shadow-[0_18px_44px_rgba(12,18,10,0.18)]'
         : 'w-full';
@@ -379,22 +379,22 @@ export default function SearchWidget({
         : '';
     const heroLabelClass = cn(
         'flex items-center gap-2 text-[0.58rem] font-semibold uppercase tracking-[0.14em]',
-        isHeroHorizontal ? 'text-[color:var(--brand-forest)]/78' : 'text-white/80'
+        isHeroHorizontal ? 'text-brand-brown-dark/78' : 'text-white/80'
     );
     const heroValueClass = isHeroHorizontal
-        ? 'flex h-auto min-h-7 w-full cursor-pointer items-center justify-between rounded-none border-0 bg-transparent p-0 text-left font-sans text-[1rem] font-semibold text-[color:var(--brand-forest)] shadow-none transition-colors duration-200 hover:text-[color:var(--brand-forest)]'
-        : 'flex h-12 w-full cursor-pointer items-center justify-between rounded-none border border-white/46 bg-white/90 px-4 text-left font-sans text-[0.95rem] font-semibold text-[color:var(--brand-forest)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors duration-200 hover:border-[color:var(--brand-gold)] hover:bg-white';
+        ? 'flex h-auto min-h-7 w-full cursor-pointer items-center justify-between rounded-none border-0 bg-transparent p-0 text-left font-sans text-[1rem] font-semibold text-brand-brown-dark shadow-none transition-colors duration-200 hover:text-brand-brown-dark'
+        : 'flex h-12 w-full cursor-pointer items-center justify-between rounded-none border border-white/46 bg-white/90 px-4 text-left font-sans text-[0.95rem] font-semibold text-brand-brown-dark shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-colors duration-200 hover:border-[color:var(--brand-gold)] hover:bg-white';
     const heroTriggerClass = isHeroHorizontal
-        ? 'flex h-auto min-h-7 w-full items-center rounded-none border-0 bg-transparent p-0 font-sans text-[1rem] font-semibold text-[color:var(--brand-forest)] shadow-none ring-0 ring-offset-0 placeholder:text-[color:var(--brand-forest)]/55 transition-colors duration-200 hover:text-[color:var(--brand-forest)] focus:ring-0 focus:ring-offset-0'
-        : 'flex h-12 w-full items-center rounded-none border border-white/46 bg-white/90 px-4 font-sans text-[0.95rem] font-semibold text-[color:var(--brand-forest)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] ring-0 ring-offset-0 placeholder:text-[color:var(--brand-forest)]/55 transition-colors duration-200 hover:border-[color:var(--brand-gold)] hover:bg-white focus:ring-0 focus:ring-offset-0';
+        ? 'flex h-auto min-h-7 w-full items-center rounded-none border-0 bg-transparent p-0 font-sans text-[1rem] font-semibold text-brand-brown-dark shadow-none ring-0 ring-offset-0 placeholder:text-brand-brown-dark/55 transition-colors duration-200 hover:text-brand-brown-dark focus:ring-0 focus:ring-offset-0'
+        : 'flex h-12 w-full items-center rounded-none border border-white/46 bg-white/90 px-4 font-sans text-[0.95rem] font-semibold text-brand-brown-dark shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] ring-0 ring-offset-0 placeholder:text-brand-brown-dark/55 transition-colors duration-200 hover:border-[color:var(--brand-gold)] hover:bg-white focus:ring-0 focus:ring-offset-0';
     const heroButtonColumnClass = isHeroHorizontal ? 'flex h-full items-stretch bg-white p-3 pt-1 sm:pt-3' : 'flex h-full items-end';
-    const heroGuestsPanelClass = 'w-[340px] rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] p-5 text-[color:var(--brand-forest)] shadow-[0_16px_34px_rgba(36,28,22,0.12)]';
+    const heroGuestsPanelClass = 'w-[340px] rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] p-5 text-brand-brown-dark shadow-[0_16px_34px_rgba(36,28,22,0.12)]';
 
     const labelClass = isInlinePreset
         ? 'mb-2 flex items-center gap-2 text-sm font-medium text-foreground'
         : isHeroPreset
             ? heroLabelClass
-            : `mb-2 flex items-center gap-2 text-sm font-medium ${variant === 'light' ? 'text-primary' : 'text-white'}`;
+            : `mb-2 flex items-center gap-2 text-sm font-medium ${variant === 'light' ? 'text-brand-brown-dark' : 'text-white'}`;
 
     const dateInputClass = isInlinePreset
         ? 'w-full h-11 rounded-none border border-input bg-white px-3 text-sm text-foreground flex items-center justify-between transition-colors cursor-pointer'
@@ -415,7 +415,7 @@ export default function SearchWidget({
     const searchDisabled = shouldShowCapacityFallback || numAdults < 1 || (numChildren > 0 && agesMissing) || !checkIn || !checkOut || loading;
     const searchMessageClass = variant === 'light'
         ? 'mt-4 rounded-none border border-destructive/20 bg-destructive/10 p-4 text-destructive'
-        : 'mt-4 rounded-none border border-[#d8cfbf] bg-[#f8f3ea] p-4 text-primary';
+        : 'mt-4 rounded-none border border-[#d8cfbf] bg-[#f8f3ea] p-4 text-brand-brown-dark';
     const inlineErrorClass = isHeroPreset
         ? 'mt-3 rounded-none border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900'
         : 'mt-2 rounded-none border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive';
@@ -510,14 +510,14 @@ export default function SearchWidget({
                     className="flex w-full items-center justify-between gap-3 rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] px-4 py-3 text-left shadow-[0_12px_28px_rgba(36,28,22,0.08)] transition-colors hover:border-[color:var(--brand-gold)]/45 sm:px-5"
                 >
                     <div className="min-w-0">
-                        <p className="font-accent text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[color:var(--brand-forest)]/75">
+                        <p className="font-accent text-[0.6rem] font-medium uppercase tracking-[0.16em] text-brand-brown-dark/75">
                             Buscar hospedagem
                         </p>
-                        <p className="mt-1 truncate font-sans text-[0.9rem] font-semibold text-[color:var(--brand-forest)] sm:text-[0.92rem]">
+                        <p className="mt-1 truncate font-sans text-[0.9rem] font-semibold text-brand-brown-dark sm:text-[0.92rem]">
                             {heroSummary}
                         </p>
                     </div>
-                    <span className="shrink-0 rounded-none border border-[color:var(--brand-gold)] bg-[color:var(--brand-gold)]/24 px-3 py-2 font-accent text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[color:var(--brand-forest)]">
+                    <span className="shrink-0 rounded-none border border-[color:var(--brand-gold)] bg-brand-gold/24 px-3 py-2 font-accent text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-brand-brown-dark">
                         Expandir
                     </span>
                 </button>
@@ -527,7 +527,7 @@ export default function SearchWidget({
                     <button
                         type="button"
                         onClick={() => setIsHeroExpanded(false)}
-                        className="rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)] px-3 py-1.5 font-accent text-[0.62rem] font-medium uppercase tracking-[0.14em] text-[color:var(--brand-forest)] transition-colors hover:bg-[color:var(--brand-cream)]"
+                        className="rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)] px-3 py-1.5 font-accent text-[0.62rem] font-medium uppercase tracking-[0.14em] text-brand-brown-dark transition-colors hover:bg-[color:var(--brand-cream)]"
                     >
                         Minimizar busca
                     </button>
@@ -552,7 +552,7 @@ export default function SearchWidget({
                     </label>
                     <Popover open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
                     <PopoverTrigger asChild>
-                        <div data-testid="checkin-trigger" className={cn(dateInputClass, !checkIn && (isHeroPreset ? "text-primary/65" : "text-muted-foreground"))}>
+                        <div data-testid="checkin-trigger" className={cn(dateInputClass, !checkIn && (isHeroPreset ? "text-brand-brown-dark/65" : "text-muted-foreground"))}>
                             {checkIn ? (
                                 isHeroPreset
                                     ? format(checkIn, "dd MMM yyyy", { locale: ptBR })
@@ -597,7 +597,7 @@ export default function SearchWidget({
                     </label>
                     <Popover open={isCheckOutOpen} onOpenChange={handleCheckOutOpenChange}>
                     <PopoverTrigger asChild>
-                        <div data-testid="checkout-trigger" className={cn(dateInputClass, !checkOut && (isHeroPreset ? "text-primary/65" : "text-muted-foreground"))}>
+                        <div data-testid="checkout-trigger" className={cn(dateInputClass, !checkOut && (isHeroPreset ? "text-brand-brown-dark/65" : "text-muted-foreground"))}>
                             {checkOut ? (
                                 isHeroPreset
                                     ? format(checkOut, "dd MMM yyyy", { locale: ptBR })
@@ -661,18 +661,18 @@ export default function SearchWidget({
                             >
                                 <div className="space-y-4">
                                     <div className="space-y-1">
-                                        <p className="font-accent text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-forest)]/70">
+                                        <p className="font-accent text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-brand-brown-dark/70">
                                             Configurar ocupação
                                         </p>
-                                        <p className="text-sm text-[color:var(--brand-forest)]/75">
+                                        <p className="text-sm text-brand-brown-dark/75">
                                             Até 4 hóspedes por quarto. Crianças de 0 a 5 anos não pagam, mas contam na ocupação.
                                         </p>
                                     </div>
 
                                     <div className="flex items-center justify-between rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)]/70 px-4 py-3">
                                         <div>
-                                            <p className="text-sm font-semibold text-[color:var(--brand-forest)]">Adultos</p>
-                                            <p className="text-xs text-[color:var(--brand-forest)]/70">A partir de 12 anos</p>
+                                            <p className="text-sm font-semibold text-brand-brown-dark">Adultos</p>
+                                            <p className="text-xs text-brand-brown-dark/70">A partir de 12 anos</p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Button
@@ -685,7 +685,7 @@ export default function SearchWidget({
                                             >
                                                 <Minus className="h-4 w-4" />
                                             </Button>
-                                            <span className="inline-flex min-w-8 items-center justify-center text-base font-semibold text-[color:var(--brand-forest)]">
+                                            <span className="inline-flex min-w-8 items-center justify-center text-base font-semibold text-brand-brown-dark">
                                                 {adults}
                                             </span>
                                             <Button
@@ -703,8 +703,8 @@ export default function SearchWidget({
 
                                     <div className="flex items-center justify-between rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)]/70 px-4 py-3">
                                         <div>
-                                            <p className="text-sm font-semibold text-[color:var(--brand-forest)]">Crianças</p>
-                                            <p className="text-xs text-[color:var(--brand-forest)]/70">Até 11 anos</p>
+                                            <p className="text-sm font-semibold text-brand-brown-dark">Crianças</p>
+                                            <p className="text-xs text-brand-brown-dark/70">Até 11 anos</p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Button
@@ -717,7 +717,7 @@ export default function SearchWidget({
                                             >
                                                 <Minus className="h-4 w-4" />
                                             </Button>
-                                            <span className="inline-flex min-w-8 items-center justify-center text-base font-semibold text-[color:var(--brand-forest)]">
+                                            <span className="inline-flex min-w-8 items-center justify-center text-base font-semibold text-brand-brown-dark">
                                                 {children}
                                             </span>
                                             <Button
@@ -735,8 +735,8 @@ export default function SearchWidget({
 
                                     {numChildren > 0 ? (
                                         <div className="space-y-2 rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)]/70 p-4">
-                                            <p className="text-sm font-semibold text-[color:var(--brand-forest)]">Idade das crianças</p>
-                                            <p className="text-xs text-[color:var(--brand-forest)]/70">
+                                            <p className="text-sm font-semibold text-brand-brown-dark">Idade das crianças</p>
+                                            <p className="text-xs text-brand-brown-dark/70">
                                                 0 a 5 anos: cortesia. 6 a 11 anos: tarifa de criança. A partir de 12 anos: conta como adulto.
                                             </p>
                                             <div className="grid gap-2 sm:grid-cols-2">
@@ -750,7 +750,7 @@ export default function SearchWidget({
                                                             setChildrenAges((prev) => prev.map((v, i) => (i === idx ? nextAge : v)));
                                                         }}
                                                     >
-                                                        <SelectTrigger className="h-11 rounded-none border-[color:var(--brand-gold)]/55 bg-[color:var(--brand-white)] px-4 text-left text-sm font-medium text-[color:var(--brand-forest)]">
+                                                        <SelectTrigger className="h-11 rounded-none border-[color:var(--brand-gold)]/55 bg-[color:var(--brand-white)] px-4 text-left text-sm font-medium text-brand-brown-dark">
                                                             <SelectValue aria-label={age === null ? `Idade da criança ${idx + 1}` : `${age} anos`}>
                                                                 {age === null ? `Criança ${idx + 1}` : `${age} anos`}
                                                             </SelectValue>
@@ -822,10 +822,10 @@ export default function SearchWidget({
                                 ? cn(
                                     'flex w-full items-center justify-center gap-2 rounded-none px-5 font-sans text-[0.78rem] font-semibold uppercase tracking-[0.13em] shadow-none transition-all duration-200 focus-visible:ring-secondary focus-visible:ring-offset-0',
                                     isHeroHorizontal
-                                        ? 'h-full min-h-[64px] border border-[#c5a06a] bg-[#D1B07C] text-[color:var(--brand-forest)] hover:bg-[#c9a66f] hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]'
-                                        : 'h-[52px] border border-white/16 bg-[color:var(--brand-forest)] text-white hover:bg-[color:var(--forest-soft)] hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]'
+                                        ? 'h-full min-h-[64px] border border-[#c5a06a] bg-[#D1B07C] text-brand-brown-dark hover:bg-[#c9a66f] hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]'
+                                        : 'h-[52px] border border-white/16 bg-brand-brown-dark text-white hover:bg-[color:var(--forest-soft)] hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]'
                                 )
-                            : 'flex h-[56px] w-full min-w-[170px] items-center justify-center gap-2 border border-primary bg-primary px-5 text-sm font-semibold text-white shadow-none transition-all duration-300 hover:-translate-y-px hover:bg-primary/90 hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)] focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:text-base'}
+                            : 'flex h-[56px] w-full min-w-[170px] items-center justify-center gap-2 border border-brand-brown-dark bg-brand-brown-dark px-5 text-sm font-semibold text-white shadow-none transition-all duration-300 hover:-translate-y-px hover:bg-brand-brown-dark/90 hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)] focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:text-base'}
                         aria-label={submitLabel}
                         onClick={() => {
                             onPrimaryCtaClick?.();
@@ -842,7 +842,7 @@ export default function SearchWidget({
                                 <span className="whitespace-nowrap">{loading ? loadingLabel : 'Ver disponibilidade'}</span>
                                 <span className={cn(
                                     "mt-1 text-[0.58rem] tracking-[0.14em]",
-                                    isHeroHorizontal ? "text-[color:var(--brand-forest)]/68" : "text-white/72"
+                                    isHeroHorizontal ? "text-brand-brown-dark/68" : "text-white/72"
                                 )}>
                                     {isHeroHorizontal ? 'Melhor tarifa' : 'Consulte valores'}
                                 </span>
@@ -865,7 +865,7 @@ export default function SearchWidget({
                             : "pt-1"
                     )}>
                         <div className="flex flex-col gap-3">
-                            <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-[color:var(--brand-forest)]">
+                            <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-brand-brown-dark">
                                 <input
                                     type="checkbox"
                                     aria-label="Adicionar cupom à busca"
@@ -891,7 +891,7 @@ export default function SearchWidget({
                                         aria-label="Código do cupom"
                                         className={cn(
                                             dateInputClass,
-                                            "h-11 min-w-0 flex-1 rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)] px-4 py-0 text-sm uppercase text-[color:var(--brand-forest)] placeholder:normal-case placeholder:text-[color:var(--brand-forest)]/55 focus:border-[color:var(--brand-gold)] focus:outline-none focus:ring-0"
+                                            "h-11 min-w-0 flex-1 rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)] px-4 py-0 text-sm uppercase text-brand-brown-dark placeholder:normal-case placeholder:text-brand-brown-dark/55 focus:border-[color:var(--brand-gold)] focus:outline-none focus:ring-0"
                                         )}
                                         placeholder="Digite o código do cupom"
                                         value={couponCode}
@@ -902,7 +902,7 @@ export default function SearchWidget({
                                         type="submit"
                                         variant="outline"
                                         disabled={loading || !couponCode.trim()}
-                                        className="h-11 shrink-0 rounded-none border-[color:var(--brand-gold)] bg-[color:var(--brand-cream)] px-5 font-semibold text-[color:var(--brand-forest)] hover:bg-[color:var(--brand-gold)]/20"
+                                        className="h-11 shrink-0 rounded-none border-[color:var(--brand-gold)] bg-[color:var(--brand-cream)] px-5 font-semibold text-brand-brown-dark hover:bg-brand-gold/20"
                                     >
                                         {loading ? 'Aplicando...' : 'Aplicar cupom'}
                                     </Button>
@@ -960,8 +960,8 @@ export default function SearchWidget({
             {ctaMicrocopy ? (
                 <p className={cn(
                     "mt-3 text-sm font-medium text-center",
-                    variant === 'light' ? 'text-primary' : 'text-white/95',
-                    isHeroPreset && "mt-4 text-left text-xs font-medium tracking-[0.04em] text-primary/85"
+                    variant === 'light' ? 'text-brand-brown-dark' : 'text-white/95',
+                    isHeroPreset && "mt-4 text-left text-xs font-medium tracking-[0.04em] text-brand-brown-dark/85"
                 )}>
                     {ctaMicrocopy}
                 </p>
@@ -974,7 +974,7 @@ export default function SearchWidget({
                 </div>
             ) : null}
             {promoLocked && couponCode ? (
-                <div className="mt-3 rounded-none border border-primary/20 bg-primary/5 p-3 text-sm text-primary">
+                <div className="mt-3 rounded-none border border-brand-brown-dark/20 bg-brand-brown-dark/5 p-3 text-sm text-brand-brown-dark">
                     Cupom promocional {couponCode} aplicado pela oferta especial.
                 </div>
             ) : null}

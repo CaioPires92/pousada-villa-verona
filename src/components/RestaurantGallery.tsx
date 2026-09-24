@@ -67,7 +67,7 @@ export function RestaurantGallery({ images }: RestaurantGalleryProps) {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.05 }}
                         viewport={{ once: true }}
-                        className="relative aspect-[4/3] cursor-pointer overflow-hidden border border-primary/10 bg-white transition-colors duration-200 hover:border-primary/20"
+                        className="relative aspect-[4/3] cursor-pointer overflow-hidden border border-brand-brown-dark/10 bg-white transition-colors duration-200 hover:border-brand-brown-dark/20"
                         onClick={() => openLightbox(index)}
                     >
                         <Image

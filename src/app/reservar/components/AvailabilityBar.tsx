@@ -58,12 +58,12 @@ export default function AvailabilityBar({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-3 sm:gap-5">
                     <div className="inline-flex items-center gap-2 border border-border/40 bg-card px-2.5 py-1.5 text-sm font-medium text-foreground">
-                        <CalendarDays className="h-4 w-4 text-primary" />
+                        <CalendarDays className="h-4 w-4 text-brand-brown-dark" />
                         <span>{formattedDates}</span>
                     </div>
                     <div className="hidden h-4 w-px bg-border sm:block" />
                     <div className="inline-flex items-center gap-2 border border-border/40 bg-card px-2.5 py-1.5 text-sm font-medium text-foreground">
-                        <Users className="h-4 w-4 text-primary" />
+                        <Users className="h-4 w-4 text-brand-brown-dark" />
                         <span>{`${adultsLabel} · ${childrenLabel}`}</span>
                     </div>
                 </div>

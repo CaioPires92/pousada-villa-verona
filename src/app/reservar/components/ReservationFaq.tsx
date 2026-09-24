@@ -26,19 +26,19 @@ const FAQ_ITEMS = [
 export default function ReservationFaq() {
     return (
         <section aria-labelledby="reservation-faq-title" className="container mx-auto box-border w-full max-w-full px-4 pb-4 pt-12">
-            <div className="border-t border-primary/10 pt-8">
-                <h2 id="reservation-faq-title" className="text-2xl font-semibold text-primary">Dúvidas antes de reservar</h2>
+            <div className="border-t border-brand-brown-dark/10 pt-8">
+                <h2 id="reservation-faq-title" className="text-2xl font-semibold text-brand-brown-dark">Dúvidas antes de reservar</h2>
                 <div className="mt-5 grid gap-3 lg:grid-cols-3">
                     {FAQ_ITEMS.map((item) => (
-                        <details key={item.question} className="group border border-primary/10 bg-white p-4">
-                            <summary className="cursor-pointer font-medium text-primary">{item.question}</summary>
+                        <details key={item.question} className="group border border-brand-brown-dark/10 bg-white p-4">
+                            <summary className="cursor-pointer font-medium text-brand-brown-dark">{item.question}</summary>
                             <p className="mt-3 text-sm leading-6 text-foreground/75">{item.answer}</p>
                         </details>
                     ))}
                 </div>
                 <p className="mt-4 text-sm text-foreground/70">
                     Consulte a{' '}
-                    <Link href="/politica-de-cancelamento" className="font-medium text-primary underline underline-offset-2">
+                    <Link href="/politica-de-cancelamento" className="font-medium text-brand-brown-dark underline underline-offset-2">
                         política de cancelamento
                     </Link>{' '}
                     ou fale com a pousada pelo WhatsApp (19) 99965-4866.

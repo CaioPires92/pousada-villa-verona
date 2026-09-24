@@ -75,13 +75,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       <section className="container relative">
         <div className="max-w-4xl space-y-6 pb-10">
           <div className="flex items-center gap-4">
-            <span className="h-px w-14 bg-secondary" aria-hidden="true" />
-            <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">
+            <span className="h-px w-14 bg-brand-gold" aria-hidden="true" />
+            <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-brand-gold">
               Blog Delplata
             </p>
           </div>
-          <div className="space-y-4 border-l-2 border-secondary pl-5">
-            <h1 className="max-w-4xl font-heading text-[2.9rem] font-semibold leading-[0.98] text-primary md:text-[4rem]">
+          <div className="space-y-4 border-l-2 border-brand-gold pl-5">
+            <h1 className="max-w-4xl font-heading text-[2.9rem] font-semibold leading-[0.98] text-brand-brown-dark md:text-[4rem]">
               Conteúdo para planejar melhor sua viagem a Serra Negra
             </h1>
             <p className="max-w-3xl text-lg leading-8 text-foreground/72">
@@ -101,7 +101,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         <div className="space-y-6">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="font-heading text-[2rem] font-semibold leading-tight text-primary md:text-[2.6rem]">
+              <h2 className="font-heading text-[2rem] font-semibold leading-tight text-brand-brown-dark md:text-[2.6rem]">
                 {selectedCategory ? selectedCategory.label : "Todos os artigos"}
               </h2>
               <p className="mt-2 text-sm text-foreground/72">
@@ -117,7 +117,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               ))}
             </div>
           ) : (
-            <div className="border border-dashed border-primary/20 bg-[color:var(--brand-white)] p-6 text-sm leading-7 text-foreground/72">
+            <div className="border border-dashed border-brand-brown-dark/20 bg-[color:var(--brand-white)] p-6 text-sm leading-7 text-foreground/72">
               No momento, esta seleção reúne apenas o artigo em destaque.
             </div>
           )}

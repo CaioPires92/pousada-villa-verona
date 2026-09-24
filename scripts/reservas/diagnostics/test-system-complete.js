@@ -29,7 +29,7 @@ function makeLocalRequest(path, method = 'GET', body = null, extraHeaders = {}) 
     return new Promise((resolve, reject) => {
         const options = {
             hostname: 'localhost',
-            port: 3001,
+            port: 3005,
             path: path,
             method: method,
             headers: {
@@ -412,7 +412,7 @@ async function runTests() {
 // Verificar se o servidor está rodando
 console.log('⏳ Verificando servidor...\n');
 
-http.get('http://localhost:3001', (res) => {
+http.get('http://localhost:3005', (res) => {
     if (res.statusCode === 200) {
         console.log('✅ Servidor rodando!\n');
         runTests().catch(error => {

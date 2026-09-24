@@ -63,7 +63,7 @@ export default function Testimonials() {
       
       <div className="flex gap-6 overflow-x-auto pb-10 px-4 md:px-12 xl:justify-center snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {testimonials.map((t, idx) => (
-          <div key={idx} className="bg-white rounded-3xl p-7 min-w-[340px] max-w-[340px] shrink-0 snap-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-primary/5 flex flex-col">
+          <div key={idx} className="bg-white rounded-3xl p-7 min-w-[340px] max-w-[340px] shrink-0 snap-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-brand-brown-dark/5 flex flex-col">
              {/* Header */}
              <div className="flex items-center gap-4 mb-5">
                 <div className="w-12 h-12 rounded-full bg-[#EBE9E4] text-brand-brown-dark flex items-center justify-center font-serif text-xl">{t.initial}</div>

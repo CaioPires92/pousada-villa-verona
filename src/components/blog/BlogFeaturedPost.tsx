@@ -14,9 +14,9 @@ export function BlogFeaturedPost({ post }: BlogFeaturedPostProps) {
   const category = getBlogCategoryBySlug(post.category);
 
   return (
-    <article className="overflow-hidden border border-primary/10 bg-[color:var(--brand-white)]">
+    <article className="overflow-hidden border border-brand-brown-dark/10 bg-[color:var(--brand-white)]">
       <div className="grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
-        <Link href={`/blog/${post.slug}`} className="relative min-h-[320px] bg-primary/5">
+        <Link href={`/blog/${post.slug}`} className="relative min-h-[320px] bg-brand-brown-dark/5">
           <Image
             src={post.coverImage.src}
             alt={post.coverImage.alt}
@@ -30,7 +30,7 @@ export function BlogFeaturedPost({ post }: BlogFeaturedPostProps) {
 
         <div className="flex flex-col justify-between p-6 md:p-8">
           <div className="space-y-4">
-            <div className="space-y-4 border-l-2 border-secondary pl-4">
+            <div className="space-y-4 border-l-2 border-brand-gold pl-4">
               <div className="flex flex-wrap items-center gap-3">
                 {category ? (
                   <Badge variant="outline" className="rounded-none px-3 py-1">
@@ -42,8 +42,8 @@ export function BlogFeaturedPost({ post }: BlogFeaturedPostProps) {
                 <p className="text-sm text-foreground/72">
                   {formatBlogDate(post.publishedAt)} • {post.readingTime}
                 </p>
-                <h2 className="font-heading text-[2.2rem] font-semibold leading-tight text-primary md:text-[3rem]">
-                  <Link href={`/blog/${post.slug}`} className="hover:text-primary/85">
+                <h2 className="font-heading text-[2.2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">
+                  <Link href={`/blog/${post.slug}`} className="hover:text-brand-brown-dark/85">
                     {post.title}
                   </Link>
                 </h2>
@@ -55,7 +55,7 @@ export function BlogFeaturedPost({ post }: BlogFeaturedPostProps) {
           <div className="mt-8 space-y-4">
             <Link
               href={`/blog/${post.slug}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-transform hover:translate-x-1"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-brand-brown-dark transition-transform hover:translate-x-1"
             >
               Ler artigo
               <ArrowRight className="h-4 w-4" />

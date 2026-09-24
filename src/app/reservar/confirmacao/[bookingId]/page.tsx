@@ -172,11 +172,11 @@ function getStatusPresentation(status: PaymentStatus) {
             title: 'Pagamento aprovado!',
             subtitle: 'Sua reserva esta confirmada e pronta para a sua chegada.',
             banner: 'Em instantes voce recebera a confirmacao com os detalhes da hospedagem.',
-            accent: 'text-primary',
-            border: 'border-primary/10',
+            accent: 'text-brand-brown-dark',
+            border: 'border-brand-brown-dark/10',
             surface: 'bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,244,234,0.88))]',
-            iconWrap: 'border-primary/20 bg-secondary/12 text-primary',
-            badgeClass: 'border-primary/15 bg-primary text-white',
+            iconWrap: 'border-brand-brown-dark/20 bg-brand-gold/12 text-brand-brown-dark',
+            badgeClass: 'border-brand-brown-dark/15 bg-brand-brown-dark text-white',
             statusLabel: 'Confirmada',
         };
     }
@@ -199,11 +199,11 @@ function getStatusPresentation(status: PaymentStatus) {
         title: 'Pagamento em processamento',
         subtitle: 'Estamos aguardando a confirmacao final da transacao.',
         banner: 'Esta pagina atualiza automaticamente para refletir o status mais recente do pagamento.',
-        accent: 'text-primary',
-        border: 'border-secondary/25',
+        accent: 'text-brand-brown-dark',
+        border: 'border-brand-gold/25',
         surface: 'bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.98))]',
-        iconWrap: 'border-secondary/30 bg-secondary/12 text-primary',
-        badgeClass: 'border-secondary/20 bg-secondary/85 text-secondary-foreground',
+        iconWrap: 'border-brand-gold/30 bg-brand-gold/12 text-brand-brown-dark',
+        badgeClass: 'border-brand-gold/20 bg-brand-gold/85 text-brand-gold-foreground',
         statusLabel: 'Em processamento',
     };
 }
@@ -310,13 +310,13 @@ export default function ConfirmacaoPage() {
 
     if (loading) {
         return (
-            <main className="min-h-screen bg-background px-4 pb-20 pt-32 text-center text-primary md:px-6">
-                <div className="mx-auto flex max-w-xl flex-col items-center border border-primary/10 bg-white px-8 py-12">
-                    <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-none border border-primary/15 bg-[color:var(--brand-cream)]">
-                        <Clock3 className="h-7 w-7 animate-pulse text-primary" />
+            <main className="min-h-screen bg-background px-4 pb-20 pt-32 text-center text-brand-brown-dark md:px-6">
+                <div className="mx-auto flex max-w-xl flex-col items-center border border-brand-brown-dark/10 bg-white px-8 py-12">
+                    <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-none border border-brand-brown-dark/15 bg-[color:var(--brand-cream)]">
+                        <Clock3 className="h-7 w-7 animate-pulse text-brand-brown-dark" />
                     </div>
-                    <h1 className="text-2xl font-semibold text-primary">Sincronizando sua reserva</h1>
-                    <p className="mt-3 max-w-md text-sm leading-7 text-primary/72">
+                    <h1 className="text-2xl font-semibold text-brand-brown-dark">Sincronizando sua reserva</h1>
+                    <p className="mt-3 max-w-md text-sm leading-7 text-brand-brown-dark/72">
                         Estamos atualizando o status mais recente do pagamento para mostrar a confirmacao correta.
                     </p>
                 </div>
@@ -336,14 +336,14 @@ export default function ConfirmacaoPage() {
     const remainingAmount = booking?.payment?.remainingAmount;
 
     return (
-        <main className="min-h-screen bg-background px-4 pb-14 pt-28 text-primary md:px-6 md:pt-32">
+        <main className="min-h-screen bg-background px-4 pb-14 pt-28 text-brand-brown-dark md:px-6 md:pt-32">
             <div className="mx-auto max-w-6xl">
                 <div className="absolute inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(circle_at_top,rgba(187,184,99,0.18),transparent_58%)]" />
 
                 <section className={`overflow-hidden border ${statusView.border} ${statusView.surface}`}>
-                    <div className="border-b border-primary/10 px-6 py-8 md:px-10 md:py-10">
+                    <div className="border-b border-brand-brown-dark/10 px-6 py-8 md:px-10 md:py-10">
                         {statusToast ? (
-                            <div className="mb-6 inline-flex border border-primary/10 bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white">
+                            <div className="mb-6 inline-flex border border-brand-brown-dark/10 bg-brand-brown-dark px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white">
                                 {statusToast}
                             </div>
                         ) : null}
@@ -354,13 +354,13 @@ export default function ConfirmacaoPage() {
                                     <StatusIcon status={effectiveStatus} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary/58">
+                                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-brown-dark/58">
                                         Confirmacao da reserva
                                     </p>
                                     <h1 className={`mt-2 text-3xl font-semibold leading-tight md:text-[2.7rem] ${statusView.accent}`}>
                                         {statusView.title}
                                     </h1>
-                                    <p className="mt-3 max-w-2xl text-base leading-7 text-primary/76">
+                                    <p className="mt-3 max-w-2xl text-base leading-7 text-brand-brown-dark/76">
                                         {statusView.subtitle}
                                     </p>
                                 </div>
@@ -374,101 +374,101 @@ export default function ConfirmacaoPage() {
 
                     <div className="grid gap-6 px-6 py-6 md:px-10 md:py-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)]">
                         <div className="space-y-6">
-                            <section className="border border-primary/10 bg-white">
-                                <div className="border-b border-primary/10 bg-[color:var(--brand-cream)] px-5 py-4 md:px-6">
+                            <section className="border border-brand-brown-dark/10 bg-white">
+                                <div className="border-b border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-5 py-4 md:px-6">
                                     <div className="flex items-center gap-3">
-                                        <div className="flex h-11 w-11 items-center justify-center border border-primary/10 bg-white text-primary">
+                                        <div className="flex h-11 w-11 items-center justify-center border border-brand-brown-dark/10 bg-white text-brand-brown-dark">
                                             <CalendarCheck2 className="h-5 w-5" />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary/58">
+                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-brown-dark/58">
                                                 Sua reserva
                                             </p>
-                                            <h2 className="text-2xl font-semibold text-primary">Detalhes da hospedagem</h2>
+                                            <h2 className="text-2xl font-semibold text-brand-brown-dark">Detalhes da hospedagem</h2>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="px-5 py-4 md:px-6 md:py-5">
                                     <div className="grid gap-4">
-                                        <div className="flex items-center justify-between gap-4 border-b border-primary/10 pb-4">
-                                            <div className="flex items-center gap-3 text-primary/78">
+                                        <div className="flex items-center justify-between gap-4 border-b border-brand-brown-dark/10 pb-4">
+                                            <div className="flex items-center gap-3 text-brand-brown-dark/78">
                                                 <Home className="h-4.5 w-4.5 shrink-0" />
                                                 <span className="text-sm font-medium">Quarto</span>
                                             </div>
-                                            <span className="text-right text-sm font-semibold text-primary">
+                                            <span className="text-right text-sm font-semibold text-brand-brown-dark">
                                                 {booking?.roomType?.name || 'Acomodacao selecionada'}
                                             </span>
                                         </div>
 
-                                        <div className="flex items-center justify-between gap-4 border-b border-primary/10 pb-4">
-                                            <div className="flex items-center gap-3 text-primary/78">
+                                        <div className="flex items-center justify-between gap-4 border-b border-brand-brown-dark/10 pb-4">
+                                            <div className="flex items-center gap-3 text-brand-brown-dark/78">
                                                 <UserRound className="h-4.5 w-4.5 shrink-0" />
                                                 <span className="text-sm font-medium">Hospede</span>
                                             </div>
-                                            <span className="text-right text-sm font-semibold uppercase text-primary">
+                                            <span className="text-right text-sm font-semibold uppercase text-brand-brown-dark">
                                                 {booking?.guest?.name || 'Nao informado'}
                                             </span>
                                         </div>
 
-                                        <div className="flex items-center justify-between gap-4 border-b border-primary/10 pb-4">
-                                            <div className="flex items-center gap-3 text-primary/78">
+                                        <div className="flex items-center justify-between gap-4 border-b border-brand-brown-dark/10 pb-4">
+                                            <div className="flex items-center gap-3 text-brand-brown-dark/78">
                                                 <CalendarDays className="h-4.5 w-4.5 shrink-0" />
                                                 <span className="text-sm font-medium">Check-in</span>
                                             </div>
-                                            <span className="text-right text-sm font-semibold text-primary">
+                                            <span className="text-right text-sm font-semibold text-brand-brown-dark">
                                                 {booking?.checkIn ? formatDateBR(booking.checkIn) : '-'}
                                             </span>
                                         </div>
 
-                                        <div className="flex items-center justify-between gap-4 border-b border-primary/10 pb-4">
-                                            <div className="flex items-center gap-3 text-primary/78">
+                                        <div className="flex items-center justify-between gap-4 border-b border-brand-brown-dark/10 pb-4">
+                                            <div className="flex items-center gap-3 text-brand-brown-dark/78">
                                                 <CalendarClock className="h-4.5 w-4.5 shrink-0" />
                                                 <span className="text-sm font-medium">Check-out</span>
                                             </div>
-                                            <span className="text-right text-sm font-semibold text-primary">
+                                            <span className="text-right text-sm font-semibold text-brand-brown-dark">
                                                 {booking?.checkOut ? formatDateBR(booking.checkOut) : '-'}
                                             </span>
                                         </div>
 
-                                        <div className="flex items-center justify-between gap-4 border-b border-primary/10 pb-4">
-                                            <div className="flex items-center gap-3 text-primary/78">
+                                        <div className="flex items-center justify-between gap-4 border-b border-brand-brown-dark/10 pb-4">
+                                            <div className="flex items-center gap-3 text-brand-brown-dark/78">
                                                 <Receipt className="h-4.5 w-4.5 shrink-0" />
                                                 <span className="text-sm font-medium">Diarias</span>
                                             </div>
-                                            <span className="text-right text-sm font-semibold text-primary">
+                                            <span className="text-right text-sm font-semibold text-brand-brown-dark">
                                                 {stayNights} {stayNights === 1 ? 'diaria' : 'diarias'}
                                             </span>
                                         </div>
 
-                                        <div className={`flex items-center justify-between gap-4 ${partialPayment ? 'border-b border-primary/10 pb-4' : 'pt-1'}`}>
-                                            <div className="flex items-center gap-3 text-primary/78">
+                                        <div className={`flex items-center justify-between gap-4 ${partialPayment ? 'border-b border-brand-brown-dark/10 pb-4' : 'pt-1'}`}>
+                                            <div className="flex items-center gap-3 text-brand-brown-dark/78">
                                                 <BadgeCheck className="h-4.5 w-4.5 shrink-0" />
                                                 <span className="text-sm font-medium">Total da estadia</span>
                                             </div>
-                                            <span className="text-right text-[1.95rem] font-semibold leading-none text-primary">
+                                            <span className="text-right text-[1.95rem] font-semibold leading-none text-brand-brown-dark">
                                                 {formatCurrency(totalAmount)}
                                             </span>
                                         </div>
 
                                         {partialPayment ? (
                                             <>
-                                                <div className="flex items-center justify-between gap-4 border-b border-primary/10 pb-4">
-                                                    <div className="flex items-center gap-3 text-primary/78">
+                                                <div className="flex items-center justify-between gap-4 border-b border-brand-brown-dark/10 pb-4">
+                                                    <div className="flex items-center gap-3 text-brand-brown-dark/78">
                                                         <CreditCard className="h-4.5 w-4.5 shrink-0" />
                                                         <span className="text-sm font-medium">Pago agora</span>
                                                     </div>
-                                                    <span className="text-right text-xl font-semibold text-primary">
+                                                    <span className="text-right text-xl font-semibold text-brand-brown-dark">
                                                         {formatCurrency(paidAmount)}
                                                     </span>
                                                 </div>
 
                                                 <div className="flex items-center justify-between gap-4 pt-1">
-                                                    <div className="flex items-center gap-3 text-primary/78">
+                                                    <div className="flex items-center gap-3 text-brand-brown-dark/78">
                                                         <CalendarClock className="h-4.5 w-4.5 shrink-0" />
                                                         <span className="text-sm font-medium">{formatBalanceDue(booking?.payment)}</span>
                                                     </div>
-                                                    <span className="text-right text-xl font-semibold text-primary">
+                                                    <span className="text-right text-xl font-semibold text-brand-brown-dark">
                                                         {formatCurrency(remainingAmount)}
                                                     </span>
                                                 </div>
@@ -476,24 +476,24 @@ export default function ConfirmacaoPage() {
                                         ) : null}
                                     </div>
 
-                                    <div className="mt-6 grid gap-3 border-t border-primary/10 pt-6">
+                                    <div className="mt-6 grid gap-3 border-t border-brand-brown-dark/10 pt-6">
                                         <div className="flex items-center justify-between gap-4">
-                                            <span className="text-sm text-primary/78">Status da reserva</span>
+                                            <span className="text-sm text-brand-brown-dark/78">Status da reserva</span>
                                             <Badge className={`rounded-none px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] ${statusView.badgeClass}`}>
                                                 {effectiveStatus === 'CONFIRMED' ? 'Confirmada' : effectiveStatus === 'CANCELLED' ? 'Cancelada' : 'Pendente'}
                                             </Badge>
                                         </div>
 
                                         <div className="flex items-center justify-between gap-4">
-                                            <span className="text-sm text-primary/78">Metodo de pagamento</span>
-                                            <span className="text-right text-sm font-medium text-primary">
+                                            <span className="text-sm text-brand-brown-dark/78">Metodo de pagamento</span>
+                                            <span className="text-right text-sm font-medium text-brand-brown-dark">
                                                 {paymentMethodLabel}
                                             </span>
                                         </div>
 
                                         <div className="flex items-center justify-between gap-4">
-                                            <span className="text-sm text-primary/78">Status do pagamento</span>
-                                            <span className="text-right text-sm font-medium text-primary">
+                                            <span className="text-sm text-brand-brown-dark/78">Status do pagamento</span>
+                                            <span className="text-right text-sm font-medium text-brand-brown-dark">
                                                 {paymentStatusLabel}
                                             </span>
                                         </div>
@@ -507,7 +507,7 @@ export default function ConfirmacaoPage() {
                                 </div>
                             </section>
 
-                            <section className={`border px-5 py-5 md:px-6 ${statusView.border} ${effectiveStatus === 'CONFIRMED' ? 'bg-secondary/8' : effectiveStatus === 'CANCELLED' ? 'bg-[#8A2F2A]/6' : 'bg-[color:var(--brand-cream)]'}`}>
+                            <section className={`border px-5 py-5 md:px-6 ${statusView.border} ${effectiveStatus === 'CONFIRMED' ? 'bg-brand-gold/8' : effectiveStatus === 'CANCELLED' ? 'bg-[#8A2F2A]/6' : 'bg-[color:var(--brand-cream)]'}`}>
                                 <div className="flex items-start gap-4">
                                     <div className={`flex h-12 w-12 shrink-0 items-center justify-center border ${statusView.iconWrap}`}>
                                         <StatusIcon status={effectiveStatus} />
@@ -520,11 +520,11 @@ export default function ConfirmacaoPage() {
                                                     ? 'Pagamento nao confirmado'
                                                     : 'Atualizacao em andamento'}
                                         </h3>
-                                        <p className="mt-2 text-sm leading-7 text-primary/78">
+                                        <p className="mt-2 text-sm leading-7 text-brand-brown-dark/78">
                                             {statusView.banner}
                                         </p>
                                         {polling && effectiveStatus === 'PENDING' ? (
-                                            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary/60">
+                                            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-brown-dark/60">
                                                 Atualizacao automatica a cada 10 segundos
                                             </p>
                                         ) : null}
@@ -545,7 +545,7 @@ export default function ConfirmacaoPage() {
                         </div>
 
                         <aside className="space-y-6">
-                            <section className="overflow-hidden border border-primary/10 bg-white">
+                            <section className="overflow-hidden border border-brand-brown-dark/10 bg-white">
                                 <div className="relative aspect-[4/3] bg-[color:var(--brand-cream)]">
                                     {roomImage ? (
                                         <Image
@@ -568,45 +568,45 @@ export default function ConfirmacaoPage() {
                                 </div>
                             </section>
 
-                            <section className="border border-primary/10 bg-white">
-                                <div className="border-b border-primary/10 bg-[color:var(--brand-cream)] px-5 py-4">
-                                    <h3 className="text-xl font-semibold text-primary">Proximos passos</h3>
+                            <section className="border border-brand-brown-dark/10 bg-white">
+                                <div className="border-b border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-5 py-4">
+                                    <h3 className="text-xl font-semibold text-brand-brown-dark">Proximos passos</h3>
                                 </div>
-                                <div className="space-y-4 px-5 py-5 text-sm leading-7 text-primary/78">
+                                <div className="space-y-4 px-5 py-5 text-sm leading-7 text-brand-brown-dark/78">
                                     <div className="flex items-start gap-3">
-                                        <Mail className="mt-1 h-4.5 w-4.5 shrink-0 text-primary" />
+                                        <Mail className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />
                                         <p>Voce recebera um e-mail com os detalhes da sua reserva.</p>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <ShieldCheck className="mt-1 h-4.5 w-4.5 shrink-0 text-primary" />
+                                        <ShieldCheck className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />
                                         <p>Apresente um documento com foto no check-in.</p>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <Clock3 className="mt-1 h-4.5 w-4.5 shrink-0 text-primary" />
+                                        <Clock3 className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />
                                         <p>Check-in a partir das 14h e check-out ate as 12h.</p>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <Coffee className="mt-1 h-4.5 w-4.5 shrink-0 text-primary" />
+                                        <Coffee className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />
                                         <p>Cafe da manha incluso durante a sua diaria.</p>
                                     </div>
                                 </div>
                             </section>
 
-                            <section className="border border-primary/10 bg-white">
-                                <div className="border-b border-primary/10 bg-[color:var(--brand-cream)] px-5 py-4">
-                                    <h3 className="text-xl font-semibold text-primary">Precisa de ajuda?</h3>
+                            <section className="border border-brand-brown-dark/10 bg-white">
+                                <div className="border-b border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-5 py-4">
+                                    <h3 className="text-xl font-semibold text-brand-brown-dark">Precisa de ajuda?</h3>
                                 </div>
-                                <div className="space-y-4 px-5 py-5 text-sm leading-7 text-primary/78">
+                                <div className="space-y-4 px-5 py-5 text-sm leading-7 text-brand-brown-dark/78">
                                     <p>Nossa equipe esta a disposicao para qualquer ajuste ou duvida sobre a reserva.</p>
                                     <div className="flex items-start gap-3">
-                                        <Phone className="mt-1 h-4.5 w-4.5 shrink-0 text-primary" />
+                                        <Phone className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <Mail className="mt-1 h-4.5 w-4.5 shrink-0 text-primary" />
+                                        <Mail className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />
                                         <p>E-mail: contato@pousadadelplata.com.br</p>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <MapPinned className="mt-1 h-4.5 w-4.5 shrink-0 text-primary" />
+                                        <MapPinned className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />
                                         <p>Atendimento direto da pousada, sem intermediarios.</p>
                                     </div>
                                 </div>
@@ -614,34 +614,34 @@ export default function ConfirmacaoPage() {
                         </aside>
                     </div>
 
-                    <div className="border-t border-primary/10 bg-white px-6 py-5 md:px-10">
+                    <div className="border-t border-brand-brown-dark/10 bg-white px-6 py-5 md:px-10">
                         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                            <div className="flex items-center gap-3 border border-primary/10 bg-[color:var(--brand-cream)] px-4 py-4">
-                                <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
+                            <div className="flex items-center gap-3 border border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-4 py-4">
+                                <ShieldCheck className="h-5 w-5 shrink-0 text-brand-brown-dark" />
                                 <div>
-                                    <p className="text-sm font-semibold text-primary">Status da reserva</p>
-                                    <p className="text-xs text-primary/68">Acompanhamento nesta página</p>
+                                    <p className="text-sm font-semibold text-brand-brown-dark">Status da reserva</p>
+                                    <p className="text-xs text-brand-brown-dark/68">Acompanhamento nesta página</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 border border-primary/10 bg-[color:var(--brand-cream)] px-4 py-4">
-                                <BadgeCheck className="h-5 w-5 shrink-0 text-primary" />
+                            <div className="flex items-center gap-3 border border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-4 py-4">
+                                <BadgeCheck className="h-5 w-5 shrink-0 text-brand-brown-dark" />
                                 <div>
-                                    <p className="text-sm font-semibold text-primary">{partialPayment ? 'Pagamento parcial' : 'Valor da reserva'}</p>
-                                    <p className="text-xs text-primary/68">{partialPayment ? 'Entrada e saldo detalhados acima' : 'Total exibido nos detalhes'}</p>
+                                    <p className="text-sm font-semibold text-brand-brown-dark">{partialPayment ? 'Pagamento parcial' : 'Valor da reserva'}</p>
+                                    <p className="text-xs text-brand-brown-dark/68">{partialPayment ? 'Entrada e saldo detalhados acima' : 'Total exibido nos detalhes'}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 border border-primary/10 bg-[color:var(--brand-cream)] px-4 py-4">
-                                <Coffee className="h-5 w-5 shrink-0 text-primary" />
+                            <div className="flex items-center gap-3 border border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-4 py-4">
+                                <Coffee className="h-5 w-5 shrink-0 text-brand-brown-dark" />
                                 <div>
-                                    <p className="text-sm font-semibold text-primary">Cafe da manha incluso</p>
-                                    <p className="text-xs text-primary/68">Em todas as diarias</p>
+                                    <p className="text-sm font-semibold text-brand-brown-dark">Cafe da manha incluso</p>
+                                    <p className="text-xs text-brand-brown-dark/68">Em todas as diarias</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 border border-primary/10 bg-[color:var(--brand-cream)] px-4 py-4">
-                                <CreditCard className="h-5 w-5 shrink-0 text-primary" />
+                            <div className="flex items-center gap-3 border border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-4 py-4">
+                                <CreditCard className="h-5 w-5 shrink-0 text-brand-brown-dark" />
                                 <div>
-                                    <p className="text-sm font-semibold text-primary">Atendimento direto</p>
-                                    <p className="text-xs text-primary/68">Suporte rapido quando precisar</p>
+                                    <p className="text-sm font-semibold text-brand-brown-dark">Atendimento direto</p>
+                                    <p className="text-xs text-brand-brown-dark/68">Suporte rapido quando precisar</p>
                                 </div>
                             </div>
                         </div>

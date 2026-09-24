@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const FALLBACK_SITE_URL = "http://localhost:3001";
+const FALLBACK_SITE_URL = "http://localhost:3005";
 
 export const DEFAULT_OG_IMAGE = "/fotos/piscina-aptos/DJI_0845.jpg";
 

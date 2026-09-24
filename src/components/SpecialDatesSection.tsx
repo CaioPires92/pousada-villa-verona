@@ -66,28 +66,28 @@ export default function SpecialDatesSection({ dates, onDateClick }: SpecialDates
     const activeHref = getSpecialDateHref(activeDate);
 
     return (
-        <section className="section-space-sm border-b border-primary/10 bg-background">
+        <section className="section-space-sm border-b border-brand-brown-dark/10 bg-background">
             <div className="container">
                 <div className="mx-auto max-w-[1180px]">
                     <div className="mb-8 flex justify-center md:mb-10">
-                        <div className="inline-flex items-center gap-3 rounded-none border border-primary/10 bg-[color:var(--brand-white)] px-5 py-2 font-sans text-[0.75rem] font-medium uppercase tracking-[0.14em] text-primary/90">
-                            <CalendarDays className="h-4 w-4 text-secondary" strokeWidth={1.8} />
+                        <div className="inline-flex items-center gap-3 rounded-none border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-5 py-2 font-sans text-[0.75rem] font-medium uppercase tracking-[0.14em] text-brand-brown-dark/90">
+                            <CalendarDays className="h-4 w-4 text-brand-gold" strokeWidth={1.8} />
                             Datas especiais
                         </div>
                     </div>
 
                     <div className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.7fr)] lg:items-center lg:gap-12">
                         <div className="max-w-[20rem] space-y-5 xl:max-w-[21rem]">
-                            <h2 className="font-hero-display max-w-[10ch] text-[2.25rem] font-semibold leading-[0.95] text-primary sm:text-[2.75rem] lg:text-[3.15rem] xl:text-[3.35rem]">
+                            <h2 className="font-hero-display max-w-[10ch] text-[2.25rem] font-semibold leading-[0.95] text-brand-brown-dark sm:text-[2.75rem] lg:text-[3.15rem] xl:text-[3.35rem]">
                                 Próximos feriados
                             </h2>
-                            <div className="h-px w-20 bg-secondary/70" />
+                            <div className="h-px w-20 bg-brand-gold/70" />
                             <p className="max-w-[19rem] font-sans text-[1rem] leading-7 text-foreground/72">
                                 Consulte datas de feriados e veja as acomodações disponíveis no motor de reservas.
                             </p>
                         </div>
 
-                        <div className="relative overflow-hidden rounded-none border border-primary/10 bg-[color:var(--brand-cream)] lg:max-w-[56rem]">
+                        <div className="relative overflow-hidden rounded-none border border-brand-brown-dark/10 bg-[color:var(--brand-cream)] lg:max-w-[56rem]">
                             {activeDate.image ? (
                                 <div className="relative aspect-[1.3/1] min-h-[320px] w-full lg:aspect-[1.38/1]">
                                     <Image
@@ -102,13 +102,13 @@ export default function SpecialDatesSection({ dates, onDateClick }: SpecialDates
                                 </div>
                             ) : (
                                 <div className="flex min-h-[320px] items-center justify-center bg-[radial-gradient(circle_at_top,rgba(187,184,99,0.24),transparent_45%),linear-gradient(180deg,rgba(187,184,99,0.16)_0%,rgba(187,184,99,0.08)_100%)]">
-                                    <CalendarDays className="h-14 w-14 text-secondary" strokeWidth={1.5} />
+                                    <CalendarDays className="h-14 w-14 text-brand-gold" strokeWidth={1.5} />
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    <div className="mt-10 overflow-hidden rounded-none border border-primary/10 bg-white">
+                    <div className="mt-10 overflow-hidden rounded-none border border-brand-brown-dark/10 bg-white">
                         <div className="grid md:grid-cols-3">
                             {enabledDates.map((specialDate, index) => {
                                 const isActive = specialDate.id === activeDate.id;
@@ -119,14 +119,14 @@ export default function SpecialDatesSection({ dates, onDateClick }: SpecialDates
                                         type="button"
                                         onClick={() => setActiveDateId(specialDate.id)}
                                         aria-label={`${formatSpecialDatePeriod(specialDate)} ${specialDate.title}`}
-                                        className={`flex w-full items-center gap-5 px-6 py-7 text-left transition-colors duration-200 md:px-7 ${isActive ? 'bg-secondary/10' : 'bg-transparent hover:bg-secondary/5'
-                                            } ${index < enabledDates.length - 1 ? 'border-b border-primary/10 md:border-b-0 md:border-r md:border-primary/10' : ''}`}
+                                        className={`flex w-full items-center gap-5 px-6 py-7 text-left transition-colors duration-200 md:px-7 ${isActive ? 'bg-brand-gold/10' : 'bg-transparent hover:bg-brand-gold/5'
+                                            } ${index < enabledDates.length - 1 ? 'border-b border-brand-brown-dark/10 md:border-b-0 md:border-r md:border-brand-brown-dark/10' : ''}`}
                                     >
-                                        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-none bg-secondary/12 text-secondary">
+                                        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-none bg-brand-gold/12 text-brand-gold">
                                             <CalendarDays className="h-7 w-7" strokeWidth={1.6} />
                                         </span>
                                         <span className="min-w-0">
-                                            <span className="block font-sans text-[0.88rem] font-semibold uppercase tracking-[0.12em] text-primary/90">
+                                            <span className="block font-sans text-[0.88rem] font-semibold uppercase tracking-[0.12em] text-brand-brown-dark/90">
                                                 {formatSpecialDatePeriod(specialDate)}
                                             </span>
                                             <span className="mt-1 block font-sans text-[1.15rem] font-semibold leading-[1.15] text-foreground">
@@ -139,22 +139,22 @@ export default function SpecialDatesSection({ dates, onDateClick }: SpecialDates
                         </div>
                     </div>
 
-                    <div className="mt-6 rounded-none border border-primary/10 bg-[color:var(--brand-white)] px-6 py-6 text-primary md:px-10 md:py-8">
+                    <div className="mt-6 rounded-none border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-6 py-6 text-brand-brown-dark md:px-10 md:py-8">
                         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                             <div className="flex items-start gap-4">
-                                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-none border border-secondary/30 bg-white text-secondary">
+                                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-none border border-brand-gold/30 bg-white text-brand-gold">
                                     <CalendarDays className="h-7 w-7" strokeWidth={1.7} />
                                 </span>
                                 <div className="space-y-1.5">
-                                    <p className="font-sans text-[1.7rem] font-semibold leading-tight text-primary">
+                                    <p className="font-sans text-[1.7rem] font-semibold leading-tight text-brand-brown-dark">
                                         Consulte disponibilidade para essas datas
                                     </p>
-                                    <p className="font-sans text-[1rem] leading-7 text-primary/84">
+                                    <p className="font-sans text-[1rem] leading-7 text-brand-brown-dark/84">
                                         {activeDate.bannerLabel || activeDate.description}
                                     </p>
                                     {minNightsLabel ? (
-                                        <div className="inline-flex items-center gap-2 pt-1 font-sans text-sm text-primary/82">
-                                            <MoonStar className="h-4 w-4 text-secondary" strokeWidth={1.8} />
+                                        <div className="inline-flex items-center gap-2 pt-1 font-sans text-sm text-brand-brown-dark/82">
+                                            <MoonStar className="h-4 w-4 text-brand-gold" strokeWidth={1.8} />
                                             <span>{minNightsLabel}</span>
                                         </div>
                                     ) : null}
@@ -164,10 +164,10 @@ export default function SpecialDatesSection({ dates, onDateClick }: SpecialDates
                             <Link
                                 href={activeHref}
                                 onClick={() => onDateClick?.(activeDate)}
-                                className="inline-flex h-16 items-center justify-center gap-4 rounded-none border border-primary bg-primary px-8 font-sans text-[0.95rem] font-semibold uppercase tracking-[0.12em] text-white transition-colors duration-300 hover:bg-primary/90 lg:min-w-[320px]"
+                                className="inline-flex h-16 items-center justify-center gap-4 rounded-none border border-brand-brown-dark bg-brand-brown-dark px-8 font-sans text-[0.95rem] font-semibold uppercase tracking-[0.12em] text-white transition-colors duration-300 hover:bg-brand-brown-dark/90 lg:min-w-[320px]"
                             >
                                 Ver disponibilidade
-                                <ArrowRight className="h-5 w-5 text-secondary" strokeWidth={1.8} />
+                                <ArrowRight className="h-5 w-5 text-brand-gold" strokeWidth={1.8} />
                             </Link>
                         </div>
                     </div>

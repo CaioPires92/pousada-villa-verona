@@ -23,10 +23,10 @@ const devices = [
 ];
 
 const pages = [
-    { name: 'Homepage', url: 'http://localhost:3001' },
-    { name: 'Reservar', url: 'http://localhost:3001/reservar?checkIn=2025-12-01&checkOut=2025-12-02' },
-    { name: 'Admin_Login', url: 'http://localhost:3001/admin/login' },
-    { name: 'Admin_Dashboard', url: 'http://localhost:3001/admin/dashboard' }
+    { name: 'Homepage', url: 'http://localhost:3005' },
+    { name: 'Reservar', url: 'http://localhost:3005/reservar?checkIn=2025-12-01&checkOut=2025-12-02' },
+    { name: 'Admin_Login', url: 'http://localhost:3005/admin/login' },
+    { name: 'Admin_Dashboard', url: 'http://localhost:3005/admin/dashboard' }
 ];
 
 let testsRun = 0;
@@ -131,7 +131,7 @@ async function testResponsiveness() {
 console.log('⏳ Verificando se o servidor está rodando...\n');
 
 const http = require('http');
-http.get('http://localhost:3001', (res) => {
+http.get('http://localhost:3005', (res) => {
     if (res.statusCode === 200) {
         console.log('✅ Servidor rodando!\n');
         testResponsiveness().catch(error => {
