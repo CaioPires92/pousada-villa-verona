@@ -17,6 +17,7 @@ export default function MobileBookingBar() {
     const [checkOut, setCheckOut] = useState<Date | undefined>();
     const [adults, setAdults] = useState(2);
     const [children, setChildren] = useState(0);
+    const [childrenAges, setChildrenAges] = useState<number[]>([]);
 
     useEffect(() => {
         const today = new Date();
@@ -35,7 +36,29 @@ export default function MobileBookingBar() {
         e.preventDefault();
         const ci = checkIn ? format(checkIn, 'yyyy-MM-dd') : '';
         const co = checkOut ? format(checkOut, 'yyyy-MM-dd') : '';
-        router.push(`/reservar?checkin=${ci}&checkout=${co}&adults=${adults}&children=${children}`);
+        const agesParam = childrenAges.length > 0 ? `&childrenAges=${childrenAges.join(',')}` : '';
+        router.push(`/reservar?checkin=${ci}&checkout=${co}&adults=${adults}&children=${children}${agesParam}`);
+    };
+
+    const updateChildrenCount = (newCount: number) => {
+        setChildren(newCount);
+        setChildrenAges(prev => {
+            const next = [...prev];
+            if (newCount > next.length) {
+                while(next.length < newCount) next.push(0);
+            } else if (newCount < next.length) {
+                next.length = newCount;
+            }
+            return next;
+        });
+    };
+
+    const updateChildAge = (index: number, age: number) => {
+        setChildrenAges(prev => {
+            const next = [...prev];
+            next[index] = age;
+            return next;
+        });
     };
 
     const calendarClassNames = {
@@ -168,7 +191,7 @@ export default function MobileBookingBar() {
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <button 
-                                                    onClick={() => setChildren(Math.max(0, children - 1))}
+                                                    onClick={() => updateChildrenCount(Math.max(0, children - 1))}
                                                     disabled={children <= 0}
                                                     className="w-8 h-8 flex items-center justify-center border border-white/20 bg-brand-brown-dark rounded hover:border-brand-gold text-white hover:text-brand-gold transition-colors disabled:opacity-50 disabled:hover:border-white/20 disabled:hover:text-white"
                                                 >
@@ -176,7 +199,7 @@ export default function MobileBookingBar() {
                                                 </button>
                                                 <span className="w-4 text-center font-bold text-white">{children}</span>
                                                 <button 
-                                                    onClick={() => setChildren(Math.min(3, children + 1))}
+                                                    onClick={() => updateChildrenCount(Math.min(3, children + 1))}
                                                     disabled={children >= 3 || (adults + children >= 4)}
                                                     className="w-8 h-8 flex items-center justify-center border border-white/20 bg-brand-brown-dark rounded hover:border-brand-gold text-white hover:text-brand-gold transition-colors disabled:opacity-50 disabled:hover:border-white/20 disabled:hover:text-white"
                                                 >
@@ -184,6 +207,35 @@ export default function MobileBookingBar() {
                                                 </button>
                                             </div>
                                         </div>
+
+                                        {/* Idade das Crianças (Dynamic) */}
+                                        {children > 0 && (
+                                            <div className="p-4 bg-brand-brown-red rounded-sm border border-white/5 space-y-4">
+                                                <div>
+                                                    <p className="text-sm font-bold text-white mb-2">Idade das crianças</p>
+                                                    <p className="text-[11px] text-white/70 leading-relaxed">
+                                                        0 a 5 anos: cortesia. 6 a 11 anos: tarifa de criança. A partir de 12 anos: conta como adulto.
+                                                    </p>
+                                                </div>
+                                                <div className="flex flex-wrap gap-3">
+                                                    {childrenAges.map((age, idx) => (
+                                                        <div key={idx} className="flex-1 min-w-[120px] bg-brand-brown-dark border border-white/20 rounded-sm">
+                                                            <select
+                                                                value={age}
+                                                                onChange={(e) => updateChildAge(idx, parseInt(e.target.value))}
+                                                                className="w-full bg-transparent text-sm text-white p-2.5 outline-none focus:ring-1 focus:ring-brand-gold appearance-none"
+                                                                style={{ backgroundImage: 'url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%23FFFFFF\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3E%3C/svg%3E")', backgroundPosition: 'right .5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                                                            >
+                                                                {[...Array(12)].map((_, i) => (
+                                                                    <option key={i} value={i} className="bg-brand-brown-dark">{i} {i === 1 ? 'ano' : 'anos'}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
                                     </div>
                                 </div>
                             </PopoverContent>
