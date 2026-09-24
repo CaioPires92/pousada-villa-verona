@@ -1572,13 +1572,28 @@ function ReservarContent() {
                         <Button
                             type="button"
                             size="sm"
-                            className="h-9 rounded-none font-medium bg-brand-brown-dark text-white hover:bg-brand-brown-dark/90"
+                            className="h-9 rounded font-medium bg-brand-brown-dark text-white hover:bg-brand-brown-dark/90 px-4"
                             onClick={() => setSearchEditorOpen((prev) => !prev)}
                         >
                             {searchEditorOpen ? 'Fechar busca' : 'Alterar busca'}
                         </Button>
                     }
-                />
+                >
+                    <div className="flex-1 w-full lg:max-w-md pt-3 lg:pt-0">
+                        <div className="flex items-center justify-between gap-4 mb-2">
+                            <p className="text-sm font-bold text-brand-brown-dark">Passo {currentStep} de {totalSteps}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                {currentStep === 1 ? 'Escolha da acomodação' : currentStep === 2 ? 'Dados e revisão' : 'Pagamento'}
+                            </p>
+                        </div>
+                        <div className="h-1.5 w-full bg-[color:var(--brand-cream)] rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-brand-brown-dark transition-all duration-500"
+                                style={{ width: `${progressPercent}%` }}
+                            />
+                        </div>
+                    </div>
+                </AvailabilityBar>
                 {searchEditorOpen ? (
                     <div className="mb-6">
                         <SearchWidget
@@ -1592,20 +1607,7 @@ function ReservarContent() {
                     </div>
                 ) : null}
 
-                <div className="mb-4 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-3 md:mb-6">
-                    <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm font-medium text-foreground">Passo {currentStep} de {totalSteps}</p>
-                        <p className="text-xs text-muted-foreground">
-                            {currentStep === 1 ? 'Escolha da acomodação' : currentStep === 2 ? 'Dados e revisão' : 'Pagamento'}
-                        </p>
-                    </div>
-                    <div className="mt-2 h-2 w-full bg-[color:var(--brand-cream)]">
-                        <div
-                            className="h-full bg-brand-brown-dark transition-all"
-                            style={{ width: `${progressPercent}%` }}
-                        />
-                    </div>
-                </div>
+                
 
                 {!selectedRoom ? (
                     <div className="space-y-6">
