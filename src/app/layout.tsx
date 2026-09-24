@@ -109,7 +109,6 @@ export default function RootLayout({
         {children}
         <Footer />
         <MobileBookingBar />
-        <WhatsAppFloatingButton />
         <ScrollToTopButton />
       </body>
     </html>
