@@ -1729,7 +1729,7 @@ function ReservarContent() {
                                                         <div>
                                                             <p className="text-[11px] font-bold uppercase tracking-widest text-brand-brown-dark mb-1">Tarifa Padrão</p>
                                                             <div className="flex items-center gap-1.5 text-brand-brown-dark/70 text-sm font-semibold">
-                                                                <User className="h-4 w-4" /> {stayGuests || 2}
+                                                                <User className="h-4 w-4" /> {Number(adults) + Number(children) || 2}
                                                             </div>
                                                         </div>
                                                         
