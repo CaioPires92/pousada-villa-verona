@@ -5,92 +5,71 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
 import { trackClickReservar } from "@/lib/analytics";
 
 export default function Header() {
-    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const pathname = usePathname();
 
-    const isTransparentPath = pathname === "/";
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
     const navLinks = [
-        { href: "/blog", label: "Blog" },
-        { href: "/acomodacoes", label: "Acomodações" },
-        { href: "/lazer", label: "Lazer" },
-        { href: "/restaurante", label: "Restaurante" },
-        { href: "/contato", label: "Contato" },
+        { href: "/", label: "HOME" },
+        { href: "/a-reserva-mantiqueira", label: "A RESERVA MANTIQUEIRA" },
+        { href: "/acomodacoes", label: "ACOMODAÇÕES", hasDropdown: true },
+        { href: "/galeria", label: "GALERIA" },
+        { href: "/serra-negra", label: "SERRA NEGRA" },
+        { href: "/contato", label: "CONTATO" },
     ];
-
-    // Determine header style based on page and scroll state
-    const isTransparent = isTransparentPath && !isScrolled;
 
     if (pathname.startsWith('/admin')) return null;
 
-    const isHomeHero = pathname === "/" && isTransparent;
-
     return (
-        <header
-            className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${!isTransparent
-                ? "border-b border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] shadow-[0_8px_24px_rgba(9,9,9,0.06)]"
-                : "bg-transparent"
-                }`}
-        >
-            <div className="container">
-                <div className={`flex items-center justify-between ${isHomeHero ? "h-28 lg:h-32" : "h-22"}`}>
-                    {/* Logo */}
-                    <Link
-                        href="/"
-                        aria-label="Ir para a página inicial"
-                        className={`relative transition-opacity hover:opacity-90 ${isHomeHero ? "h-20 w-44 sm:h-24 sm:w-56 lg:h-28 lg:w-64" : "h-24 w-72"}`}
-                    >
-                        <Image
-                            src="/fotos/logo.png"
-                            alt="Hotel Pousada Delplata"
-                            fill
-                            sizes="(max-width: 768px) 100vw, 320px"
-                            className="object-contain object-left"
-                        />
-                    </Link>
+        <header className="sticky top-0 left-0 right-0 z-50 bg-[#F9F9F7] shadow-sm">
+            <div className="container mx-auto px-4 lg:px-8">
+                <div className="flex items-center justify-between h-20 md:h-24">
+                    {/* Logo Area */}
+                    <div className="h-full flex items-start">
+                        <Link
+                            href="/"
+                            aria-label="Ir para a página inicial"
+                            className="relative h-24 w-32 md:h-32 md:w-44 bg-[#2C4A3B] rounded-b-xl flex items-center justify-center p-4 transition-transform hover:scale-105 z-10 shadow-lg"
+                        >
+                            <Image
+                                src="/fotos/logo.png"
+                                alt="Reserva Mantiqueira"
+                                fill
+                                sizes="(max-width: 768px) 100vw, 160px"
+                                className="object-contain p-2"
+                            />
+                        </Link>
+                    </div>
 
                     {/* Desktop Navigation */}
-                    <nav aria-label="Navegação principal" className={`hidden md:flex items-center ${isHomeHero ? "gap-5 lg:gap-9" : "gap-8"}`}>
+                    <nav aria-label="Navegação principal" className="hidden lg:flex items-center gap-6 xl:gap-8">
                         {navLinks.map((link) => (
-                            <Link
-                                key={`${link.href}-${link.label}`}
-                                href={link.href}
-                                className={`transition-colors duration-300 hover:text-secondary ${isHomeHero
-                                    ? "font-sans text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-white)] [text-shadow:0_2px_12px_rgba(0,0,0,0.62)]"
-                                    : !isTransparent
-                                        ? "font-sans font-medium text-primary/90"
-                                        : "font-sans font-medium text-white"
-                                    }`}
-                            >
-                                {link.label}
-                            </Link>
+                            <div key={`${link.href}-${link.label}`} className="flex items-center">
+                                <Link
+                                    href={link.href}
+                                    className="text-xs xl:text-sm font-semibold tracking-widest text-[#4A4A4A] hover:text-[#2C4A3B] transition-colors flex items-center gap-1"
+                                >
+                                    {link.label}
+                                    {link.hasDropdown && <ChevronDown size={14} className="opacity-70" />}
+                                </Link>
+                            </div>
                         ))}
+                    </nav>
+
+                    {/* CTA Button */}
+                    <div className="hidden md:flex">
                         <Button
                             asChild
-                            variant={!isTransparent ? "default" : "secondary"}
-                            className={isHomeHero
-                                ? "h-14 rounded-none border border-[color:var(--brand-gold)]/60 bg-[color:var(--forest-soft)] px-6 font-sans text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-white)] shadow-none transition-all duration-200 hover:-translate-y-px hover:border-[color:var(--brand-white)]/70 hover:bg-[color:var(--brand-forest)] hover:text-[color:var(--brand-white)]"
-                                : "rounded-none bg-primary text-white shadow-none transition-all duration-300 hover:-translate-y-px hover:bg-primary/90 hover:shadow-[0_8px_18px_rgba(9,9,9,0.08)]"}
+                            className="bg-[#2C4A3B] hover:bg-[#1f3529] text-white rounded-none h-12 px-6 lg:px-8 text-xs font-semibold tracking-wider flex items-center gap-2"
                         >
                             <Link href="/reservar" onClick={() => trackClickReservar('header_desktop')}>
-                                Reservar agora
+                                FAÇA SUA RESERVA <ChevronRight size={16} />
                             </Link>
                         </Button>
-                    </nav>
+                    </div>
 
                     {/* Mobile Menu Button */}
                     <button
@@ -98,7 +77,7 @@ export default function Header() {
                         aria-label={isMobileMenuOpen ? "Fechar menu" : "Abrir menu"}
                         aria-expanded={isMobileMenuOpen}
                         aria-controls="mobile-navigation"
-                        className={`md:hidden p-2 ${!isTransparent ? "text-primary" : "text-white"}`}
+                        className="lg:hidden p-2 text-[#4A4A4A]"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     >
                         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -107,20 +86,23 @@ export default function Header() {
 
                 {/* Mobile Navigation */}
                 {isMobileMenuOpen && (
-                    <nav id="mobile-navigation" aria-label="Navegação mobile" className="md:hidden space-y-4 border-t border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] px-4 pb-6 pt-5">
+                    <nav id="mobile-navigation" aria-label="Navegação mobile" className="lg:hidden absolute top-full left-0 right-0 bg-[#F9F9F7] border-t border-gray-200 shadow-lg px-4 pb-6 pt-2 space-y-4">
                         {navLinks.map((link) => (
                             <Link
                                 key={`${link.href}-${link.label}`}
                                 href={link.href}
-                                className="block text-primary/90 font-medium hover:text-secondary transition-colors"
+                                className="block text-[#4A4A4A] font-semibold text-sm tracking-widest hover:text-[#2C4A3B] transition-colors py-2 border-b border-gray-100 last:border-0"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
-                                {link.label}
+                                <div className="flex items-center justify-between">
+                                    {link.label}
+                                    {link.hasDropdown && <ChevronDown size={16} />}
+                                </div>
                             </Link>
                         ))}
-                        <Button asChild className="w-full rounded-none shadow-none">
+                        <Button asChild className="w-full bg-[#2C4A3B] hover:bg-[#1f3529] text-white rounded-none h-12 flex items-center justify-center gap-2 mt-4">
                             <Link href="/reservar" onClick={() => { trackClickReservar('header_mobile'); setIsMobileMenuOpen(false); }}>
-                                Reservar agora
+                                FAÇA SUA RESERVA <ChevronRight size={16} />
                             </Link>
                         </Button>
                     </nav>

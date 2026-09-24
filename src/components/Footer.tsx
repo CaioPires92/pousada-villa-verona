@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from "lucide-react";
+import { Instagram, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -8,43 +8,39 @@ export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-primary text-white">
-            <div className="container py-16">
-                <div
-                    className="grid grid-cols-1 md:grid-cols-3 gap-12"
-                >
-                    {/* About */}
-                    <div className="space-y-4">
-                        <div className="relative h-32 w-80">
+        <footer className="bg-[#3B4A3F] text-white py-12 md:py-16">
+            <div className="container mx-auto px-4 lg:px-8">
+                <div className="flex flex-col md:flex-row gap-12 md:gap-8 justify-between items-start mb-16">
+                    {/* Logo */}
+                    <div className="flex-shrink-0">
+                        <div className="relative h-32 w-32 md:h-40 md:w-40">
                             <Image
                                 src="/fotos/logo.png"
-                                alt="Hotel Pousada Delplata"
+                                alt="Reserva Mantiqueira"
                                 fill
-                                sizes="(max-width: 768px) 100vw, 320px"
+                                sizes="(max-width: 768px) 128px, 160px"
                                 className="object-contain object-left"
                             />
                         </div>
-                        <p className="text-white/80 leading-relaxed">
-                            O Hotel Pousada Delplata é um local tranquilo e rodeado de muita natureza, ambiente ideal para descansar, sair da rotina e renovar as energias.
-                        </p>
                     </div>
 
-                    {/* Quick Links */}
+                    {/* Navegação */}
                     <div className="space-y-4">
-                        <h4 className="text-xl font-semibold font-heading">Links Rápidos</h4>
-                        <ul className="space-y-3">
+                        <h4 className="text-xs font-semibold tracking-widest text-white/60 mb-6 uppercase">Navegação</h4>
+                        <ul className="space-y-3 text-sm font-medium">
                             {[
-                                { href: "/blog", label: "Blog" },
+                                { href: "/", label: "Home" },
+                                { href: "/a-reserva-mantiqueira", label: "A Reserva Mantiqueira" },
                                 { href: "/acomodacoes", label: "Acomodações" },
-                                { href: "/lazer", label: "Lazer" },
+                                { href: "/galeria", label: "Galeria" },
+                                { href: "/serra-negra", label: "Serra Negra" },
                                 { href: "/contato", label: "Contato" },
                             ].map((link) => (
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="text-white/80 hover:text-secondary transition-colors duration-300 inline-flex items-center group"
+                                        className="text-white hover:text-white/70 transition-colors"
                                     >
-                                        <span className="w-0 group-hover:w-2 h-0.5 bg-secondary transition-all duration-300 mr-0 group-hover:mr-2" />
                                         {link.label}
                                     </Link>
                                 </li>
@@ -52,72 +48,78 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Contact */}
+                    {/* Experiências */}
                     <div className="space-y-4">
-                        <h4 className="text-xl font-semibold font-heading">Contato</h4>
-                        <ul className="space-y-3">
-                            <li className="flex items-start gap-3 text-white/80">
-                                <MapPin className="w-5 h-5 mt-1 flex-shrink-0 text-secondary" />
+                        <h4 className="text-xs font-semibold tracking-widest text-white/60 mb-6 uppercase">Experiências</h4>
+                        <ul className="space-y-3 text-sm font-medium">
+                            {[
+                                { href: "/cabana-boutique", label: "Cabana Boutique" },
+                                { href: "/casa-vista", label: "Casa Vista" },
+                            ].map((link) => (
+                                <li key={link.href}>
+                                    <Link
+                                        href={link.href}
+                                        className="text-white hover:text-white/70 transition-colors"
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Atendimento */}
+                    <div className="space-y-4">
+                        <h4 className="text-xs font-semibold tracking-widest text-white/60 mb-6 uppercase">Atendimento</h4>
+                        <ul className="space-y-5 text-sm font-medium">
+                            <li className="flex items-start gap-4 text-white">
+                                <div className="p-2 border border-white/20 rounded-full flex-shrink-0 mt-1">
+                                    <Mail className="w-4 h-4" />
+                                </div>
                                 <div>
-                                    <p>R. Vicente Frederico Leporas, 151</p>
-                                    <p>Bairro das Posses, Serra Negra - SP, 13930-000</p>
+                                    <p className="text-xs text-white/60 uppercase tracking-wider mb-1">Reserva via Email</p>
+                                    <a href="mailto:reservas@reservamantiqueiracabana.com.br" className="hover:text-white/70 transition-colors">
+                                        reservas@reservamantiqueiracabana.com.br
+                                    </a>
                                 </div>
                             </li>
-                            <li className="flex items-center gap-3 text-white/80 hover:text-secondary transition-colors">
-                                <Phone className="w-5 h-5 flex-shrink-0" />
-                                <a href="tel:+551938422559">(19) 3842-2559</a>
+                            <li className="flex items-start gap-4 text-white">
+                                <div className="p-2 border border-white/20 rounded-full flex-shrink-0 mt-1">
+                                    <Phone className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <p className="text-xs text-white/60 uppercase tracking-wider mb-1">WhatsApp Concierge</p>
+                                    <a href="https://wa.me/5519999040040" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors">
+                                        (19) 99904-0040
+                                    </a>
+                                </div>
                             </li>
-                            <li className="flex items-center gap-3 text-white/80 hover:text-secondary transition-colors">
-                                <MessageCircle className="w-5 h-5 flex-shrink-0" />
-                                <a href="https://wa.me/5519999654866" target="_blank" rel="noopener noreferrer">
-                                    (19) 99965-4866
-                                </a>
-                            </li>
-                            <li className="flex items-center gap-3 text-white/80 hover:text-secondary transition-colors">
-                                <Mail className="w-5 h-5 flex-shrink-0" />
-                                <a href="mailto:contato@pousadadelplata.com.br">
-                                    contato@pousadadelplata.com.br
-                                </a>
-                            </li>
-                            <li className="flex items-center gap-3 text-white/80 hover:text-secondary transition-colors">
-                                <Instagram className="w-5 h-5 flex-shrink-0" />
-                                <a href="https://www.instagram.com/pousadadelplata/" target="_blank" rel="noopener noreferrer">
-                                    Instagram
-                                </a>
-                            </li>
-                            <li className="flex items-center gap-3 text-white/80 hover:text-secondary transition-colors">
-                                <Facebook className="w-5 h-5 flex-shrink-0" />
-                                <a href="https://www.facebook.com/Delplata/?locale=pt_BR" target="_blank" rel="noopener noreferrer">
-                                    Facebook
-                                </a>
+                            <li className="flex items-start gap-4 text-white">
+                                <div className="p-2 border border-white/20 rounded-full flex-shrink-0 mt-1">
+                                    <MapPin className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <p className="text-xs text-white/60 uppercase tracking-wider mb-1">Localização</p>
+                                    <p>Serra Negra, SP</p>
+                                </div>
                             </li>
                         </ul>
                     </div>
                 </div>
-            </div>
 
-            {/* Copyright */}
-            <div className="border-t border-white/10">
-                <div className="container py-6">
-                    <p
-                        className="text-center text-white/60 text-sm"
-                    >
-                        © {currentYear} Hotel Pousada Delplata. Todos os direitos reservados.
+                {/* Bottom Bar */}
+                <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-widest text-white/60 font-medium">
+                    <p>
+                        © {currentYear} Reserva Mantiqueira. Todos os direitos reservados.
                     </p>
-                    <p
-                        className="mt-2 text-center text-white/60 text-sm"
-                    >
-                        Desenvolvido por{" "}
-                        <a
-                            href="https://www.instagram.com/caiopires92/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-secondary transition-colors"
-                        >
-                            Caio Pires
+                    <div className="flex items-center gap-6">
+                        <p>
+                            DESENVOLVIDO POR TRRWEB
+                        </p>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full hover:bg-white/10 transition-colors text-white">
+                            <Instagram className="w-4 h-4" />
                         </a>
-                        .
-                    </p>
+                    </div>
                 </div>
             </div>
         </footer>
