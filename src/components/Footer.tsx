@@ -16,7 +16,7 @@ export default function Footer() {
                         <div className="relative h-32 w-32 md:h-40 md:w-40">
                             <Image
                                 src="/fotos/logo.png"
-                                alt="Reserva Mantiqueira"
+                                alt="Pousada Villa Verona"
                                 fill
                                 sizes="(max-width: 768px) 128px, 160px"
                                 className="object-contain object-left"
@@ -30,7 +30,7 @@ export default function Footer() {
                         <ul className="space-y-3 text-sm font-medium">
                             {[
                                 { href: "/", label: "Home" },
-                                { href: "/a-reserva-mantiqueira", label: "A Reserva Mantiqueira" },
+                                { href: "/a-pousada", label: "A Pousada Villa Verona" },
                                 { href: "/acomodacoes", label: "Acomodações" },
                                 { href: "/galeria", label: "Galeria" },
                                 { href: "/serra-negra", label: "Serra Negra" },
@@ -78,8 +78,8 @@ export default function Footer() {
                                 </div>
                                 <div>
                                     <p className="text-xs text-white/60 uppercase tracking-wider mb-1">Reserva via Email</p>
-                                    <a href="mailto:reservas@reservamantiqueiracabana.com.br" className="hover:text-white/70 transition-colors">
-                                        reservas@reservamantiqueiracabana.com.br
+                                    <a href="mailto:contato@villaveronapousada.com.br" className="hover:text-white/70 transition-colors">
+                                        contato@villaveronapousada.com.br
                                     </a>
                                 </div>
                             </li>
@@ -89,8 +89,8 @@ export default function Footer() {
                                 </div>
                                 <div>
                                     <p className="text-xs text-white/60 uppercase tracking-wider mb-1">WhatsApp Concierge</p>
-                                    <a href="https://wa.me/5519999040040" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors">
-                                        (19) 99904-0040
+                                    <a href="https://wa.me/5519999002288" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors">
+                                        (19) 99900-2288
                                     </a>
                                 </div>
                             </li>
@@ -110,7 +110,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-widest text-white/60 font-medium">
                     <p>
-                        © {currentYear} Reserva Mantiqueira. Todos os direitos reservados.
+                        © {currentYear} Pousada Villa Verona. Todos os direitos reservados.
                     </p>
                     <div className="flex items-center gap-6">
                         <p>

@@ -14,7 +14,7 @@ export default function Header() {
 
     const navLinks = [
         { href: "/", label: "HOME" },
-        { href: "/a-reserva-mantiqueira", label: "A RESERVA MANTIQUEIRA" },
+        { href: "/a-pousada", label: "A POUSADA VILLA VERONA" },
         { href: "/acomodacoes", label: "ACOMODAÇÕES", hasDropdown: true },
         { href: "/galeria", label: "GALERIA" },
         { href: "/serra-negra", label: "SERRA NEGRA" },
@@ -36,7 +36,7 @@ export default function Header() {
                         >
                             <Image
                                 src="/fotos/logo.png"
-                                alt="Reserva Mantiqueira"
+                                alt="Pousada Villa Verona"
                                 fill
                                 sizes="(max-width: 768px) 100vw, 160px"
                                 className="object-contain p-2"

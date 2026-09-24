@@ -213,7 +213,7 @@ export default function HomeContent() {
   return (
     <main className="min-h-screen">
       {/* Hero Section with Background Image */}
-      <section data-home-hero className="relative flex min-h-screen min-h-[100svh] w-full items-end overflow-hidden bg-[color:var(--brand-black)]">
+      <section data-home-hero className="relative flex min-h-screen min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[color:var(--brand-black)]">
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
@@ -225,97 +225,35 @@ export default function HomeContent() {
             quality={75}
             priority
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(40,50,35,0.72)_0%,rgba(40,50,35,0.46)_38%,rgba(40,50,35,0.18)_65%,rgba(9,9,9,0.18)_100%)]" />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
 
         <motion.div
-          className="container relative z-10 flex min-h-screen min-h-[100svh] flex-col justify-center pb-8 pt-24 sm:pb-14 sm:pt-28 lg:pb-16 lg:pt-32"
+          className="container relative z-10 flex flex-col items-center text-center mt-20"
           initial={false}
           animate="visible"
           variants={containerVariants}
         >
-          <div className="grid gap-8 lg:min-h-[64vh] lg:grid-cols-[minmax(0,0.82fr)_minmax(540px,1.18fr)] lg:items-center xl:gap-12">
-            <motion.div
-              variants={containerVariants}
-              className="max-w-[34rem] space-y-5 pb-2 text-left sm:space-y-7"
-            >
-              <motion.p
-                variants={itemVariants}
-                className="font-accent text-[0.68rem] font-medium uppercase tracking-[0.22em] text-[color:var(--brand-gold)] [text-shadow:0_1px_10px_rgba(0,0,0,0.4)]"
-              >
-                Serra Negra · SP
-              </motion.p>
+          <motion.p
+            variants={itemVariants}
+            className="font-sans text-xs md:text-sm font-medium uppercase tracking-[0.3em] text-[#d3b890] mb-4"
+          >
+            SOFISTICAÇÃO & CONFORTO
+          </motion.p>
 
-              <motion.h1
-                variants={itemVariants}
-                className="font-hero-display max-w-[13ch] text-[clamp(2.4rem,5vw,4.5rem)] font-bold leading-[0.96] text-white"
-              >
-                Pousada em Serra Negra para descansar em família
-              </motion.h1>
+          <motion.h1
+            variants={itemVariants}
+            className="font-serif text-5xl md:text-7xl lg:text-8xl font-normal text-white mb-6 tracking-wide drop-shadow-md"
+          >
+            POUSADA VILLA VERONA
+          </motion.h1>
 
-              <motion.p
-                variants={itemVariants}
-                className="max-w-[30ch] text-base leading-8 text-[color:var(--brand-white)] [text-shadow:0_1px_16px_rgba(0,0,0,0.38)] sm:text-lg"
-              >
-                Piscinas, café da manhã e acomodações na ala principal, chalés e anexos.
-              </motion.p>
-
-              {lowestOffer ? (
-                <motion.div variants={itemVariants} className="inline-flex w-fit items-end gap-3 border-l-2 border-[color:var(--brand-gold)] bg-black/20 px-4 py-3 text-white backdrop-blur-sm">
-                  <div>
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white/75">Total a partir de</p>
-                    <p className="mt-1 text-3xl font-bold leading-none">
-                      {lowestOffer.totalPrice.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                    </p>
-                  </div>
-                  <p className="pb-0.5 text-xs leading-5 text-white/75">
-                    {formatDateBRFromYmd(lowestOffer.checkIn)} – {formatDateBRFromYmd(lowestOffer.checkOut)}
-                    <br />{lowestOffer.nights} {lowestOffer.nights === 1 ? "noite" : "noites"} · 2 adultos
-                  </p>
-                </motion.div>
-              ) : null}
-
-              <motion.div variants={itemVariants} className="flex flex-wrap gap-3 pt-2">
-                <Button asChild className="h-12 rounded-none bg-[color:var(--brand-gold)] px-6 font-sans text-sm font-semibold text-[color:var(--brand-forest)] shadow-none hover:bg-[color:var(--brand-gold)]/90">
-                  <Link href="/reservar" onClick={() => trackClickReservarHero("hero")}>
-                    Ver preços e disponibilidade
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" className="hidden h-12 rounded-none border-[color:var(--brand-gold)]/60 bg-[color:var(--forest-soft)] px-6 font-sans text-sm font-medium text-[color:var(--brand-white)] shadow-none transition-all duration-200 hover:-translate-y-px hover:border-[color:var(--brand-white)]/70 hover:bg-[color:var(--brand-forest)] hover:text-[color:var(--brand-white)] sm:inline-flex">
-                  <Link href="/acomodacoes">
-                    Conheça a pousada
-                  </Link>
-                </Button>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="hidden sm:block">
-                <SocialProofBadges variant="hero" showTotal={false} className="mx-0" />
-              </motion.div>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="w-full max-w-[430px] justify-self-start lg:justify-self-end">
-              <div className="border border-white/28 bg-black/34 shadow-[0_24px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl supports-[backdrop-filter]:bg-black/32">
-                <div className="border-b border-white/18 px-5 py-4 sm:px-6">
-                  <div>
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">Reserva online</p>
-                    <h2 className="mt-1 text-lg font-semibold leading-tight text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.28)]">Consulte valores para sua estadia</h2>
-                    <p className="mt-1 text-sm leading-5 text-white/80">Veja disponibilidade antes de reservar.</p>
-                  </div>
-                </div>
-                <div className="p-5 sm:p-6">
-                  <SearchWidget
-                    uiPreset="hero"
-                    submitLabel="Ver preços e disponibilidade"
-                    submitLabelMobile="Ver preços"
-                    collapsible={false}
-                  />
-                  <p className="pt-4 text-xs leading-5 text-white/75">
-                    Valor calculado conforme datas, ocupação e acomodação disponível.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <motion.p
+            variants={itemVariants}
+            className="text-base md:text-xl text-white/90 font-light max-w-2xl"
+          >
+            Acomodações privativas para dias de total exclusividade
+          </motion.p>
         </motion.div>
       </section>
 

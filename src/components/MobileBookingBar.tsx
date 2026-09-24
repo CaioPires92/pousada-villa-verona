@@ -1,133 +1,76 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { CalendarDays, ShieldCheck, X } from 'lucide-react';
-import { trackClickReservar } from '@/lib/analytics';
-
-const DISMISSED_KEY = 'delplata-booking-assistant-dismissed';
-const RESERVA_INTERACTION_EVENT = 'reservar-cta-interaction';
-
-function hasLeftHomeHero() {
-    const hero = document.querySelector<HTMLElement>('[data-home-hero]');
-
-    if (hero) {
-        return hero.getBoundingClientRect().bottom <= 0;
-    }
-
-    return window.scrollY > window.innerHeight * 0.9;
-}
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Calendar, Users, ArrowRight, MessageCircle } from "lucide-react";
 
 export default function MobileBookingBar() {
     const pathname = usePathname();
-    const [isVisible, setIsVisible] = useState(false);
-    const [isDismissed, setIsDismissed] = useState(() => (
-        typeof window !== 'undefined' && sessionStorage.getItem(DISMISSED_KEY) === '1'
-    ));
 
-    const isExcludedPage = pathname.startsWith('/admin') || pathname.startsWith('/reservar');
-    const isHome = pathname === '/';
+    const isExcludedPage = pathname.startsWith("/admin") || pathname.startsWith("/reservar");
 
-    useEffect(() => {
-        if (isExcludedPage || isDismissed) {
-            return;
-        }
-
-        if (!isHome) {
-            const timer = window.setTimeout(() => setIsVisible(true), 700);
-            return () => window.clearTimeout(timer);
-        }
-
-        const handleScroll = () => {
-            if (hasLeftHomeHero()) {
-                setIsVisible(true);
-            }
-        };
-
-        const handleReservationInteraction = () => {
-            if (hasLeftHomeHero()) {
-                setIsVisible(true);
-            }
-        };
-
-        handleScroll();
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        window.addEventListener(RESERVA_INTERACTION_EVENT, handleReservationInteraction);
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener(RESERVA_INTERACTION_EVENT, handleReservationInteraction);
-        };
-    }, [isDismissed, isExcludedPage, isHome]);
-
-    const handleDismiss = () => {
-        sessionStorage.setItem(DISMISSED_KEY, '1');
-        setIsDismissed(true);
-        setIsVisible(false);
-    };
-
-    if (isExcludedPage || isDismissed || !isVisible) {
+    if (isExcludedPage) {
         return null;
     }
 
     return (
-        <>
-            <div aria-hidden="true" className="h-[calc(5.25rem+env(safe-area-inset-bottom))] md:hidden" />
-            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-primary/15 bg-white/96 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(9,9,9,0.10)] backdrop-blur md:hidden">
-                <button
-                    type="button"
-                    onClick={handleDismiss}
-                    className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center text-primary/55 transition-colors hover:text-primary"
-                    aria-label="Fechar lembrete de reserva"
+        <div className="fixed inset-x-0 bottom-0 z-40">
+            <div className="w-full bg-[#3B4A3F] border-t border-[#4a5c4e] shadow-2xl relative">
+                
+                {/* Floating WhatsApp Button on the left */}
+                <a 
+                    href="https://wa.me/5519999002288" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="absolute -top-6 left-4 md:left-12 lg:left-24 bg-[#25D366] hover:bg-[#20b858] transition-colors p-3.5 rounded-full shadow-lg z-50 flex items-center justify-center"
+                    aria-label="Falar no WhatsApp"
                 >
-                    <X className="h-4 w-4" />
-                </button>
-                <p className="mb-2 pr-8 text-center text-xs font-semibold uppercase tracking-[0.14em] text-primary/70">
-                    Reserva direta
-                </p>
-                <Link
-                    href="/reservar"
-                    onClick={() => trackClickReservar('booking_assistant_mobile')}
-                    className="flex min-h-12 items-center justify-center gap-2 bg-primary px-4 text-center text-sm font-semibold text-white transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                >
-                    <CalendarDays className="h-4 w-4" aria-hidden="true" />
-                    Ver preços e disponibilidade
-                </Link>
-            </div>
-            <aside className="fixed bottom-6 right-6 z-40 hidden w-[320px] border border-white/18 bg-[#283223] text-white shadow-[0_24px_70px_rgba(0,0,0,0.30)] md:block">
-                <button
-                    type="button"
-                    onClick={handleDismiss}
-                    className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center text-white/60 transition-colors hover:text-white"
-                    aria-label="Fechar lembrete de reserva"
-                >
-                    <X className="h-4 w-4" />
-                </button>
-                <div className="border-b border-white/15 px-5 py-4 pr-12">
-                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">
-                        Reserva direta
-                    </p>
-                    <h2 className="mt-1 text-lg font-semibold leading-tight">Consulte datas e valores</h2>
-                    <p className="mt-1 text-sm leading-5 text-white/72">
-                        Veja disponibilidade online antes de decidir.
-                    </p>
-                </div>
-                <div className="space-y-4 p-5">
-                    <div className="flex items-start gap-3 text-sm leading-5 text-white/78">
-                        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--brand-gold)]" />
-                        <span>Café da manhã, total da estadia e pagamento aparecem antes de finalizar.</span>
+                    <MessageCircle className="w-7 h-7 md:w-8 md:h-8 text-white" />
+                </a>
+
+                <div className="container mx-auto px-16 lg:px-32 py-3 flex flex-wrap md:flex-nowrap items-center justify-between md:justify-end lg:justify-center gap-2 md:gap-4 lg:gap-8">
+                    
+                    {/* Form Fields container */}
+                    <div className="flex flex-1 items-center justify-end gap-2 md:gap-4 lg:gap-8 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                        {/* Check-in */}
+                        <div className="bg-[#4C5B50] rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
+                            <Calendar className="w-4 h-4 text-[#d3b890]" />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider">Check-in</span>
+                                <span className="text-sm text-white font-bold">24/09/2026</span>
+                            </div>
+                        </div>
+
+                        {/* Check-out */}
+                        <div className="bg-[#4C5B50] rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
+                            <Calendar className="w-4 h-4 text-[#d3b890]" />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider">Check-out</span>
+                                <span className="text-sm text-white font-bold">26/09/2026</span>
+                            </div>
+                        </div>
+
+                        <div className="hidden md:block w-px h-10 bg-white/10 mx-2"></div>
+
+                        {/* Adultos */}
+                        <div className="bg-[#4C5B50] rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
+                            <Users className="w-4 h-4 text-[#d3b890]" />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider">Adultos</span>
+                                <span className="text-sm text-white font-bold">2 Adultos</span>
+                            </div>
+                        </div>
                     </div>
+
+                    {/* Submit Button */}
                     <Link
                         href="/reservar"
-                        onClick={() => trackClickReservar('booking_assistant_desktop')}
-                        className="flex h-12 items-center justify-center gap-2 bg-[color:var(--brand-gold)] px-4 text-center text-sm font-semibold text-[#283223] transition-colors hover:bg-[color:var(--brand-gold)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#283223]"
+                        className="w-full md:w-auto mt-2 md:mt-0 flex-shrink-0 bg-[#d3b890] hover:bg-[#c4a67e] transition-colors text-[#2C4A3B] px-6 py-3.5 rounded-sm flex items-center justify-center gap-2 font-bold text-xs tracking-widest uppercase"
                     >
-                        <CalendarDays className="h-4 w-4" aria-hidden="true" />
-                        Ver disponibilidade
+                        SIMULAR RESERVA <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>
-            </aside>
-        </>
+            </div>
+        </div>
     );
 }
