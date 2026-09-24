@@ -1718,7 +1718,7 @@ function ReservarContent() {
                                                     <div className="flex flex-wrap items-center gap-1.5 mt-2 text-xs">
                                                         <span className="font-semibold text-brand-brown-dark uppercase tracking-wider mr-1 text-[10px]">Comodidades:</span>
                                                         {roomAmenities.join(', ')}
-                                                        <button className="text-blue-600 hover:underline font-medium ml-1">Ver mais</button>
+                                                        
                                                     </div>
                                                 </div>
 
@@ -1748,7 +1748,7 @@ function ReservarContent() {
                                                             Estadia mínima definida para essa data é de {stayNights} {stayNights === 1 ? 'noite' : 'noites'}.
                                                         </p>
                                                         <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
-                                                            - Pagamento com cartão de crédito em até 3 vezes sem juros e em... <button className="text-blue-600 hover:underline">Ver mais</button>
+                                                            - Pagamento com cartão de crédito em até 3 vezes sem juros.
                                                         </p>
                                                     </div>
                                                 </div>
