@@ -238,7 +238,7 @@ export default function HomeContent() {
         >
           <motion.p
             variants={itemVariants}
-            className="font-sans text-xs md:text-sm font-medium uppercase tracking-[0.3em] text-[var(--brand-gold)] mb-4"
+            className="font-sans text-xs md:text-sm font-medium uppercase tracking-[0.3em] text-brand-gold mb-4"
           >
             SOFISTICAÇÃO & CONFORTO
           </motion.p>
