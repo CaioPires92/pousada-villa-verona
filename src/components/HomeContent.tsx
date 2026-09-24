@@ -26,6 +26,7 @@ const HomeAvailabilityOffers = dynamic(() => import("@/components/HomeAvailabili
   loading: () => <section aria-label="Ofertas disponíveis" className="min-h-[420px] bg-white" />,
 });
 const SpecialDatesSection = dynamic(() => import("@/components/SpecialDatesSection"));
+import ContactAndLocation from "./ContactAndLocation";
 import {
   SPECIAL_DATES,
 } from "@/constants/specialDates";
