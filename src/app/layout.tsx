@@ -1,6 +1,20 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Suspense } from "react";
+import { Montserrat, Source_Serif_4 } from "next/font/google";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["300", "400", "600"],
+  variable: "--font-montserrat",
+});
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-source-serif",
+});
+
 
 import Footer from "@/components/Footer";
 import CampaignAttribution from "@/components/CampaignAttribution";
@@ -67,7 +81,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="font-sans antialiased">
+      <body className={`${montserrat.variable} ${sourceSerif.variable} font-sans antialiased text-brand-brown-dark bg-[#F5F5F5]`}>
         <Suspense fallback={null}>
           <CampaignAttribution />
         </Suspense>

@@ -18,7 +18,12 @@ const config: Config = {
     	},
     		extend: {
     			colors: {
-    				primary: {
+    			brand: {
+    				gold: '#FDB32C',
+    				'brown-dark': '#430F03',
+    				'brown-red': '#652609'
+    			},
+    			    				primary: {
     					DEFAULT: '#283223',
     					foreground: '#FFFFFF'
     				},
@@ -68,23 +73,12 @@ const config: Config = {
     				md: '16px',
     				sm: '8px'
     			},
-    			fontFamily: {
-    				sans: [
-    					'var(--font-inter)',
-    					'sans-serif'
-    				],
-    				heading: [
-    					'var(--font-inter)',
-    					'sans-serif'
-    				],
-    			display: [
-    				'var(--font-inter)',
-    				'sans-serif'
-    			],
-    				accent: [
-    					'var(--font-inter)',
-    					'sans-serif'
-    				]
+    						fontFamily: {
+    				sans: ['var(--font-montserrat)', 'sans-serif'],
+    				serif: ['var(--font-source-serif)', 'serif'],
+    				heading: ['var(--font-source-serif)', 'serif'],
+    			    display: ['var(--font-source-serif)', 'serif'],
+    				accent: ['var(--font-montserrat)', 'sans-serif']
     			},
     		keyframes: {
     			'accordion-down': {

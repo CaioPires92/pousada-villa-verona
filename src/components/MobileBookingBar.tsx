@@ -15,7 +15,7 @@ export default function MobileBookingBar() {
 
     return (
         <div className="fixed inset-x-0 bottom-0 z-40">
-            <div className="w-full bg-[#3B4A3F] border-t border-[#4a5c4e] shadow-2xl relative">
+            <div className="w-full bg-brand-brown-dark border-t border-brand-brown-red shadow-2xl relative">
                 
                 {/* Floating WhatsApp Button on the left */}
                 <a 
@@ -33,8 +33,8 @@ export default function MobileBookingBar() {
                     {/* Form Fields container */}
                     <div className="flex flex-1 items-center justify-end gap-2 md:gap-4 lg:gap-8 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                         {/* Check-in */}
-                        <div className="bg-[#4C5B50] rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
-                            <Calendar className="w-4 h-4 text-[#d3b890]" />
+                        <div className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
+                            <Calendar className="w-4 h-4 text-brand-gold" />
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider">Check-in</span>
                                 <span className="text-sm text-white font-bold">24/09/2026</span>
@@ -42,8 +42,8 @@ export default function MobileBookingBar() {
                         </div>
 
                         {/* Check-out */}
-                        <div className="bg-[#4C5B50] rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
-                            <Calendar className="w-4 h-4 text-[#d3b890]" />
+                        <div className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
+                            <Calendar className="w-4 h-4 text-brand-gold" />
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider">Check-out</span>
                                 <span className="text-sm text-white font-bold">26/09/2026</span>
@@ -53,8 +53,8 @@ export default function MobileBookingBar() {
                         <div className="hidden md:block w-px h-10 bg-white/10 mx-2"></div>
 
                         {/* Adultos */}
-                        <div className="bg-[#4C5B50] rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
-                            <Users className="w-4 h-4 text-[#d3b890]" />
+                        <div className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5">
+                            <Users className="w-4 h-4 text-brand-gold" />
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider">Adultos</span>
                                 <span className="text-sm text-white font-bold">2 Adultos</span>
@@ -65,7 +65,7 @@ export default function MobileBookingBar() {
                     {/* Submit Button */}
                     <Link
                         href="/reservar"
-                        className="w-full md:w-auto mt-2 md:mt-0 flex-shrink-0 bg-[#d3b890] hover:bg-[#c4a67e] transition-colors text-[#2C4A3B] px-6 py-3.5 rounded-sm flex items-center justify-center gap-2 font-bold text-xs tracking-widest uppercase"
+                        className="w-full md:w-auto mt-2 md:mt-0 flex-shrink-0 bg-brand-gold hover:opacity-90 transition-colors text-brand-brown-dark font-sans tracking-[0.15em] px-6 py-3.5 rounded-sm flex items-center justify-center gap-2 font-bold text-xs tracking-widest uppercase"
                     >
                         SIMULAR RESERVA <ArrowRight className="w-4 h-4" />
                     </Link>

@@ -8,14 +8,14 @@ export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-[#3B4A3F] text-white py-12 md:py-16">
+        <footer className="bg-brand-brown-dark text-white pt-12 pb-32 md:pt-16 md:pb-32 lg:pb-36">
             <div className="container mx-auto px-4 lg:px-8">
                 <div className="flex flex-col md:flex-row gap-12 md:gap-8 justify-between items-start mb-16">
                     {/* Logo */}
                     <div className="flex-shrink-0">
-                        <div className="relative h-32 w-32 md:h-40 md:w-40">
+                        <div className="relative h-20 w-32 md:h-24 md:w-40">
                             <Image
-                                src="/fotos/logo.png"
+                                src="/logo.png"
                                 alt="Pousada Villa Verona"
                                 fill
                                 sizes="(max-width: 768px) 128px, 160px"
@@ -26,7 +26,7 @@ export default function Footer() {
 
                     {/* Navegação */}
                     <div className="space-y-4">
-                        <h4 className="text-xs font-semibold tracking-widest text-white/60 mb-6 uppercase">Navegação</h4>
+                        <h4 className="text-xs font-semibold tracking-widest text-brand-gold mb-6 uppercase">Navegação</h4>
                         <ul className="space-y-3 text-sm font-medium">
                             {[
                                 { href: "/", label: "Home" },
@@ -50,7 +50,7 @@ export default function Footer() {
 
                     {/* Experiências */}
                     <div className="space-y-4">
-                        <h4 className="text-xs font-semibold tracking-widest text-white/60 mb-6 uppercase">Experiências</h4>
+                        <h4 className="text-xs font-semibold tracking-widest text-brand-gold mb-6 uppercase">Experiências</h4>
                         <ul className="space-y-3 text-sm font-medium">
                             {[
                                 { href: "/cabana-boutique", label: "Cabana Boutique" },
@@ -70,14 +70,14 @@ export default function Footer() {
 
                     {/* Atendimento */}
                     <div className="space-y-4">
-                        <h4 className="text-xs font-semibold tracking-widest text-white/60 mb-6 uppercase">Atendimento</h4>
+                        <h4 className="text-xs font-semibold tracking-widest text-brand-gold mb-6 uppercase">Atendimento</h4>
                         <ul className="space-y-5 text-sm font-medium">
                             <li className="flex items-start gap-4 text-white">
                                 <div className="p-2 border border-white/20 rounded-full flex-shrink-0 mt-1">
                                     <Mail className="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <p className="text-xs text-white/60 uppercase tracking-wider mb-1">Reserva via Email</p>
+                                    <p className="text-xs text-brand-gold uppercase tracking-wider mb-1">Reserva via Email</p>
                                     <a href="mailto:contato@villaveronapousada.com.br" className="hover:text-white/70 transition-colors">
                                         contato@villaveronapousada.com.br
                                     </a>
@@ -88,7 +88,7 @@ export default function Footer() {
                                     <Phone className="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <p className="text-xs text-white/60 uppercase tracking-wider mb-1">WhatsApp Concierge</p>
+                                    <p className="text-xs text-brand-gold uppercase tracking-wider mb-1">WhatsApp Concierge</p>
                                     <a href="https://wa.me/5519999002288" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors">
                                         (19) 99900-2288
                                     </a>
@@ -99,7 +99,7 @@ export default function Footer() {
                                     <MapPin className="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <p className="text-xs text-white/60 uppercase tracking-wider mb-1">Localização</p>
+                                    <p className="text-xs text-brand-gold uppercase tracking-wider mb-1">Localização</p>
                                     <p>Serra Negra, SP</p>
                                 </div>
                             </li>
@@ -108,7 +108,7 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-widest text-white/60 font-medium">
+                <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-widest text-brand-gold font-medium">
                     <p>
                         © {currentYear} Pousada Villa Verona. Todos os direitos reservados.
                     </p>

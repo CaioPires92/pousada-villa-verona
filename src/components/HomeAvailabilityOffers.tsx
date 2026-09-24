@@ -344,7 +344,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
       <div className="container mx-auto max-w-[1440px] px-4">
         <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
-            <p className="font-accent text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">
+            <p className="font-sans text-xs font-semibold tracking-[0.3em] uppercase text-brand-gold">
               Disponibilidade real
             </p>
             <h2 id="home-offers-title" className="mt-3 font-hero-display text-[2.25rem] leading-[1.05] text-[#1d1b19] md:text-[3.1rem]">
@@ -357,7 +357,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
           <button
             type="button"
             onClick={openSearchModal}
-            className="inline-flex h-12 items-center justify-center gap-2 border border-primary/15 bg-white px-5 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+            className="inline-flex h-12 items-center justify-center gap-2 border border-primary/15 bg-white px-5 text-sm font-semibold text-brand-brown-dark transition-colors hover:bg-primary hover:text-white"
           >
             Consultar outras datas <ArrowRight className="h-4 w-4" />
           </button>
@@ -368,17 +368,17 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
             <div className="w-full max-w-2xl bg-transparent border-0 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:p-7">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="font-accent text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">Nova consulta</p>
-                  <h3 id="home-offers-search-title" className="mt-2 text-2xl font-semibold text-primary">Consultar outras datas</h3>
+                  <p className="font-accent text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-brand-gold">Nova consulta</p>
+                  <h3 id="home-offers-search-title" className="mt-2 text-2xl font-semibold text-brand-brown-dark">Consultar outras datas</h3>
                   <p className="mt-1 text-sm text-muted-foreground">Informe datas e ocupação para atualizar os valores dos cards.</p>
                 </div>
-                <button type="button" onClick={() => setIsSearchModalOpen(false)} className="text-2xl leading-none text-primary/65 hover:text-primary" aria-label="Fechar consulta">
+                <button type="button" onClick={() => setIsSearchModalOpen(false)} className="text-2xl leading-none text-brand-brown-dark/65 hover:text-brand-brown-dark" aria-label="Fechar consulta">
                   ×
                 </button>
               </div>
 
               <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <label className="space-y-2 text-sm font-semibold text-primary">
+                <label className="space-y-2 text-sm font-semibold text-brand-brown-dark">
                   Check-in
                   <input
                     type="date"
@@ -388,7 +388,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     className="h-12 w-full rounded-none border border-primary/15 bg-white px-3 font-medium text-foreground"
                   />
                 </label>
-                <label className="space-y-2 text-sm font-semibold text-primary">
+                <label className="space-y-2 text-sm font-semibold text-brand-brown-dark">
                   Check-out
                   <input
                     type="date"
@@ -398,7 +398,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     className="h-12 w-full rounded-none border border-primary/15 bg-white px-3 font-medium text-foreground"
                   />
                 </label>
-                <label className="space-y-2 text-sm font-semibold text-primary">
+                <label className="space-y-2 text-sm font-semibold text-brand-brown-dark">
                   Adultos
                   <select
                     value={draftSearch.adults}
@@ -414,7 +414,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     {[1, 2, 3, 4].map((value) => <option key={value} value={value}>{value}</option>)}
                   </select>
                 </label>
-                <label className="space-y-2 text-sm font-semibold text-primary">
+                <label className="space-y-2 text-sm font-semibold text-brand-brown-dark">
                   Crianças
                   <select
                     value={draftSearch.children}
@@ -431,7 +431,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
               {draftSearch.children > 0 ? (
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   {draftSearch.childrenAges.slice(0, draftSearch.children).map((age, index) => (
-                    <label key={index} className="space-y-2 text-sm font-semibold text-primary">
+                    <label key={index} className="space-y-2 text-sm font-semibold text-brand-brown-dark">
                       Idade da criança {index + 1}
                       <select
                         value={age}
@@ -485,8 +485,8 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
           </div>
         ) : unavailable ? (
           <div className="bg-transparent border-0 px-6 py-10 text-center md:px-10">
-            <CalendarDays className="mx-auto h-9 w-9 text-[color:var(--brand-gold)]" />
-            <h3 className="mt-4 text-xl font-semibold text-primary">Consulte as datas da sua viagem</h3>
+            <CalendarDays className="mx-auto h-9 w-9 text-brand-gold" />
+            <h3 className="mt-4 text-xl font-semibold text-brand-brown-dark">Consulte as datas da sua viagem</h3>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
               Não encontramos uma oferta para o período de referência. O motor pode consultar outras datas e a ocupação correta sem exibir um preço desatualizado.
             </p>
@@ -498,7 +498,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
           <div className="relative group/carousel">
             <button 
               type="button" 
-              className="absolute left-2 md:left-4 top-[35%] -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.15)] text-primary opacity-100 md:opacity-0 transition-opacity md:group-hover/carousel:opacity-100 disabled:opacity-0"
+              className="absolute left-2 md:left-4 top-[35%] -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.15)] text-brand-brown-dark opacity-100 md:opacity-0 transition-opacity md:group-hover/carousel:opacity-100 disabled:opacity-0"
               onClick={() => {
                 const container = document.getElementById('offers-carousel');
                 if (container) {
@@ -514,7 +514,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
             </button>
             <button 
               type="button" 
-              className="absolute right-2 md:right-4 top-[35%] -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.15)] text-primary opacity-100 md:opacity-0 transition-opacity md:group-hover/carousel:opacity-100 disabled:opacity-0"
+              className="absolute right-2 md:right-4 top-[35%] -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.15)] text-brand-brown-dark opacity-100 md:opacity-0 transition-opacity md:group-hover/carousel:opacity-100 disabled:opacity-0"
               onClick={() => {
                 const container = document.getElementById('offers-carousel');
                 if (container) {
@@ -580,9 +580,9 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                   </div>
 
                   <div className="flex flex-1 flex-col pt-6 pb-2">
-                    <h3 className="font-serif text-3xl md:text-4xl font-normal leading-tight text-primary mb-3">{room.name}</h3>
+                    <h3 className="font-serif text-3xl md:text-4xl font-normal leading-tight text-brand-brown-dark mb-3">{room.name}</h3>
                     {room.description ? (
-                      <p className="text-[0.95rem] font-light leading-[1.8] text-[#555] mb-5">
+                      <p className="text-[0.95rem] font-light leading-[1.8] text-brand-brown-dark/80 mb-5">
                         {room.description}
                       </p>
                     ) : null}
@@ -590,7 +590,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     <div className="w-full h-px bg-[#e5e5e5] my-4"></div>
                     
                     {amenities.length > 0 || maxGuests > 0 ? (
-                      <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 text-[0.95rem] font-light text-[#555]">
+                      <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 text-[0.95rem] font-light text-brand-brown-dark/80">
                         {maxGuests > 0 ? (
                           <li className="flex items-center gap-3">
                             <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--brand-gold)] opacity-70"></span> Até {maxGuests} hóspedes
@@ -607,7 +607,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     <div className="mt-8 flex justify-start">
                       <Link
                         href={roomUrl}
-                        className="inline-flex h-12 items-center justify-center bg-[color:var(--brand-forest)] px-7 text-[0.75rem] font-bold tracking-[0.15em] text-white transition-colors hover:opacity-90"
+                        className="inline-flex h-12 items-center justify-center bg-brand-brown-dark px-7 text-[0.75rem] font-bold tracking-[0.15em] text-white transition-colors hover:opacity-90"
                       >
                         SOLICITAR RESERVA
                       </Link>
