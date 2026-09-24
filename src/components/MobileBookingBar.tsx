@@ -37,7 +37,7 @@ export default function MobileBookingBar() {
         const ci = checkIn ? format(checkIn, 'yyyy-MM-dd') : '';
         const co = checkOut ? format(checkOut, 'yyyy-MM-dd') : '';
         const agesParam = childrenAges.length > 0 ? `&childrenAges=${childrenAges.join(',')}` : '';
-        router.push(`/reservar?checkin=${ci}&checkout=${co}&adults=${adults}&children=${children}${agesParam}`);
+        router.push(`/reservar?checkIn=${ci}&checkOut=${co}&adults=${adults}&children=${children}${agesParam}`);
     };
 
     const updateChildrenCount = (newCount: number) => {

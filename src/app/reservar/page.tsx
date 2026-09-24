@@ -1572,7 +1572,7 @@ function ReservarContent() {
                         <Button
                             type="button"
                             size="sm"
-                            className="h-9 rounded-none font-medium bg-brand-brown-dark text-brand-brown-dark-foreground hover:bg-brand-brown-dark/90"
+                            className="h-9 rounded-none font-medium bg-brand-brown-dark text-white hover:bg-brand-brown-dark/90"
                             onClick={() => setSearchEditorOpen((prev) => !prev)}
                         >
                             {searchEditorOpen ? 'Fechar busca' : 'Alterar busca'}
@@ -1729,7 +1729,7 @@ function ReservarContent() {
                                                         <p className="mt-2 text-xs text-foreground/68">{stayNights} {stayNights === 1 ? 'noite' : 'noites'} · {formatCurrencyBRL(nightlyRate)} por noite</p>
                                                         {hasSavings ? <p className="mt-1 text-xs font-medium text-emerald-700">Economia de {formatCurrencyBRL(Number(room.discountAmount))}</p> : null}
                                                     </div>
-                                                    <Button size="lg" onClick={() => handleSelectRoom(room)} className="h-[50px] w-full rounded-none bg-brand-brown-dark px-4 text-sm font-semibold text-brand-brown-dark-foreground shadow-none hover:bg-brand-brown-dark/95">
+                                                    <Button size="lg" onClick={() => handleSelectRoom(room)} className="h-[50px] w-full rounded-none bg-brand-brown-dark px-4 text-sm font-semibold text-white shadow-none hover:bg-brand-brown-dark/95">
                                                         Escolher acomodação <ArrowRight className="ml-2 h-4 w-4" />
                                                     </Button>
                                                 </div>
