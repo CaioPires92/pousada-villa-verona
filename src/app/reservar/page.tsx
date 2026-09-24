@@ -1650,7 +1650,7 @@ function ReservarContent() {
                                         <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Pix ou cartão</span>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+                                <div className="flex flex-col gap-6">
                                     {availableRooms.map((room) => {
                                         const roomPhotos = getRoomDisplayPhotos(room);
                                         const roomPrimaryImage = roomPhotos[0] ?? null;
@@ -1669,10 +1669,10 @@ function ReservarContent() {
                                         return (
                                         <Card
                                             key={room.id}
-                                            className="group flex h-full flex-col overflow-hidden rounded-none border border-brand-brown-dark/10 bg-[color:var(--brand-white)] shadow-none transition-all duration-300 hover:border-brand-brown-dark/25"
+                                            className="group flex flex-col md:flex-row overflow-hidden rounded-xl border border-brand-brown-dark/10 bg-white shadow-sm transition-all duration-300 hover:shadow-md"
                                         >
                                             <div
-                                                className={`relative aspect-[16/9] overflow-hidden bg-[color:var(--brand-cream)] ${canOpenGallery ? 'cursor-zoom-in' : ''}`}
+                                                className={`relative w-full md:w-[340px] lg:w-[420px] flex-shrink-0 aspect-[4/3] md:aspect-auto overflow-hidden bg-gray-100 ${canOpenGallery ? 'cursor-pointer' : ''}`}
                                                 role={canOpenGallery ? 'button' : undefined}
                                                 tabIndex={canOpenGallery ? 0 : undefined}
                                                 onClick={canOpenGallery ? () => openRoomGallery(room) : undefined}
@@ -1689,7 +1689,7 @@ function ReservarContent() {
                                                         src={roomPrimaryImage}
                                                         alt={room.name}
                                                         fill
-                                                        sizes="(max-width: 1279px) 100vw, 50vw"
+                                                        sizes="(max-width: 768px) 100vw, 420px"
                                                         className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
                                                     />
                                                 ) : (
@@ -1698,40 +1698,61 @@ function ReservarContent() {
                                                     </div>
                                                 )}
                                                 {canOpenGallery ? (
-                                                    <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 bg-black/58 px-3 py-2 text-xs font-semibold text-white backdrop-blur-sm">
-                                                        <Camera className="h-3.5 w-3.5" />
-                                                        <span>Ver fotos ({roomPhotos.length})</span>
+                                                    <div className="absolute bottom-4 right-4 md:bottom-4 md:left-4 md:right-auto inline-flex items-center justify-center bg-black/50 p-2 rounded-full text-white backdrop-blur-sm md:p-2 md:rounded-lg md:text-xs md:font-medium md:gap-1.5 md:inline-flex">
+                                                        <Camera className="h-4 w-4 md:h-3.5 md:w-3.5" />
+                                                        <span className="hidden md:inline">Ver fotos ({roomPhotos.length})</span>
                                                     </div>
                                                 ) : null}
                                             </div>
-                                            <div className="flex flex-1 flex-col p-5 md:p-6">
-                                                <h3 className="font-sans text-[1.55rem] font-semibold leading-tight tracking-[-0.02em] text-brand-brown-dark md:text-[1.75rem]">
-                                                    {room.name}
-                                                </h3>
-                                                <p className="mt-2 line-clamp-2 text-sm leading-6 text-foreground/72">{roomDescription}</p>
-
-                                                <div className="mt-4 flex flex-wrap gap-2">
-                                                    {roomAmenities.slice(0, 4).map((amenity, i) => {
-                                                        const AmenityIcon = getAmenityIcon(amenity);
-                                                        return (
-                                                            <span key={i} className="inline-flex items-center gap-1.5 border border-brand-brown-dark/10 bg-[color:var(--brand-cream)] px-2.5 py-1.5 text-xs font-medium text-brand-brown-dark">
-                                                                <AmenityIcon className="h-3.5 w-3.5 text-brand-brown-dark/78" /> {amenity}
-                                                            </span>
-                                                        );
-                                                    })}
+                                            
+                                            <div className="flex flex-1 flex-col p-5 md:p-6 lg:p-8">
+                                                <div className="flex flex-wrap items-center gap-3">
+                                                    <h3 className="font-sans text-xl font-bold leading-tight tracking-tight text-brand-brown-dark md:text-2xl">
+                                                        {room.name} <span className="text-base font-medium text-gray-500">(Para até {room.capacity || 2} hóspedes)</span>
+                                                    </h3>
+                                                    <span className="text-[10px] text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded font-semibold uppercase tracking-wider">
+                                                        Privativo
+                                                    </span>
                                                 </div>
 
-                                                <div className="mt-auto grid items-end gap-4 border-t border-brand-brown-dark/10 pt-5 sm:grid-cols-[minmax(0,1fr)_minmax(220px,0.9fr)]">
-                                                    <div>
-                                                        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-foreground/58">Total da estadia</p>
-                                                        {originalNightlyRate ? <p className="mt-1 text-sm text-muted-foreground line-through">{formatCurrencyBRL(originalNightlyRate * stayNights)}</p> : null}
-                                                        <p className="mt-1 text-[2rem] font-semibold leading-none tracking-[-0.03em] text-brand-brown-dark">{formatCurrencyBRL(room.totalPrice)}</p>
-                                                        <p className="mt-2 text-xs text-foreground/68">{stayNights} {stayNights === 1 ? 'noite' : 'noites'} · {formatCurrencyBRL(nightlyRate)} por noite</p>
-                                                        {hasSavings ? <p className="mt-1 text-xs font-medium text-emerald-700">Economia de {formatCurrencyBRL(Number(room.discountAmount))}</p> : null}
+                                                <div className="mt-4 text-sm leading-relaxed text-gray-600 space-y-2 flex-1">
+                                                    <p className="line-clamp-3">{roomDescription}</p>
+                                                    <div className="flex flex-wrap items-center gap-1.5 mt-2 text-xs">
+                                                        <span className="font-semibold text-brand-brown-dark uppercase tracking-wider mr-1 text-[10px]">Comodidades:</span>
+                                                        {roomAmenities.join(', ')}
+                                                        <button className="text-blue-600 hover:underline font-medium ml-1">Ver mais</button>
                                                     </div>
-                                                    <Button size="lg" onClick={() => handleSelectRoom(room)} className="h-[50px] w-full rounded-none bg-brand-brown-dark px-4 text-sm font-semibold text-white shadow-none hover:bg-brand-brown-dark/95">
-                                                        Escolher acomodação <ArrowRight className="ml-2 h-4 w-4" />
-                                                    </Button>
+                                                </div>
+
+                                                <div className="mt-6 border-t border-gray-100 pt-6">
+                                                    <div className="flex flex-wrap items-center justify-between gap-4">
+                                                        <div>
+                                                            <p className="text-[11px] font-bold uppercase tracking-widest text-brand-brown-dark mb-1">Tarifa Padrão</p>
+                                                            <div className="flex items-center gap-1.5 text-brand-brown-dark/70 text-sm font-semibold">
+                                                                <User className="h-4 w-4" /> {stayGuests || 2}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div className="flex items-center gap-5">
+                                                            <div className="text-right">
+                                                                {originalNightlyRate ? <p className="text-xs text-muted-foreground line-through">{formatCurrencyBRL(originalNightlyRate * stayNights)}</p> : null}
+                                                                <p className="text-[1.35rem] font-bold leading-none tracking-tight text-brand-brown-dark">{formatCurrencyBRL(room.totalPrice)}</p>
+                                                                {hasSavings ? <p className="mt-1 text-[10px] font-medium text-emerald-700">Economia de {formatCurrencyBRL(Number(room.discountAmount))}</p> : null}
+                                                            </div>
+                                                            <Button size="lg" onClick={() => handleSelectRoom(room)} className="h-11 rounded bg-brand-brown-dark hover:bg-brand-brown-dark/90 px-6 text-xs font-bold text-white shadow-sm transition-colors">
+                                                                ESCOLHER
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-5">
+                                                        <p className="text-[10px] font-bold text-[#cb3842] uppercase tracking-wider">
+                                                            Estadia mínima definida para essa data é de {stayNights} {stayNights === 1 ? 'noite' : 'noites'}.
+                                                        </p>
+                                                        <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+                                                            - Pagamento com cartão de crédito em até 3 vezes sem juros e em... <button className="text-blue-600 hover:underline">Ver mais</button>
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                     </Card>
