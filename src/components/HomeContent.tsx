@@ -257,51 +257,7 @@ export default function HomeContent() {
         </motion.div>
       </section>
 
-      <section className="border-b border-primary/10 bg-white py-8 md:py-10">
-        <div className="container mx-auto max-w-[1440px] px-4">
-          <SocialProofBadges variant="light" className="mx-auto max-w-5xl" />
-        </div>
-      </section>
-
       <HomeAvailabilityOffers onLowestOfferChange={handleLowestOfferChange} />
-
-      {/* Experiências */}
-      <section id="sobre" className="section-space-md bg-background">
-        <div className="container">
-          <div className="mx-auto max-w-6xl">
-            <div className="mb-12 text-center md:mb-16">
-              <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-gold)] md:text-[0.8rem]">
-                Experiências
-              </p>
-              <h2 className="font-hero-display mt-4 text-[2.4rem] leading-tight text-[#1d1b19] md:text-[3.2rem]">
-                O que torna a estadia especial
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-10">
-              {experienceBenefits.map((benefit) => {
-                const Icon = benefit.icon;
-
-                return (
-                  <div key={benefit.title} className="group flex items-start gap-4 border-t border-primary/10 pt-6">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center text-[color:var(--brand-gold)] transition-colors duration-200 group-hover:text-[color:var(--brand-forest)]">
-                      <Icon className="h-9 w-9" aria-hidden="true" strokeWidth={1.7} />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="font-sans text-[1.03rem] font-semibold leading-6 text-[#1d1b19]">
-                        {benefit.title}
-                      </p>
-                      <p className="mt-2 font-sans text-[0.98rem] leading-7 text-[#1d1b19]/72">
-                        {benefit.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Galeria */}
       <section className="section-space-md bg-[color:var(--brand-cream)] text-primary">

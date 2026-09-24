@@ -365,7 +365,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
 
         {isSearchModalOpen ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 py-8" role="dialog" aria-modal="true" aria-labelledby="home-offers-search-title">
-            <div className="w-full max-w-2xl border border-primary/10 bg-white p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:p-7">
+            <div className="w-full max-w-2xl bg-transparent border-0 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:p-7">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="font-accent text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-gold)]">Nova consulta</p>
@@ -471,9 +471,9 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
         ) : null}
 
         {offers === null ? (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4" aria-label="Carregando acomodações">
+          <div className="grid gap-5 md:grid-cols-2" aria-label="Carregando acomodações">
             {[0, 1, 2, 3].map((item) => (
-              <div key={item} className="animate-pulse border border-primary/10 bg-white">
+              <div key={item} className="animate-pulse bg-transparent border-0">
                 <div className="aspect-[4/3] bg-primary/10" />
                 <div className="space-y-3 p-5">
                   <div className="h-6 w-2/3 bg-primary/10" />
@@ -484,7 +484,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
             ))}
           </div>
         ) : unavailable ? (
-          <div className="border border-primary/10 bg-white px-6 py-10 text-center md:px-10">
+          <div className="bg-transparent border-0 px-6 py-10 text-center md:px-10">
             <CalendarDays className="mx-auto h-9 w-9 text-[color:var(--brand-gold)]" />
             <h3 className="mt-4 text-xl font-semibold text-primary">Consulte as datas da sua viagem</h3>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
@@ -495,8 +495,43 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
             </Link>
           </div>
         ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {offers.slice(0, 4).map((room) => {
+          <div className="relative group/carousel">
+            <button 
+              type="button" 
+              className="absolute left-2 md:left-4 top-[35%] -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.15)] text-primary opacity-100 md:opacity-0 transition-opacity md:group-hover/carousel:opacity-100 disabled:opacity-0"
+              onClick={() => {
+                const container = document.getElementById('offers-carousel');
+                if (container) {
+                  if (container.scrollLeft <= 10) {
+                    container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+                  } else {
+                    container.scrollBy({ left: -container.clientWidth * 0.5, behavior: 'smooth' });
+                  }
+                }
+              }}
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button 
+              type="button" 
+              className="absolute right-2 md:right-4 top-[35%] -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.15)] text-primary opacity-100 md:opacity-0 transition-opacity md:group-hover/carousel:opacity-100 disabled:opacity-0"
+              onClick={() => {
+                const container = document.getElementById('offers-carousel');
+                if (container) {
+                  const maxScrollLeft = container.scrollWidth - container.clientWidth;
+                  if (container.scrollLeft >= maxScrollLeft - 10) {
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                  } else {
+                    container.scrollBy({ left: container.clientWidth * 0.5, behavior: 'smooth' });
+                  }
+                }
+              }}
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+            
+            <div id="offers-carousel" className="flex w-full snap-x snap-mandatory gap-5 md:gap-8 overflow-x-auto pb-8 pt-4 px-4 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {offers.map((room) => {
               const photos = getOfferPhotos(room);
               const image = photos[0] ?? null;
               const canOpenGallery = photos.length > 0;
@@ -509,7 +544,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
               const roomUrl = `${resultUrl}&roomTypeId=${encodeURIComponent(room.id)}`;
 
               return (
-                <article key={room.id} className="group flex h-full flex-col overflow-hidden border border-primary/10 bg-white">
+                <article key={room.id} className="w-[85%] sm:w-[65%] lg:w-[48%] xl:w-[40%] shrink-0 snap-center group flex h-full flex-col overflow-hidden bg-transparent border-0">
                   <div
                     className={`relative aspect-[4/3] overflow-hidden bg-primary/5 ${canOpenGallery ? "cursor-zoom-in" : ""}`}
                     role={canOpenGallery ? "button" : undefined}
@@ -544,32 +579,44 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     </div>
                   </div>
 
-                  <div className="flex flex-1 flex-col p-5">
-                    <h3 className="text-xl font-semibold leading-tight text-primary">{room.name}</h3>
-                    {maxGuests > 0 ? (
-                      <p className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground">
-                        <Users className="h-4 w-4" /> Até {maxGuests} hóspedes
+                  <div className="flex flex-1 flex-col pt-6 pb-2">
+                    <h3 className="font-serif text-3xl md:text-4xl font-normal leading-tight text-primary mb-3">{room.name}</h3>
+                    {room.description ? (
+                      <p className="text-[0.95rem] font-light leading-[1.8] text-[#555] mb-5">
+                        {room.description}
                       </p>
                     ) : null}
-                    {amenities.length > 0 ? (
-                      <ul className="mt-4 space-y-2 text-sm text-foreground/75">
+                    
+                    <div className="w-full h-px bg-[#e5e5e5] my-4"></div>
+                    
+                    {amenities.length > 0 || maxGuests > 0 ? (
+                      <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 text-[0.95rem] font-light text-[#555]">
+                        {maxGuests > 0 ? (
+                          <li className="flex items-center gap-3">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--brand-gold)] opacity-70"></span> Até {maxGuests} hóspedes
+                          </li>
+                        ) : null}
                         {amenities.map((amenity) => (
-                          <li key={amenity} className="flex items-center gap-2">
-                            <Check className="h-3.5 w-3.5 text-[color:var(--brand-gold)]" /> {amenity}
+                          <li key={amenity} className="flex items-center gap-3">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--brand-gold)] opacity-70"></span> {amenity}
                           </li>
                         ))}
                       </ul>
                     ) : null}
-                    <Link
-                      href={roomUrl}
-                      className="mt-5 inline-flex h-11 items-center justify-center gap-2 bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
-                    >
-                      Escolher esta acomodação <ArrowRight className="h-4 w-4" />
-                    </Link>
+                    
+                    <div className="mt-8 flex justify-start">
+                      <Link
+                        href={roomUrl}
+                        className="inline-flex h-12 items-center justify-center bg-[color:var(--brand-forest)] px-7 text-[0.75rem] font-bold tracking-[0.15em] text-white transition-colors hover:opacity-90"
+                      >
+                        SOLICITAR RESERVA
+                      </Link>
+                    </div>
                   </div>
                 </article>
               );
             })}
+            </div>
           </div>
         )}
         {roomGallery ? (
