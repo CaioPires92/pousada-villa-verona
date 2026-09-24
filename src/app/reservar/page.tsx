@@ -1710,9 +1710,7 @@ function ReservarContent() {
                                                     <h3 className="font-sans text-xl font-bold leading-tight tracking-tight text-brand-brown-dark md:text-2xl">
                                                         {room.name} <span className="text-base font-medium text-gray-500">(Para até {room.capacity || 2} hóspedes)</span>
                                                     </h3>
-                                                    <span className="text-[10px] text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded font-semibold uppercase tracking-wider">
-                                                        Privativo
-                                                    </span>
+                                                    
                                                 </div>
 
                                                 <div className="mt-4 text-sm leading-relaxed text-gray-600 space-y-2 flex-1">
