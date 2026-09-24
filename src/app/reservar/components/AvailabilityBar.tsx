@@ -55,8 +55,8 @@ export default function AvailabilityBar({
     const formattedDates = formatCompactDateRange(checkIn, checkOut);
 
     return (
-        <div className="mb-6 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-5 py-4 shadow-sm rounded-xl">
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mb-6 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-5 py-4 shadow-sm rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full lg:w-auto">
                 <div className="flex flex-wrap items-center gap-3 sm:gap-5">
                     <div className="inline-flex items-center gap-2 border border-border/40 bg-card px-2.5 py-1.5 text-sm font-medium text-foreground">
                         <CalendarDays className="h-4 w-4 text-brand-brown-dark" />
@@ -70,7 +70,10 @@ export default function AvailabilityBar({
                 </div>
                 <div className="shrink-0">{alterControl}</div>
             </div>
-                <div className="hidden lg:block w-px h-8 bg-border/50 mx-4"></div>
+            
+            <div className="hidden lg:block w-px h-8 bg-border/50 mx-2"></div>
+            
+            <div className="w-full lg:flex-1">
                 {children}
             </div>
         </div>
