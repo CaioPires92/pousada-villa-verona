@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, MessageCircle, MapPin, ArrowRight, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function ContactAndLocation() {
+export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any }) {
   const [activeTab, setActiveTab] = useState<'contato' | 'reserva'>('contato');
 
   return (
@@ -15,7 +15,7 @@ export default function ContactAndLocation() {
           <div className="flex flex-col justify-center">
             <h2 className="text-3xl md:text-4xl font-semibold text-brand-brown-dark leading-tight mb-4 tracking-tight">
               Entre em contato com a <br className="hidden md:block" />
-              RESERVA MANTIQUEIRA
+              {hotelConfig?.name?.toUpperCase() || 'POUSADA'}
             </h2>
             <p className="text-foreground/70 mb-8 max-w-md leading-relaxed">
               Estamos à disposição para esclarecer dúvidas ou organizar sua estadia com tranquilidade e atenção.
@@ -23,28 +23,28 @@ export default function ContactAndLocation() {
 
             <div className="space-y-4 max-w-md">
               {/* WhatsApp Card */}
-              <a href="https://wa.me/5519999040040" target="_blank" rel="noreferrer" className="flex items-center justify-between p-5 rounded-2xl border border-brand-brown-dark/10 bg-white hover:border-brand-brown-dark/30 transition-colors group">
+              <a href="{hotelConfig?.whatsappLink || 'https://wa.me/5519999040040'}" target="_blank" rel="noreferrer" className="flex items-center justify-between p-5 rounded-2xl border border-brand-brown-dark/10 bg-white hover:border-brand-brown-dark/30 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gray-100 p-3 rounded-full text-brand-brown-dark group-hover:bg-[#00E676]/10 group-hover:text-[#00E676] transition-colors">
                     <MessageCircle className="w-5 h-5" />
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-brand-brown-dark/60 mb-0.5">WhatsApp</p>
-                    <p className="font-semibold text-brand-brown-dark">(19) 99904-0040</p>
+                    <p className="font-semibold text-brand-brown-dark">{hotelConfig?.whatsapp || '(19) 99904-0040'}</p>
                   </div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-brand-brown-dark/30 group-hover:text-brand-brown-dark transition-colors" />
               </a>
 
               {/* Email Card */}
-              <a href="mailto:reservas@reservamantiqueiracabana.com.br" className="flex items-center justify-between p-5 rounded-2xl border border-brand-brown-dark/10 bg-white hover:border-brand-brown-dark/30 transition-colors group">
+              <a href="{`mailto:${hotelConfig?.email || 'reservas@pousadadelplata.com.br'}`}" className="flex items-center justify-between p-5 rounded-2xl border border-brand-brown-dark/10 bg-white hover:border-brand-brown-dark/30 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gray-100 p-3 rounded-full text-brand-brown-dark group-hover:bg-brand-brown-dark/10 transition-colors">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-brand-brown-dark/60 mb-0.5">Email</p>
-                    <p className="font-semibold text-brand-brown-dark text-sm md:text-base">reservas@reservamantiqueiracabana.com.br</p>
+                    <p className="font-semibold text-brand-brown-dark text-sm md:text-base">{hotelConfig?.email || 'reservas@pousadadelplata.com.br'}</p>
                   </div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-brand-brown-dark/30 group-hover:text-brand-brown-dark transition-colors" />
@@ -65,7 +65,7 @@ export default function ContactAndLocation() {
                   <div className="h-px w-full bg-white/10 mb-6"></div>
                   
                   <p className="text-sm text-white/80 mb-4 leading-relaxed max-w-[85%]">
-                    Localizados no interior de SP, prontos para oferecer o melhor de Serra Negra.
+                    {hotelConfig?.address || 'Localizados no interior de SP, prontos para oferecer o melhor de Serra Negra.'}
                   </p>
                   <a href="#mapa" className="inline-flex items-center gap-2 text-sm font-semibold hover:text-[#BBB863] transition-colors">
                     Ver no Google Maps <ArrowRight className="w-4 h-4" />

@@ -146,7 +146,7 @@ const siteImages = {
   ],
 } as const;
 
-export default function HomeContent() {
+export default function HomeContent({ hotelConfig }: { hotelConfig?: any }) {
   /* Removed GSAP refs and effects to fix re-render flash */
   /* Using purely Framer Motion for stable SSR/Hydration */
 
@@ -324,7 +324,7 @@ export default function HomeContent() {
       </section>
 
       {/* Special Dates Section */}
-      <ContactAndLocation />
+      <ContactAndLocation hotelConfig={hotelConfig} />
 
       {/* Special Dates Section */}
       <SpecialDatesSection

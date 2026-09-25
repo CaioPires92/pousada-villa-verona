@@ -113,10 +113,10 @@ export default function Footer() {
                         © {currentYear} Pousada Villa Verona. Todos os direitos reservados.
                     </p>
                     <div className="flex items-center gap-6">
-                        <p>
-                            DESENVOLVIDO POR TRRWEB
-                        </p>
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full hover:bg-white/10 transition-colors text-white">
+                        <a href="https://www.instagram.com/caiocgp92/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                            DESENVOLVIDO POR CAIO PIRES
+                        </a>
+                        <a href="https://www.instagram.com/caiocgp92/" target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 rounded-full hover:bg-white/10 transition-colors text-white">
                             <Instagram className="w-4 h-4" />
                         </a>
                     </div>
