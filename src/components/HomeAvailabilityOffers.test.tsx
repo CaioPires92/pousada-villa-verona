@@ -37,7 +37,7 @@ describe("HomeAvailabilityOffers", () => {
     expect(screen.getByText(/Até 4 hóspedes/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Consultar outras datas/i }));
     expect(screen.getByRole("dialog", { name: /Consultar outras datas/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Escolher esta acomodação/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Solicitar reserva/i })).toHaveAttribute(
       "href",
       expect.stringContaining("roomTypeId=room-1"),
     );
@@ -96,7 +96,7 @@ describe("HomeAvailabilityOffers", () => {
 
     expect(screen.getByText("R$ 499,00")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(3);
-    expect(screen.getByRole("link", { name: /Escolher esta acomodação/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Solicitar reserva/i })).toHaveAttribute(
       "href",
       expect.stringContaining("roomTypeId=next-room"),
     );
@@ -194,7 +194,7 @@ describe("HomeAvailabilityOffers", () => {
       expect.stringContaining("checkIn=2026-08-10&checkOut=2026-08-12&adults=3&children=1&childrenAges=0"),
       expect.objectContaining({ cache: "no-store" }),
     );
-    expect(screen.getByRole("link", { name: /Escolher esta acomodação/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Solicitar reserva/i })).toHaveAttribute(
       "href",
       expect.stringContaining("adults=3"),
     );

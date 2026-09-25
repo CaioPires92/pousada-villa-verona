@@ -4,68 +4,30 @@ import MobileBookingBar from './MobileBookingBar';
 
 const mocks = vi.hoisted(() => ({
     pathname: '/',
-    trackClickReservar: vi.fn(),
+    push: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
     usePathname: () => mocks.pathname,
-}));
-
-vi.mock('@/lib/analytics', () => ({
-    trackClickReservar: mocks.trackClickReservar,
+    useRouter: () => ({ push: mocks.push }),
 }));
 
 describe('MobileBookingBar', () => {
     beforeEach(() => {
         mocks.pathname = '/acomodacoes';
-        mocks.trackClickReservar.mockClear();
-        sessionStorage.clear();
+        mocks.push.mockClear();
     });
 
-    it('links to the booking search and tracks the desktop click', async () => {
+    it('abre a busca com datas e ocupação selecionadas', async () => {
         render(<MobileBookingBar />);
 
-        const link = await screen.findByRole('link', { name: /ver disponibilidade/i });
+        const link = await screen.findByRole('link', { name: /simular reserva/i });
         expect(link).toHaveAttribute('href', '/reservar');
 
         fireEvent.click(link);
-        expect(mocks.trackClickReservar).toHaveBeenCalledWith('booking_assistant_desktop');
-    });
-
-    it('waits until the visitor leaves the hero before showing on the home page', () => {
-        mocks.pathname = '/';
-        const hero = document.createElement('section');
-        hero.setAttribute('data-home-hero', '');
-        hero.getBoundingClientRect = vi.fn(() => ({
-            bottom: 640,
-        }) as DOMRect);
-        document.body.appendChild(hero);
-
-        render(<MobileBookingBar />);
-
-        expect(screen.queryByRole('link', { name: /ver disponibilidade/i })).not.toBeInTheDocument();
-
-        fireEvent(window, new Event('reservar-cta-interaction'));
-        fireEvent.scroll(window);
-
-        expect(screen.queryByRole('link', { name: /ver disponibilidade/i })).not.toBeInTheDocument();
-
-        hero.getBoundingClientRect = vi.fn(() => ({
-            bottom: -1,
-        }) as DOMRect);
-        fireEvent.scroll(window);
-
-        expect(screen.getByRole('link', { name: /ver disponibilidade/i })).toBeInTheDocument();
-    });
-
-    it('can be dismissed for the current session', async () => {
-        render(<MobileBookingBar />);
-
-        const closeButtons = await screen.findAllByRole('button', { name: /fechar lembrete de reserva/i });
-        fireEvent.click(closeButtons[0]);
-
-        expect(sessionStorage.getItem('villaverona-booking-assistant-dismissed')).toBe('1');
-        expect(screen.queryByRole('link', { name: /ver disponibilidade/i })).not.toBeInTheDocument();
+        expect(mocks.push).toHaveBeenCalledWith(
+            expect.stringMatching(/^\/reservar\?checkIn=\d{4}-\d{2}-\d{2}&checkOut=\d{4}-\d{2}-\d{2}&adults=2&children=0$/),
+        );
     });
 
     it.each(['/reservar', '/reservar/confirmacao', '/admin', '/admin/reservas'])(

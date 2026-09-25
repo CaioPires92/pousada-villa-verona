@@ -263,7 +263,7 @@ describe('ReservarPage', () => {
     });
 
     // Click to select room and show breakdown
-    const selectButton = screen.getByText(/Escolher acomodação/i);
+    const selectButton = screen.getByRole('button', { name: /^Escolher$/i });
     fireEvent.click(selectButton);
 
     // Wait for breakdown to appear in summary
@@ -303,7 +303,7 @@ describe('ReservarPage', () => {
       expect(screen.getByText('Test Room Cupom')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText(/Escolher acomodação/i));
+    fireEvent.click(screen.getByRole('button', { name: /^Escolher$/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/Passo 2 de 3/i)).toBeInTheDocument();
@@ -342,7 +342,7 @@ describe('ReservarPage', () => {
       expect(screen.getByText('Suite Mobile')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText(/Escolher acomodação/i));
+    fireEvent.click(screen.getByRole('button', { name: /^Escolher$/i }));
 
     await waitFor(() => {
       expect(screen.getAllByText(/Resumo da Reserva/i).length).toBeGreaterThan(0);
@@ -439,7 +439,7 @@ describe('ReservarPage', () => {
       expect(screen.getByText('Suite Cupom')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText(/Escolher acomodação/i));
+    fireEvent.click(screen.getByRole('button', { name: /^Escolher$/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/Passo 2 de 3/i)).toBeInTheDocument();

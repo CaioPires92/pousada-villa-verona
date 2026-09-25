@@ -41,11 +41,9 @@ describe('HomeContent', () => {
 
     expect(screen.getByRole('heading', {
       level: 1,
-      name: /Pousada em Serra Negra para descansar em família/i,
+      name: /Pousada Villa Verona/i,
     })).toBeInTheDocument();
-    expect(screen.getByText(/Piscinas, café da manhã e acomodações na ala principal/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Ver preços e disponibilidade/i })).toHaveAttribute('href', '/reservar');
-    expect(screen.getByText(/Consulte valores para sua estadia/i)).toBeInTheDocument();
+    expect(screen.getByText(/Acomodações privativas para dias de total exclusividade/i)).toBeInTheDocument();
     expect(await screen.findByTestId('home-availability-offers')).toBeInTheDocument();
     expect(screen.queryByText(/Melhor tarifa garantida/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/ótimo custo-benefício/i)).not.toBeInTheDocument();
