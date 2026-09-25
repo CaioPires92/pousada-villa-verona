@@ -5,8 +5,6 @@ import prisma from "@/lib/prisma";
 import { RoomCard } from "@/components/RoomCard";
 import { serializePrismaArray } from "@/lib/serialize-prisma";
 import { buildPageMetadata } from "@/lib/seo";
-import { isAnnexWingRoom, isMainWingRoom } from "@/lib/rooms";
-
 
 // Revalidate data every 60 seconds (ISR)
 export const revalidate = 60;
@@ -43,26 +41,12 @@ async function getRooms() {
 export default async function RoomsPage() {
     const rooms = await getRooms();
 
-    const mainWingRooms = rooms.filter((r: any) => isMainWingRoom(r.name));
-    const annexWingRooms = rooms.filter((r: any) => isAnnexWingRoom(r.name));
-
-    const renderRoomGrid = (roomsList: typeof rooms) => (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {roomsList.map((room: any) => (
-                <RoomCard
-                    key={room.id}
-                    room={room}
-                />
-            ))}
-        </div>
-    );
-
     return (
         <main className="min-h-screen bg-background">
             <section className="relative flex min-h-[42vh] items-center justify-center overflow-hidden bg-[color:var(--brand-black)]">
                 <div className="absolute inset-0">
                     <Image
-                        src="/fotos/ala-principal/apartamentos/superior/DSC_0076-1200.webp"
+                        src="/fotos/jardim-aptos/DJI_0904.jpg"
                         alt="Acomodações Pousada Villa Verona"
                         fill
                         className="object-cover object-center"
@@ -80,36 +64,29 @@ export default async function RoomsPage() {
                     </h1>
                     <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/88 md:text-lg">
                         Conforto e aconchego preparados especialmente para o seu descanso.
-                        Escolha o ambiente ideal para sua estadia.
+                        Escolha o ambiente ideal para sua estadia na Serra da Mantiqueira.
                     </p>
                 </div>
             </section>
 
             <div className="space-y-0">
-                {/* Ala Principal Section */}
                 <section className="section-space-md bg-[color:var(--brand-cream)]">
                     <div className="container">
-                    <div className="mb-10 border-b border-brand-brown-dark/10 pb-4">
-                        <h2 className="font-hero-display text-[2.2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">Ala Principal</h2>
-                        <p className="mt-2 text-[1.02rem] leading-7 text-foreground/72">
-                            Acomodações proximas a todas as dependências.
-                        </p>
-                    </div>
-                    {renderRoomGrid(mainWingRooms)}
-                    </div>
-                </section>
-
-                {/* Ala Anexo Section */}
-                <section className="section-space-md bg-background">
-                    <div className="container">
-                    <div className="mb-10 border-b border-brand-brown-dark/10 pb-4">
-                        <h2 className="font-hero-display text-[2.2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">Ala Chalés e Anexos</h2>
-                        <p className="mt-2 flex items-center gap-2 text-[1.02rem] leading-7 text-foreground/72">
-                            <span className="inline-block w-2 h-2 rounded-full bg-brand-gold"></span>
-                            Localizada a 70 metros da ala principal
-                        </p>
-                    </div>
-                    {renderRoomGrid(annexWingRooms)}
+                        <div className="mb-10 border-b border-brand-brown-dark/10 pb-4 text-center">
+                            <h2 className="font-hero-display text-[2.2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">Escolha seu Quarto</h2>
+                            <p className="mt-2 text-[1.02rem] leading-7 text-foreground/72">
+                                Diferentes opções para atender casais, pequenas e grandes famílias.
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {rooms.map((room: any) => (
+                                <RoomCard
+                                    key={room.id}
+                                    room={room}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </section>
             </div>
