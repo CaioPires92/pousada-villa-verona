@@ -125,7 +125,7 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
         {/* Map Section */}
         <div id="mapa" className="relative w-full h-[500px] rounded-[32px] overflow-hidden border border-brand-brown-dark/10 shadow-sm">
           <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117972.18128362391!2d-46.77259163012803!3d-22.620023608149814!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94c9215017006835%3A0x7d025b3064ec64fc!2sSerra%20Negra%2C%20State%20of%20S%C3%A3o%20Paulo!5e0!3m2!1sen!2sbr!4v1714488392013!5m2!1sen!2sbr" 
+            src="https://maps.google.com/maps?q=Pousada+Villa+Verona+Serra+Negra&t=&z=15&ie=UTF8&iwloc=&output=embed" 
             width="100%" 
             height="100%" 
             style={{ border: 0 }} 
