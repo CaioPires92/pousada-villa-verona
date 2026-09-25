@@ -350,7 +350,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
             <h2 id="home-offers-title" className="mt-3 font-hero-display text-[2.25rem] leading-[1.05] text-[#1d1b19] md:text-[3.1rem]">
               Escolha sua acomodação
             </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[#1d1b19]/70 md:text-base">
+            <p suppressHydrationWarning className="mt-3 max-w-2xl text-sm leading-6 text-[#1d1b19]/70 md:text-base">
               Valores calculados pelo motor para {guestLabel}, de {dateLabel}. Altere as datas para consultar sua estadia.
             </p>
           </div>
