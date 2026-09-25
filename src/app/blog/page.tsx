@@ -77,7 +77,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <div className="flex items-center gap-4">
             <span className="h-px w-14 bg-brand-gold" aria-hidden="true" />
             <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-brand-gold">
-              Blog Delplata
+              Blog Villa Verona
             </p>
           </div>
           <div className="space-y-4 border-l-2 border-brand-gold pl-5">

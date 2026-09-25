@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
         // Enviar email
         await transporter.sendMail({
-            from: `"Pousada Delplata" <${process.env.SMTP_USER}>`,
+            from: `"Pousada Villa Verona" <${process.env.SMTP_USER}>`,
             to: email,
             subject: `🎫 Voucher de Hospedagem - Reserva ${bookingSubjectCode}`,
             html: htmlContent,

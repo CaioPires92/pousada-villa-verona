@@ -35,7 +35,7 @@ export async function generateMetadata({
 
     if (!room) {
         return buildPageMetadata({
-            title: "Acomodação não encontrada | Pousada Delplata",
+            title: "Acomodação não encontrada | Pousada Villa Verona",
             description: "A acomodação procurada não foi encontrada.",
             path: `/acomodacoes/${id}`,
             noIndex: true,
@@ -45,17 +45,17 @@ export async function generateMetadata({
     const summary = stripHtml(room.description ?? "").slice(0, 155);
 
     return buildPageMetadata({
-        title: `${room.name} em Serra Negra | Pousada Delplata`,
+        title: `${room.name} em Serra Negra | Pousada Villa Verona`,
         description:
             summary.length > 0
                 ? summary
-                : `Veja detalhes da acomodação ${room.name}, capacidade, comodidades e disponibilidade na Pousada Delplata.`,
+                : `Veja detalhes da acomodação ${room.name}, capacidade, comodidades e disponibilidade na Pousada Villa Verona.`,
         path: `/acomodacoes/${room.id}`,
         image: room.photos[0]?.url,
         keywords: [
             room.name,
             "acomodação em Serra Negra",
-            "quarto na Pousada Delplata",
+            "quarto na Pousada Villa Verona",
         ],
     });
 }

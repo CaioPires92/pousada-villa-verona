@@ -562,7 +562,7 @@ export default function ConfirmacaoPage() {
                                             Sua acomodacao
                                         </p>
                                         <p className="mt-2 text-2xl font-semibold text-white">
-                                            {booking?.roomType?.name || 'Reserva Delplata'}
+                                            {booking?.roomType?.name || 'Reserva Villa Verona'}
                                         </p>
                                     </div>
                                 </div>
@@ -603,7 +603,7 @@ export default function ConfirmacaoPage() {
                                     </div>
                                     <div className="flex items-start gap-3">
                                         <Mail className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />
-                                        <p>E-mail: contato@pousadadelplata.com.br</p>
+                                        <p>E-mail: contato@pousadavillaverona.com.br</p>
                                     </div>
                                     <div className="flex items-start gap-3">
                                         <MapPinned className="mt-1 h-4.5 w-4.5 shrink-0 text-brand-brown-dark" />

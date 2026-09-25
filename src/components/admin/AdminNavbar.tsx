@@ -81,7 +81,7 @@ export default function AdminNavbar({ isCollapsed = false, onToggle }: AdminNavb
                 {!isCollapsed && (
                     <h1 className="text-xl font-black text-slate-800 flex items-center gap-2 overflow-hidden whitespace-nowrap">
                         <span className="bg-slate-800 text-white p-1 rounded shrink-0">DP</span>
-                        Delplata
+                        Villa Verona
                     </h1>
                 )}
                 {isCollapsed && (

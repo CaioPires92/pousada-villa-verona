@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
         <div className={styles.container}>
             <div className={styles.loginBox}>
                 <div className={styles.logo}>
-                    <h1>🏨 Pousada Delplata</h1>
+                    <h1>🏨 Pousada Villa Verona</h1>
                     <p>Painel Administrativo</p>
                 </div>
 

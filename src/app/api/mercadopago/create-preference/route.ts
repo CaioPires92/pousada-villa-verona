@@ -35,7 +35,7 @@ export async function POST(request: Request) {
             items: [
                 {
                     id: booking.roomType.id,
-                    title: `Pousada Delplata - ${booking.roomType.name}`,
+                    title: `Pousada Villa Verona - ${booking.roomType.name}`,
                     quantity: 1,
                     unit_price: Number(Number(booking.totalPrice).toFixed(2)),
                     currency_id: 'BRL',

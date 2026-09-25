@@ -50,7 +50,7 @@ describe('requireAdminAuth', () => {
         void secret;
         return {
           adminId: 'admin-1',
-          email: 'admin@delplata.com.br',
+          email: 'admin@villaverona.com.br',
           role: 'admin',
         };
       },
@@ -59,7 +59,7 @@ describe('requireAdminAuth', () => {
     const claims = await requireAdminAuth();
     expect(claims).toEqual({
       adminId: 'admin-1',
-      email: 'admin@delplata.com.br',
+      email: 'admin@villaverona.com.br',
       role: 'admin',
     });
   });

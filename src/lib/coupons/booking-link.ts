@@ -1,7 +1,7 @@
 import { normalizeCouponCode } from "@/lib/coupons/hash";
 import { createHmac, timingSafeEqual } from "crypto";
 
-const OFFICIAL_SITE_URL = "https://www.pousadadelplata.com.br";
+const OFFICIAL_SITE_URL = "https://www.pousadavillaverona.com.br";
 
 function configuredSiteUrl() {
   return process.env.NEXT_PUBLIC_SITE_URL

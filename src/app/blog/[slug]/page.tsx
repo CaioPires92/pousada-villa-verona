@@ -34,7 +34,7 @@ export async function generateMetadata({
 
   if (!post) {
     return {
-      title: "Conteúdo não encontrado | Blog Delplata",
+      title: "Conteúdo não encontrado | Blog Villa Verona",
     };
   }
 

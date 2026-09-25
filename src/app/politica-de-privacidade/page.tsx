@@ -1,9 +1,9 @@
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
-    title: "Política de privacidade | Pousada Delplata",
+    title: "Política de privacidade | Pousada Villa Verona",
     description:
-        "Entenda como a Pousada Delplata coleta, utiliza e protege dados pessoais em reservas, atendimento e navegação no site.",
+        "Entenda como a Pousada Villa Verona coleta, utiliza e protege dados pessoais em reservas, atendimento e navegação no site.",
     path: "/politica-de-privacidade",
 });
 
@@ -59,9 +59,9 @@ export default function PoliticaDePrivacidadePage() {
                         <section>
                             <h2 className="font-hero-display font-semibold">6. Contato</h2>
                             <p>
-                                Para dúvidas sobre privacidade, fale com a Pousada Delplata em{' '}
-                                <a className="text-brand-brown-dark underline" href="mailto:contato@pousadadelplata.com.br">
-                                    contato@pousadadelplata.com.br
+                                Para dúvidas sobre privacidade, fale com a Pousada Villa Verona em{' '}
+                                <a className="text-brand-brown-dark underline" href="mailto:contato@pousadavillaverona.com.br">
+                                    contato@pousadavillaverona.com.br
                                 </a>
                                 .
                             </p>

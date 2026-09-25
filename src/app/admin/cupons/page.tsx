@@ -644,7 +644,7 @@ export default function AdminCuponsPage() {
                                     <label>Nome do cupom</label>
                                     <input 
                                         className={styles.input} 
-                                        placeholder="Ex: Natal Delplata 2026"
+                                        placeholder="Ex: Natal Villa Verona 2026"
                                         value={form.name} 
                                         onChange={(e) => setForm({ ...form, name: e.target.value })} 
                                     />

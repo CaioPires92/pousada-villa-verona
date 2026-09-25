@@ -34,16 +34,16 @@ import {
 const siteImages = {
   hero: {
     src: "/fotos/piscina-aptos/DJI_0845.jpg",
-    alt: "Piscina da Pousada Delplata em Serra Negra",
+    alt: "Piscina da Pousada Villa Verona em Serra Negra",
   },
   accommodations: {
     mainWing: {
       src: "/fotos/ala-principal/apartamentos/superior/DSC_0069-1200.webp",
-      alt: "Ala Principal da Pousada Delplata",
+      alt: "Ala Principal da Pousada Villa Verona",
     },
     annexWing: {
       src: "/fotos/ala-chales/chales/IMG_0125-1200.webp",
-      alt: "Ala Chalés e Anexos da Pousada Delplata",
+      alt: "Ala Chalés e Anexos da Pousada Villa Verona",
     },
   },
   leisure: {
@@ -57,19 +57,19 @@ const siteImages = {
   experiences: {
     pool: {
       src: "/fotos/piscina-aptos/DJI_0863.jpg",
-      alt: "Piscina da Pousada Delplata",
+      alt: "Piscina da Pousada Villa Verona",
     },
     breakfast: {
       src: "/fotos/restaurante/IMG_0025.webp",
-      alt: "Mesa de café da manhã da Pousada Delplata",
+      alt: "Mesa de café da manhã da Pousada Villa Verona",
     },
     family: {
       src: "/fotos/jardim-aptos/DJI_0904.jpg",
-      alt: "Área verde da Pousada Delplata para famílias",
+      alt: "Área verde da Pousada Villa Verona para famílias",
     },
     nature: {
       src: "/fotos/jardim-aptos/DSC_0267.jpg",
-      alt: "Jardins da Pousada Delplata em Serra Negra",
+      alt: "Jardins da Pousada Villa Verona em Serra Negra",
     },
   },
   cta: {

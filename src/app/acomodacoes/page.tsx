@@ -13,9 +13,9 @@ export const revalidate = 60;
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = buildPageMetadata({
-    title: "Acomodações em Serra Negra | Pousada Delplata",
+    title: "Acomodações em Serra Negra | Pousada Villa Verona",
     description:
-        "Conheça as acomodações da Pousada Delplata em Serra Negra. Compare alas, quartos, capacidade e consulte disponibilidade online.",
+        "Conheça as acomodações da Pousada Villa Verona em Serra Negra. Compare alas, quartos, capacidade e consulte disponibilidade online.",
     path: "/acomodacoes",
     image: "/fotos/ala-principal/apartamentos/superior/DSC_0076-1200.webp",
     keywords: [
@@ -63,7 +63,7 @@ export default async function RoomsPage() {
                 <div className="absolute inset-0">
                     <Image
                         src="/fotos/ala-principal/apartamentos/superior/DSC_0076-1200.webp"
-                        alt="Acomodações Pousada Delplata"
+                        alt="Acomodações Pousada Villa Verona"
                         fill
                         className="object-cover object-center"
                         priority

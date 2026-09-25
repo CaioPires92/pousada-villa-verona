@@ -26,12 +26,12 @@ describe('admin-jwt', () => {
     vi.resetModules();
     vi.mock('jose', () => ({
       jwtVerify: async () => ({
-        payload: { email: 'admin@delplata.com.br', role: 'admin', sub: 'admin-1' },
+        payload: { email: 'admin@villaverona.com.br', role: 'admin', sub: 'admin-1' },
       }),
     }));
     const mod = await import('./admin-jwt');
     const claims = await mod.verifyAdminJwt('x', 'y');
-    expect(claims).toEqual({ adminId: 'admin-1', email: 'admin@delplata.com.br', role: 'admin' });
+    expect(claims).toEqual({ adminId: 'admin-1', email: 'admin@villaverona.com.br', role: 'admin' });
   });
 
   it('verifyAdminJwt retorna null quando payload inválido', async () => {

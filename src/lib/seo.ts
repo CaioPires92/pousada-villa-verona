@@ -4,7 +4,7 @@ const FALLBACK_SITE_URL = "http://localhost:3005";
 
 export const DEFAULT_OG_IMAGE = "/fotos/piscina-aptos/DJI_0845.jpg";
 
-const BUSINESS_NAME = "Pousada Delplata";
+const BUSINESS_NAME = "Pousada Villa Verona";
 const BUSINESS_DESCRIPTION =
   "Pousada em Serra Negra com acomodações para famílias, piscina, café da manhã e reserva online no site oficial.";
 
@@ -122,7 +122,7 @@ export function buildLodgingBusinessSchema() {
     url: absoluteUrl("/"),
     image: absoluteUrl(DEFAULT_OG_IMAGE),
     telephone: "+55 19 3842-2559",
-    email: "contato@pousadadelplata.com.br",
+    email: "contato@pousadavillaverona.com.br",
     address: {
       "@type": "PostalAddress",
       streetAddress: "R. Vicente Frederico Leporas, 151",

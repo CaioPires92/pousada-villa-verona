@@ -23,8 +23,8 @@ export const blogCategories: BlogCategory[] = [
       "Dicas diretas para organizar a viagem, evitar erros comuns e chegar melhor preparado.",
   },
   {
-    slug: "delplata",
-    label: "Pousada Delplata",
+    slug: "villaverona",
+    label: "Pousada Villa Verona",
     shortLabel: "A pousada",
     description:
       "Informações práticas sobre a pousada para quem quer conhecer melhor a hospedagem.",
@@ -54,7 +54,7 @@ export const blogPosts: BlogPost[] = [
     tags: ["Festa D'Italia", "Serra Negra", "eventos", "setembro", "2026"],
     coverImage: {
       src: "/fotos/jardim-aptos/DJI_0903.jpg",
-      alt: "Área externa da Pousada Delplata em Serra Negra",
+      alt: "Área externa da Pousada Villa Verona em Serra Negra",
     },
     seo: {
       title: "Festa D'Italia 2026 em Serra Negra | Programação",
@@ -85,8 +85,8 @@ export const blogPosts: BlogPost[] = [
       {
         type: "image",
         src: "/fotos/jardim-aptos/DJI_0903.jpg",
-        alt: "Área externa da Pousada Delplata em Serra Negra",
-        caption: "Imagem institucional da Pousada Delplata para o planejamento da hospedagem durante o evento.",
+        alt: "Área externa da Pousada Villa Verona em Serra Negra",
+        caption: "Imagem institucional da Pousada Villa Verona para o planejamento da hospedagem durante o evento.",
       },
       {
         type: "heading",
@@ -217,10 +217,10 @@ export const blogPosts: BlogPost[] = [
     tags: ["Serra Negra", "fim de semana", "roteiro", "planejamento"],
     coverImage: {
       src: "/fotos/piscina-aptos/DJI_0908.jpg",
-      alt: "Área externa da Pousada Delplata em Serra Negra",
+      alt: "Área externa da Pousada Villa Verona em Serra Negra",
     },
     seo: {
-      title: "O que fazer em Serra Negra em um fim de semana | Blog Delplata",
+      title: "O que fazer em Serra Negra em um fim de semana | Blog Villa Verona",
       description:
         "Veja um roteiro prático para passar um fim de semana em Serra Negra com passeios centrais, compras, teleférico e tempo para descansar.",
     },
@@ -305,7 +305,7 @@ export const blogPosts: BlogPost[] = [
     tags: ["onde ficar", "hospedagem", "Serra Negra", "reserva"],
     coverImage: {
       src: "/fotos/ala-principal/apartamentos/superior/DSC_0069-1200.webp",
-      alt: "Acomodação da Pousada Delplata",
+      alt: "Acomodação da Pousada Villa Verona",
     },
     seo: {
       title: "Onde ficar em Serra Negra | Como escolher a hospedagem",
@@ -378,7 +378,7 @@ export const blogPosts: BlogPost[] = [
     tags: ["pousada", "hotel", "comparativo", "Serra Negra"],
     coverImage: {
       src: "/fotos/ala-chales/chales/IMG_0125-1200.webp",
-      alt: "Área de hospedagem da Pousada Delplata",
+      alt: "Área de hospedagem da Pousada Villa Verona",
     },
     seo: {
       title: "Pousada ou hotel em Serra Negra: o que vale mais a pena",
@@ -444,7 +444,7 @@ export const blogPosts: BlogPost[] = [
     tags: ["quando ir", "Serra Negra", "planejamento", "viagem"],
     coverImage: {
       src: "/fotos/jardim-aptos/DSC_0258.jpg",
-      alt: "Jardins e área verde da Pousada Delplata",
+      alt: "Jardins e área verde da Pousada Villa Verona",
     },
     seo: {
       title: "Quando visitar Serra Negra | Guia prático de planejamento",
@@ -504,25 +504,25 @@ export const blogPosts: BlogPost[] = [
     ],
   },
   {
-    slug: "pousada-delplata-em-serra-negra",
-    title: "Pousada Delplata em Serra Negra",
+    slug: "pousada-villaverona-em-serra-negra",
+    title: "Pousada Villa Verona em Serra Negra",
     excerpt:
-      "Um resumo objetivo da proposta da Delplata para quem já está perto da decisão de reservar.",
+      "Um resumo objetivo da proposta da Villa Verona para quem já está perto da decisão de reservar.",
     summary:
-      "Um retrato mais direto da hospedagem para quem quer entender a proposta da Delplata.",
+      "Um retrato mais direto da hospedagem para quem quer entender a proposta da Villa Verona.",
     publishedAt: "2026-03-05",
     updatedAt: "2026-03-19",
     readingTime: "4 min",
-    category: "delplata",
-    tags: ["Delplata", "hospedagem", "pousada", "Serra Negra"],
+    category: "villaverona",
+    tags: ["Villa Verona", "hospedagem", "pousada", "Serra Negra"],
     coverImage: {
       src: "/fotos/piscina-aptos/DJI_0845.jpg",
-      alt: "Piscina da Pousada Delplata em Serra Negra",
+      alt: "Piscina da Pousada Villa Verona em Serra Negra",
     },
     seo: {
-      title: "Pousada Delplata em Serra Negra | Conheça a hospedagem",
+      title: "Pousada Villa Verona em Serra Negra | Conheça a hospedagem",
       description:
-        "Veja um resumo claro da proposta da Pousada Delplata em Serra Negra e entenda se a hospedagem combina com a sua viagem.",
+        "Veja um resumo claro da proposta da Pousada Villa Verona em Serra Negra e entenda se a hospedagem combina com a sua viagem.",
     },
     seedDemo: true,
     funnelStage: "fundo",
@@ -530,7 +530,7 @@ export const blogPosts: BlogPost[] = [
       {
         type: "paragraph",
         content:
-          "A Pousada Delplata se apresenta como uma hospedagem familiar em Serra Negra, com foco em conforto, tranquilidade e uma experiência mais acolhedora. O site destaca natureza, café da manhã diário, área de lazer com piscina e acomodações para perfis diferentes de estadia.",
+          "A Pousada Villa Verona se apresenta como uma hospedagem familiar em Serra Negra, com foco em conforto, tranquilidade e uma experiência mais acolhedora. O site destaca natureza, café da manhã diário, área de lazer com piscina e acomodações para perfis diferentes de estadia.",
       },
       {
         type: "heading",
@@ -539,8 +539,8 @@ export const blogPosts: BlogPost[] = [
       {
         type: "image",
         src: "/fotos/piscina-aptos/DJI_0845.jpg",
-        alt: "Piscina e área externa da Pousada Delplata",
-        caption: "A proposta da Delplata mistura descanso, lazer e uma leitura mais familiar da hospedagem.",
+        alt: "Piscina e área externa da Pousada Villa Verona",
+        caption: "A proposta da Villa Verona mistura descanso, lazer e uma leitura mais familiar da hospedagem.",
       },
       {
         type: "list",
@@ -554,7 +554,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "heading",
-        content: "Para quem a Delplata faz mais sentido",
+        content: "Para quem a Villa Verona faz mais sentido",
       },
       {
         type: "image",
@@ -564,7 +564,7 @@ export const blogPosts: BlogPost[] = [
       {
         type: "paragraph",
         content:
-          "Esse conteúdo faz mais sentido para quem já decidiu viajar para Serra Negra e quer entender se a Delplata combina com o estilo da estadia. A função dele é mostrar a proposta da pousada com clareza, sem exagero.",
+          "Esse conteúdo faz mais sentido para quem já decidiu viajar para Serra Negra e quer entender se a Villa Verona combina com o estilo da estadia. A função dele é mostrar a proposta da pousada com clareza, sem exagero.",
       },
     ],
   },

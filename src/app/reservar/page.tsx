@@ -2285,7 +2285,7 @@ function ReservarContent() {
                                                     <Link href="/politica-de-cancelamento" target="_blank" rel="noopener noreferrer" className="text-brand-brown-dark font-medium hover:underline">política de cancelamento</Link>{' '}
                                                     e{' '}
                                                     <Link href="/politica-de-privacidade" target="_blank" rel="noopener noreferrer" className="text-brand-brown-dark font-medium hover:underline">política de privacidade</Link>{' '}
-                                                    da Pousada Delplata.
+                                                    da Pousada Villa Verona.
                                                 </label>
                                             </div>
                                         </div>

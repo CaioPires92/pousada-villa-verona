@@ -41,7 +41,7 @@ describe('POST admin booking payment link', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         process.env.MP_ACCESS_TOKEN = '  APP_USR-test  ';
-        process.env.NEXT_PUBLIC_BASE_URL = '  https://pousadadelplata.com.br/  ';
+        process.env.NEXT_PUBLIC_BASE_URL = '  https://pousadavillaverona.com.br/  ';
     });
 
     it('gera link, mensagem de WhatsApp e atualiza o funil', async () => {
@@ -57,7 +57,7 @@ describe('POST admin booking payment link', () => {
         })));
 
         const response = await POST(
-            new Request('https://pousadadelplata.com.br/api/admin/bookings/booking-1/payment-link', { method: 'POST' }),
+            new Request('https://pousadavillaverona.com.br/api/admin/bookings/booking-1/payment-link', { method: 'POST' }),
             { params: Promise.resolve({ bookingId: 'booking-1' }) }
         );
         const data = await response.json();
@@ -85,7 +85,7 @@ describe('POST admin booking payment link', () => {
         })));
 
         const response = await POST(
-            new Request('https://pousadadelplata.com.br/api/admin/bookings/ booking-1 /payment-link', { method: 'POST' }),
+            new Request('https://pousadavillaverona.com.br/api/admin/bookings/ booking-1 /payment-link', { method: 'POST' }),
             { params: Promise.resolve({ bookingId: ' booking-1 ' }) }
         );
 
@@ -103,7 +103,7 @@ describe('POST admin booking payment link', () => {
         });
 
         const response = await POST(
-            new Request('https://pousadadelplata.com.br/api/admin/bookings/booking-1/payment-link', { method: 'POST' }),
+            new Request('https://pousadavillaverona.com.br/api/admin/bookings/booking-1/payment-link', { method: 'POST' }),
             { params: Promise.resolve({ bookingId: 'booking-1' }) }
         );
 

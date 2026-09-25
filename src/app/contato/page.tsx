@@ -4,9 +4,9 @@ import { MapPin, Phone, Mail, MessageCircle, Clock } from "lucide-react";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
-    title: "Contato da Pousada Delplata | Serra Negra",
+    title: "Contato da Pousada Villa Verona | Serra Negra",
     description:
-        "Fale com a Pousada Delplata para tirar dúvidas, solicitar informações sobre hospedagem e receber suporte para sua reserva em Serra Negra.",
+        "Fale com a Pousada Villa Verona para tirar dúvidas, solicitar informações sobre hospedagem e receber suporte para sua reserva em Serra Negra.",
     path: "/contato",
     image: "/fotos/jardim-aptos/DSC_0258.jpg",
 });
@@ -18,7 +18,7 @@ export default function ContactPage() {
                 <div className="absolute inset-0">
                     <Image
                         src="/fotos/jardim-aptos/DSC_0258.jpg"
-                        alt="Contato Pousada Delplata"
+                        alt="Contato Pousada Villa Verona"
                         fill
                         className="object-cover object-center"
                         priority
@@ -95,8 +95,8 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="font-sans font-semibold text-brand-brown-dark">E-mail</h3>
                                         <p className="text-foreground/72">
-                                            <a href="mailto:contato@pousadadelplata.com.br" className="hover:text-brand-brown-dark transition-colors">
-                                                contato@pousadadelplata.com.br
+                                            <a href="mailto:contato@pousadavillaverona.com.br" className="hover:text-brand-brown-dark transition-colors">
+                                                contato@pousadavillaverona.com.br
                                             </a>
                                         </p>
                                     </div>

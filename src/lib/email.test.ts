@@ -67,12 +67,12 @@ describe('booking emails', () => {
             code: 'VOLTE-ABC123',
             discountLabel: '10% de desconto',
             expiresAt: new Date('2026-08-31T12:00:00Z'),
-            bookingUrl: 'https://www.pousadadelplata.com.br/reservar?promo=VOLTE-ABC123',
+            bookingUrl: 'https://www.pousadavillaverona.com.br/reservar?promo=VOLTE-ABC123',
         });
 
         expect(sendMailMock).toHaveBeenCalledWith(expect.objectContaining({
             to: 'maria@example.com',
-            subject: 'Um convite para você voltar à Pousada Delplata',
+            subject: 'Um convite para você voltar à Pousada Villa Verona',
             html: expect.stringMatching(/Gostaríamos de receber você novamente[\s\S]*Planejar minha próxima estadia/),
         }));
     });
@@ -83,7 +83,7 @@ describe('booking emails', () => {
         await sendGuestDiscountEmail({
             guestName: 'Maria Silva',
             guestEmail: 'maria@example.com',
-            bookingUrl: 'https://www.pousadadelplata.com.br/reservar',
+            bookingUrl: 'https://www.pousadavillaverona.com.br/reservar',
         });
 
         const message = sendMailMock.mock.calls[0][0];

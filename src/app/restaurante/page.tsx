@@ -3,9 +3,9 @@ import { RestaurantGallery } from '@/components/RestaurantGallery';
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
-    title: "Restaurante e café da manhã em Serra Negra | Pousada Delplata",
+    title: "Restaurante e café da manhã em Serra Negra | Pousada Villa Verona",
     description:
-        "Conheça o restaurante e o café da manhã da Pousada Delplata em Serra Negra. Ambiente acolhedor para começar o dia com tranquilidade.",
+        "Conheça o restaurante e o café da manhã da Pousada Villa Verona em Serra Negra. Ambiente acolhedor para começar o dia com tranquilidade.",
     path: "/restaurante",
     image: "/fotos/restaurante/DSC_0002.jpg",
 });
@@ -55,7 +55,7 @@ export default function RestaurantPage() {
                 <div className="absolute inset-0">
                     <Image
                         src="/fotos/restaurante/DSC_0002.jpg"
-                        alt="Restaurante Pousada Delplata"
+                        alt="Restaurante Pousada Villa Verona"
                         fill
                         className="object-cover object-center"
                         priority

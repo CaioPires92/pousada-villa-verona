@@ -112,7 +112,7 @@ function buildBaseOpenGraph({
     title,
     description,
     url: absoluteUrl(path),
-    siteName: "Pousada Delplata",
+    siteName: "Pousada Villa Verona",
     locale: "pt_BR",
     type: "article" as const,
     images: image
@@ -128,8 +128,8 @@ function buildBaseOpenGraph({
 
 export function buildBlogIndexMetadata(category?: BlogCategory) {
   const title = category
-    ? `${category.shortLabel} em Serra Negra | Blog Delplata`
-    : "Blog da Pousada Delplata | Serra Negra";
+    ? `${category.shortLabel} em Serra Negra | Blog Villa Verona`
+    : "Blog da Pousada Villa Verona | Serra Negra";
   const description = category
     ? `${category.description} Veja orientações claras para planejar melhor a estadia em Serra Negra.`
     : "Guias, comparativos e conteúdos úteis para planejar a viagem, escolher a hospedagem e aproveitar melhor Serra Negra.";
@@ -197,7 +197,7 @@ export function buildBlogListSchema(posts: BlogPost[]) {
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Blog da Pousada Delplata",
+    name: "Blog da Pousada Villa Verona",
     url: absoluteUrl("/blog"),
     about: {
       "@type": "Place",
@@ -230,11 +230,11 @@ export function buildBlogArticleSchema(post: BlogPost, category: BlogCategory) {
     image: absoluteUrl(post.coverImage.src),
     author: {
       "@type": "Organization",
-      name: "Pousada Delplata",
+      name: "Pousada Villa Verona",
     },
     publisher: {
       "@type": "Organization",
-      name: "Pousada Delplata",
+      name: "Pousada Villa Verona",
       logo: {
         "@type": "ImageObject",
         url: absoluteUrl("/fotos/logo.png"),
@@ -247,7 +247,7 @@ export function buildBlogArticleSchema(post: BlogPost, category: BlogCategory) {
       },
       {
         "@type": "LodgingBusiness",
-        name: "Pousada Delplata",
+        name: "Pousada Villa Verona",
       },
     ],
   };

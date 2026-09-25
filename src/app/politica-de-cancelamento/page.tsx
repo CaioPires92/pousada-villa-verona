@@ -1,9 +1,9 @@
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
-    title: "Política de cancelamento | Pousada Delplata",
+    title: "Política de cancelamento | Pousada Villa Verona",
     description:
-        "Consulte as regras de cancelamento, alteração de datas e no-show aplicáveis às reservas da Pousada Delplata.",
+        "Consulte as regras de cancelamento, alteração de datas e no-show aplicáveis às reservas da Pousada Villa Verona.",
     path: "/politica-de-cancelamento",
 });
 
@@ -20,7 +20,7 @@ export default function PoliticaDeCancelamentoPage() {
                             <h2 className="font-hero-display font-semibold">Condições aplicáveis à reserva</h2>
                             <p>
                                 Os prazos, eventuais cobranças e condições de alteração, cancelamento ou reembolso precisam
-                                ser confirmados com a Pousada Delplata antes da conclusão da reserva.
+                                ser confirmados com a Pousada Villa Verona antes da conclusão da reserva.
                             </p>
                         </section>
 
@@ -36,8 +36,8 @@ export default function PoliticaDeCancelamentoPage() {
                             <h2 className="font-hero-display font-semibold">Como solicitar confirmação</h2>
                             <p>
                                 Antes de pagar, solicite as condições aplicáveis às suas datas pelo e-mail{' '}
-                                <a className="text-brand-brown-dark underline" href="mailto:contato@pousadadelplata.com.br">
-                                    contato@pousadadelplata.com.br
+                                <a className="text-brand-brown-dark underline" href="mailto:contato@pousadavillaverona.com.br">
+                                    contato@pousadavillaverona.com.br
                                 </a>{' '}
                                 ou WhatsApp (19) 99965-4866.
                             </p>

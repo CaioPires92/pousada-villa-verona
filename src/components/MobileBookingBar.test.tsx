@@ -64,7 +64,7 @@ describe('MobileBookingBar', () => {
         const closeButtons = await screen.findAllByRole('button', { name: /fechar lembrete de reserva/i });
         fireEvent.click(closeButtons[0]);
 
-        expect(sessionStorage.getItem('delplata-booking-assistant-dismissed')).toBe('1');
+        expect(sessionStorage.getItem('villaverona-booking-assistant-dismissed')).toBe('1');
         expect(screen.queryByRole('link', { name: /ver disponibilidade/i })).not.toBeInTheDocument();
     });
 

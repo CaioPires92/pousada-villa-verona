@@ -33,7 +33,7 @@ function buildWhatsAppUrl(
     const couponText = coupon
         ? ` Para deixar o convite ainda melhor, use o cupom *${coupon.code}* (${coupon.label})${coupon.expiresAt ? `, válido até ${formatDatePtBrLong(coupon.expiresAt)}` : ''}. O desconto é exclusivo para reservas pelo site oficial.`
         : '';
-    const message = `Olá, ${firstName}! Gostaríamos de receber você novamente na Pousada Delplata.${couponText} Planeje sua próxima estadia aqui: ${bookingUrl}`;
+    const message = `Olá, ${firstName}! Gostaríamos de receber você novamente na Pousada Villa Verona.${couponText} Planeje sua próxima estadia aqui: ${bookingUrl}`;
     return `https://wa.me/${internationalPhone}?text=${encodeURIComponent(message)}`;
 }
 
@@ -101,7 +101,7 @@ export async function POST(
             return NextResponse.json({ error: 'COUPON_GUEST_MISMATCH', message: 'Este cupom pertence a outro hóspede.' }, { status: 409 });
         }
 
-        const publicUrl = String(process.env.NEXT_PUBLIC_SITE_URL || process.env.APP_URL || 'https://www.pousadadelplata.com.br').replace(/\/+$/, '');
+        const publicUrl = String(process.env.NEXT_PUBLIC_SITE_URL || process.env.APP_URL || 'https://www.pousadavillaverona.com.br').replace(/\/+$/, '');
         const bookingUrl = couponCode
             ? `${publicUrl}/reservar?promo=${encodeURIComponent(couponCode)}`
             : `${publicUrl}/reservar`;

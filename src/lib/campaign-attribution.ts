@@ -1,4 +1,4 @@
-const CAMPAIGN_STORAGE_KEY = 'delplata_campaign_attribution';
+const CAMPAIGN_STORAGE_KEY = 'villaverona_campaign_attribution';
 
 export const CAMPAIGN_PARAM_NAMES = [
     'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',

@@ -11,7 +11,7 @@ interface BlogCtaProps {
 }
 
 const WHATSAPP_URL =
-  "https://wa.me/5519999654866?text=Ol%C3%A1!%20Vi%20o%20blog%20da%20Pousada%20Delplata%20e%20quero%20tirar%20uma%20d%C3%BAvida%20sobre%20a%20hospedagem.";
+  "https://wa.me/5519999654866?text=Ol%C3%A1!%20Vi%20o%20blog%20da%20Pousada%20Villa Verona%20e%20quero%20tirar%20uma%20d%C3%BAvida%20sobre%20a%20hospedagem.";
 
 export function BlogCta({
   title,

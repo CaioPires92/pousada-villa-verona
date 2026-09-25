@@ -2,7 +2,7 @@ export type BlogCategorySlug =
   | "o-que-fazer"
   | "onde-ficar"
   | "dicas-de-viagem"
-  | "delplata"
+  | "villaverona"
   | "guias-sazonais";
 
 export type BlogFunnelStage = "topo" | "meio" | "fundo";

@@ -3,9 +3,9 @@ import { LeisureCard } from "@/components/LeisureCard";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
-    title: "Lazer com piscina e área de descanso | Pousada Delplata",
+    title: "Lazer com piscina e área de descanso | Pousada Villa Verona",
     description:
-        "Veja a estrutura de lazer da Pousada Delplata em Serra Negra, com piscinas, churrasqueiras, jardim, sala de jogos e espaços para famílias.",
+        "Veja a estrutura de lazer da Pousada Villa Verona em Serra Negra, com piscinas, churrasqueiras, jardim, sala de jogos e espaços para famílias.",
     path: "/lazer",
     image: "/fotos/piscina-aptos/DJI_0845.jpg",
 });
@@ -152,7 +152,7 @@ export default function LeisurePage() {
                 <div className="absolute inset-0">
                     <Image
                         src="/fotos/piscina-aptos/DJI_0845.jpg"
-                        alt="Lazer Pousada Delplata"
+                        alt="Lazer Pousada Villa Verona"
                         fill
                         className="object-cover object-center"
                         priority

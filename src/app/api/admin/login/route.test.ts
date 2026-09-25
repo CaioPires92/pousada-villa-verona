@@ -62,7 +62,7 @@ describe('Admin Login API', () => {
         const req = new Request('http://localhost/api/admin/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: '  admin@delplata.com.br  ', password: 'wrong' }),
+            body: JSON.stringify({ email: '  admin@villaverona.com.br  ', password: 'wrong' }),
         });
 
         const res = await POST(req as any);
@@ -84,7 +84,7 @@ describe('Admin Login API', () => {
                 'Content-Type': 'application/json',
                 'x-forwarded-for': ' 10.0.0.2 , 10.0.0.3 ',
             },
-            body: JSON.stringify({ email: 'admin@delplata.com.br', password: 'wrong' }),
+            body: JSON.stringify({ email: 'admin@villaverona.com.br', password: 'wrong' }),
         });
 
         const res = await POST(req as any);
@@ -100,7 +100,7 @@ describe('Admin Login API', () => {
         process.env.ADMIN_JWT_SECRET = 'secret';
         (prisma.adminUser.findUnique as any).mockResolvedValue({
             id: 'admin-1',
-            email: 'admin@delplata.com.br',
+            email: 'admin@villaverona.com.br',
             passwordHash: '$2a$10$invalid',
             isActive: true,
         });
@@ -111,13 +111,13 @@ describe('Admin Login API', () => {
         const req = new Request('http://localhost/api/admin/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: '  admin@delplata.com.br  ', password: 'correct' }),
+            body: JSON.stringify({ email: '  admin@villaverona.com.br  ', password: 'correct' }),
         });
 
         const res = await POST(req as any);
         expect(res.status).toBe(200);
         const data = await res.json();
-        expect(data).toEqual({ ok: true, user: { email: 'admin@delplata.com.br' } });
+        expect(data).toEqual({ ok: true, user: { email: 'admin@villaverona.com.br' } });
         expect((data as any).token).toBeUndefined();
         expect(res.headers.get('set-cookie')).toContain('admin_session=');
     });

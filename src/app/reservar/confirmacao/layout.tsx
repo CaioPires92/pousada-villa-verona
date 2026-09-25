@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Confirmação da reserva | Pousada Delplata",
-  description: "Página de confirmação da reserva da Pousada Delplata.",
+  title: "Confirmação da reserva | Pousada Villa Verona",
+  description: "Página de confirmação da reserva da Pousada Villa Verona.",
   path: "/reservar/confirmacao",
   noIndex: true,
 });

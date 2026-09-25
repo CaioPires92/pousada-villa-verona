@@ -59,7 +59,7 @@ describe('POST /api/admin/bookings/[bookingId]/discount', () => {
         expect(decodeURIComponent(data.whatsappUrl)).not.toContain('cupom');
         expect(prisma.coupon.findFirst).not.toHaveBeenCalled();
         expect(sendGuestDiscountEmail).toHaveBeenCalledWith(expect.objectContaining({
-            bookingUrl: 'https://www.pousadadelplata.com.br/reservar',
+            bookingUrl: 'https://www.pousadavillaverona.com.br/reservar',
             code: undefined,
         }));
     });

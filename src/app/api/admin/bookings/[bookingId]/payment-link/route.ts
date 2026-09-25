@@ -35,7 +35,7 @@ function buildWhatsAppUrl(params: {
     const formatDate = (date: Date) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(date);
     const message = [
         `Olá, ${firstName}! Tudo bem?`,
-        'Criamos um novo link para o pagamento da sua reserva na Pousada Delplata:',
+        'Criamos um novo link para o pagamento da sua reserva na Pousada Villa Verona:',
         params.paymentLink,
         `Check-in: ${formatDate(params.checkIn)} | Check-out: ${formatDate(params.checkOut)}.`,
         'Se precisar de ajuda, estamos à disposição.',
@@ -94,7 +94,7 @@ export async function POST(
         const preference = {
             items: [{
                 id: booking.roomType.id,
-                title: `Pousada Delplata - ${booking.roomType.name}`,
+                title: `Pousada Villa Verona - ${booking.roomType.name}`,
                 quantity: 1,
                 unit_price: Number(Number(booking.totalPrice).toFixed(2)),
                 currency_id: 'BRL',

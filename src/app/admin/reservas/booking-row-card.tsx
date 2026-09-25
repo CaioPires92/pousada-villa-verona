@@ -55,7 +55,7 @@ function buildBookingWhatsAppUrl(booking: Booking) {
     const normalizedPhone = phone.startsWith('55') ? phone : `55${phone}`;
     const message = [
         `Olá, ${booking.guest.name || 'tudo bem'}!`,
-        'Aqui é da Pousada Delplata.',
+        'Aqui é da Pousada Villa Verona.',
         'Vimos que você tem interesse em se hospedar conosco e queremos saber se podemos ajudar com a sua reserva.',
     ].join(' ');
 

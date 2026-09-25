@@ -23,7 +23,7 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
 
             <div className="space-y-4 max-w-md">
               {/* WhatsApp Card */}
-              <a href="{hotelConfig?.whatsappLink || 'https://wa.me/5519999040040'}" target="_blank" rel="noreferrer" className="flex items-center justify-between p-5 rounded-2xl border border-brand-brown-dark/10 bg-white hover:border-brand-brown-dark/30 transition-colors group">
+              <a href={hotelConfig?.whatsappLink || 'https://wa.me/5519999040040'} target="_blank" rel="noreferrer" className="flex items-center justify-between p-5 rounded-2xl border border-brand-brown-dark/10 bg-white hover:border-brand-brown-dark/30 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gray-100 p-3 rounded-full text-brand-brown-dark group-hover:bg-[#00E676]/10 group-hover:text-[#00E676] transition-colors">
                     <MessageCircle className="w-5 h-5" />
@@ -37,14 +37,14 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
               </a>
 
               {/* Email Card */}
-              <a href="{`mailto:${hotelConfig?.email || 'reservas@pousadadelplata.com.br'}`}" className="flex items-center justify-between p-5 rounded-2xl border border-brand-brown-dark/10 bg-white hover:border-brand-brown-dark/30 transition-colors group">
+              <a href={`mailto:${hotelConfig?.email || 'reservas@villaverona.com.br'}`} className="flex items-center justify-between p-5 rounded-2xl border border-brand-brown-dark/10 bg-white hover:border-brand-brown-dark/30 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gray-100 p-3 rounded-full text-brand-brown-dark group-hover:bg-brand-brown-dark/10 transition-colors">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-brand-brown-dark/60 mb-0.5">Email</p>
-                    <p className="font-semibold text-brand-brown-dark text-sm md:text-base">{hotelConfig?.email || 'reservas@pousadadelplata.com.br'}</p>
+                    <p className="font-semibold text-brand-brown-dark text-sm md:text-base">{hotelConfig?.email || 'reservas@villaverona.com.br'}</p>
                   </div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-brand-brown-dark/30 group-hover:text-brand-brown-dark transition-colors" />

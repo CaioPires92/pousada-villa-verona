@@ -122,7 +122,7 @@ export async function POST(
                 ? `${Number(coupon.value)}% de desconto`
                 : `${Number(coupon.value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} de desconto`)
             : '';
-        const publicUrl = String(process.env.NEXT_PUBLIC_SITE_URL || process.env.APP_URL || 'https://www.pousadadelplata.com.br').replace(/\/+$/, '');
+        const publicUrl = String(process.env.NEXT_PUBLIC_SITE_URL || process.env.APP_URL || 'https://www.pousadavillaverona.com.br').replace(/\/+$/, '');
         const bookingQuery = new URLSearchParams({
             checkIn: booking.checkIn.toISOString().slice(0, 10),
             checkOut: booking.checkOut.toISOString().slice(0, 10),
@@ -179,7 +179,7 @@ export async function POST(
         const couponMessage = couponCode
             ? ` Para ajudar você a concluir, podemos oferecer ${discountLabel} com o cupom *${couponCode}*.`
             : '';
-        const whatsappMessage = `Olá, ${booking.guest.name.split(/\s+/)[0]}! Vimos que sua reserva na Pousada Delplata não foi concluída e estamos à disposição para ajudar.${couponMessage} Retome aqui: ${bookingUrl}`;
+        const whatsappMessage = `Olá, ${booking.guest.name.split(/\s+/)[0]}! Vimos que sua reserva na Pousada Villa Verona não foi concluída e estamos à disposição para ajudar.${couponMessage} Retome aqui: ${bookingUrl}`;
         const whatsappUrl = whatsappRequested
             ? `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(whatsappMessage)}`
             : null;

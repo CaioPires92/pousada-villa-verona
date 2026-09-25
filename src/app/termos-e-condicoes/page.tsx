@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata({
-    title: "Termos e condições de reserva | Pousada Delplata",
+    title: "Termos e condições de reserva | Pousada Villa Verona",
     description:
-        "Leia os termos e condições de uso do site e as regras aplicáveis às reservas realizadas na Pousada Delplata.",
+        "Leia os termos e condições de uso do site e as regras aplicáveis às reservas realizadas na Pousada Villa Verona.",
     path: "/termos-e-condicoes",
 });
 
@@ -20,7 +20,7 @@ export default function TermosECondicoesPage() {
                         <section>
                             <h2 className="font-hero-display font-semibold">1. Aceite</h2>
                             <p>
-                                Ao utilizar o site e realizar reservas na Pousada Delplata, você concorda com estes termos,
+                                Ao utilizar o site e realizar reservas na Pousada Villa Verona, você concorda com estes termos,
                                 com a política de cancelamento e com a política de privacidade.
                             </p>
                         </section>
@@ -72,8 +72,8 @@ export default function TermosECondicoesPage() {
                             <h2 className="font-hero-display font-semibold">7. Contato</h2>
                             <p>
                                 Dúvidas podem ser enviadas para{' '}
-                                <a className="text-brand-brown-dark underline" href="mailto:contato@pousadadelplata.com.br">
-                                    contato@pousadadelplata.com.br
+                                <a className="text-brand-brown-dark underline" href="mailto:contato@pousadavillaverona.com.br">
+                                    contato@pousadavillaverona.com.br
                                 </a>{' '}
                                 ou WhatsApp (19) 99965-4866.
                             </p>

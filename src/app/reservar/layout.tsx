@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Reserva online em Serra Negra | Pousada Delplata",
+  title: "Reserva online em Serra Negra | Pousada Villa Verona",
   description:
-    "Consulte disponibilidade, compare opções de hospedagem e finalize sua reserva online na Pousada Delplata em Serra Negra.",
+    "Consulte disponibilidade, compare opções de hospedagem e finalize sua reserva online na Pousada Villa Verona em Serra Negra.",
   path: "/reservar",
   keywords: [
     "reserva online em Serra Negra",

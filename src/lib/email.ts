@@ -1,11 +1,11 @@
 import nodemailer from 'nodemailer';
 import { formatDatePtBrLong } from '@/lib/date';
 
-const HOTEL_NAME = process.env.HOTEL_NAME || 'Hotel Pousada Delplata';
-const HOTEL_EMAIL = process.env.HOTEL_EMAIL || 'contato@pousadadelplata.com.br';
+const HOTEL_NAME = process.env.HOTEL_NAME || 'Hotel Pousada Villa Verona';
+const HOTEL_EMAIL = process.env.HOTEL_EMAIL || 'contato@pousadavillaverona.com.br';
 const HOTEL_WHATSAPP = process.env.HOTEL_WHATSAPP || '(19) 99965-4866';
-const DEFAULT_CONTACT_RECEIVER_EMAIL = 'contato@pousadadelplata.com.br';
-const PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://pousada-delplata.vercel.app';
+const DEFAULT_CONTACT_RECEIVER_EMAIL = 'contato@pousadavillaverona.com.br';
+const PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://pousada-villaverona.vercel.app';
 
 function formatPaymentMethodLabel(paymentMethod?: string | null) {
     const method = String(paymentMethod || '').trim().toUpperCase();
@@ -923,7 +923,7 @@ export async function sendContactEmail(data: ContactEmailData) {
 
     try {
         const info = await transporter.sendMail({
-            from: `"Site Delplata" <${process.env.SMTP_USER}>`,
+            from: `"Site Villa Verona" <${process.env.SMTP_USER}>`,
             to: toEmail,
             replyTo: data.email,
 
@@ -1076,7 +1076,7 @@ export function buildAdminRecoveryAlertEmailHtml(data: BookingEmailData) {
     <div class="container">
         <!-- Logo -->
         <div class="logo-section">
-            <img src="https://pousada-delplata.vercel.app/fotos/logo.png" alt="Delplata Pousada" />
+            <img src="https://pousada-villaverona.vercel.app/fotos/logo.png" alt="Villa Verona Pousada" />
             <div class="logo-divider"></div>
         </div>
 
@@ -1165,7 +1165,7 @@ export function buildAdminRecoveryAlertEmailHtml(data: BookingEmailData) {
             <div class="footer-amenities">
                 🏊 Piscinas &nbsp;|&nbsp; ☕ Café da manhã &nbsp;|&nbsp; 🏡 Chalés e Apartamentos
             </div>
-            <div class="footer-brand">Pousada Delplata • Serra Negra • SP</div>
+            <div class="footer-brand">Pousada Villa Verona • Serra Negra • SP</div>
             <div class="footer-slogan">🌿 Hospitalidade que acolhe, natureza que encanta.</div>
         </div>
     </div>
@@ -1179,7 +1179,7 @@ export async function sendAdminRecoveryAlertEmail(data: BookingEmailData & { pho
         return { success: false, error: 'SMTP not configured' };
     }
 
-    const adminEmail = process.env.CONTACT_RECEIVER_EMAIL || 'contato@pousadadelplata.com.br';
+    const adminEmail = process.env.CONTACT_RECEIVER_EMAIL || 'contato@pousadavillaverona.com.br';
 
     try {
         const info = await transporter.sendMail({
@@ -1217,7 +1217,7 @@ export async function sendDifficultyAlertEmail(data: {
         return { success: false, error: 'SMTP not configured' };
     }
 
-    const adminEmail = process.env.CONTACT_RECEIVER_EMAIL || 'contato@pousadadelplata.com.br';
+    const adminEmail = process.env.CONTACT_RECEIVER_EMAIL || 'contato@pousadavillaverona.com.br';
     const recoveryBookingUrl = data.bookingId ? buildRecoveryBookingUrl(data.bookingId) : '';
     const recoveryWhatsAppUrl = data.bookingId
         ? buildRecoveryWhatsAppUrl({
@@ -1310,29 +1310,29 @@ export async function sendGuestDiscountEmail(data: {
           <div style="margin-top:8px;font-size:26px;font-weight:bold;letter-spacing:2px;color:var(--brand-brown-dark)">${code}</div>
         </div>
         ${expiration ? `<p>Válido até <strong>${expiration}</strong>, sujeito às regras do cupom e à disponibilidade.</p>` : ''}
-        <p><strong>Este desconto é válido exclusivamente para reservas realizadas pelo site oficial da Pousada Delplata.</strong></p>
+        <p><strong>Este desconto é válido exclusivamente para reservas realizadas pelo site oficial da Pousada Villa Verona.</strong></p>
     ` : '';
     const html = `
       <div style="margin:0;padding:32px 16px;background:#f5f5f5;font-family:Arial,sans-serif;color:var(--brand-brown-dark)">
       <div style="max-width:620px;margin:0 auto;padding:32px;background:#ffffff;border-top:6px solid var(--brand-gold)">
-        <div style="margin-bottom:10px;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#8a883f">Pousada Delplata</div>
+        <div style="margin-bottom:10px;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#8a883f">Pousada Villa Verona</div>
         <h1 style="margin:0 0 24px;color:var(--brand-brown-dark);font-size:28px;line-height:1.2">Temos um convite para você voltar</h1>
         <p>Olá, ${guestName}!</p>
-        <p>Esperamos que esteja bem. Gostaríamos de receber você novamente na Pousada Delplata e tornar sua próxima estadia ainda mais especial.</p>
+        <p>Esperamos que esteja bem. Gostaríamos de receber você novamente na Pousada Villa Verona e tornar sua próxima estadia ainda mais especial.</p>
         ${couponBlock}
         <p style="margin:28px 0">
           <a href="${bookingUrl}" style="display:inline-block;background:var(--brand-brown-dark);color:#ffffff;padding:14px 22px;border-bottom:3px solid var(--brand-gold);text-decoration:none;font-weight:bold">Planejar minha próxima estadia</a>
         </p>
-        <p>Esperamos receber você em breve!<br><strong>Equipe Pousada Delplata</strong></p>
+        <p>Esperamos receber você em breve!<br><strong>Equipe Pousada Villa Verona</strong></p>
         ${code ? '<p style="margin-top:28px;padding-top:18px;border-top:1px solid #e2e1d3;font-size:12px;line-height:1.6;color:#667060">O desconto será calculado automaticamente pelo motor de reservas. Não cumulativo com outras promoções.</p>' : ''}
       </div>
       </div>`;
 
     try {
         const info = await transporter.sendMail({
-            from: `"Pousada Delplata" <${process.env.SMTP_USER}>`,
+            from: `"Pousada Villa Verona" <${process.env.SMTP_USER}>`,
             to: data.guestEmail,
-            subject: `Um convite para você voltar à Pousada Delplata`,
+            subject: `Um convite para você voltar à Pousada Villa Verona`,
             html,
         });
         return { success: true, messageId: info.messageId };
