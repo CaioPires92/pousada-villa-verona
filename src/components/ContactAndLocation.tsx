@@ -51,12 +51,12 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
               </a>
 
               {/* Attendance Card */}
-              <div className="relative overflow-hidden p-6 md:p-8 rounded-3xl bg-[#343e30] text-white mt-6">
+              <div className="relative overflow-hidden p-6 md:p-8 rounded-3xl bg-brand-brown-dark text-white mt-6">
                 <div className="absolute -right-6 -bottom-6 opacity-10">
                   <MapPin className="w-40 h-40" />
                 </div>
                 <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-2 text-[#BBB863]">
+                  <div className="flex items-center gap-2 mb-2 text-brand-gold">
                     <Clock className="w-4 h-4" />
                     <span className="text-xs font-bold uppercase tracking-wider">Horário de Atendimento</span>
                   </div>
@@ -67,7 +67,7 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
                   <p className="text-sm text-white/80 mb-4 leading-relaxed max-w-[85%]">
                     {hotelConfig?.address || 'Localizados no interior de SP, prontos para oferecer o melhor de Serra Negra.'}
                   </p>
-                  <a href="#mapa" className="inline-flex items-center gap-2 text-sm font-semibold hover:text-[#BBB863] transition-colors">
+                  <a href="#mapa" className="inline-flex items-center gap-2 text-sm font-semibold hover:text-brand-gold transition-colors">
                     Ver no Google Maps <ArrowRight className="w-4 h-4" />
                   </a>
                 </div>
@@ -115,7 +115,7 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
                 <textarea rows={3} placeholder="Como podemos ajudar?" className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400 resize-none"></textarea>
               </div>
 
-              <Button type="button" className="w-full h-14 rounded-xl bg-[#1a1a1a] hover:bg-black text-white font-bold tracking-wide mt-4">
+              <Button type="button" className="w-full h-14 rounded-xl bg-brand-gold hover:bg-brand-gold/90 text-white font-bold tracking-wide mt-4">
                 ENVIAR MENSAGEM <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </form>
@@ -137,10 +137,10 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
           ></iframe>
 
           {/* Floating Map Card */}
-          <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 bg-[#f4f2ee] p-6 rounded-2xl shadow-xl max-w-sm border border-brand-brown-dark/10">
+          <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 bg-[color:var(--brand-cream)] p-6 rounded-2xl shadow-xl max-w-sm border border-brand-brown-dark/10">
             <h3 className="font-serif text-2xl text-brand-brown-dark mb-2">Visite-nos</h3>
             <p className="text-sm text-foreground/70 mb-6">Explore a tranquilidade da serra pessoalmente.</p>
-            <div className="flex items-center gap-2 text-[#b49e5d]">
+            <div className="flex items-center gap-2 text-brand-gold">
               <MapPin className="w-4 h-4" />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Localização Privilegiada</span>
             </div>
