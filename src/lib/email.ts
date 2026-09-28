@@ -3,7 +3,7 @@ import { formatDatePtBrLong } from '@/lib/date';
 
 const HOTEL_NAME = process.env.HOTEL_NAME || 'Hotel Pousada Villa Verona';
 const HOTEL_EMAIL = process.env.HOTEL_EMAIL || 'contato@pousadavillaverona.com.br';
-const HOTEL_WHATSAPP = process.env.HOTEL_WHATSAPP || '(19) 99965-4866';
+const HOTEL_WHATSAPP = process.env.HOTEL_WHATSAPP || '(19) 99900-2288';
 const DEFAULT_CONTACT_RECEIVER_EMAIL = 'contato@pousadavillaverona.com.br';
 const PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://pousada-villaverona.vercel.app';
 
@@ -153,7 +153,7 @@ function formatBookingStatusLabel(status?: string | null) {
 
 function normalizeWhatsAppLinkPhone(value: string | undefined | null) {
     const digits = String(value || '').replace(/\D/g, '');
-    if (!digits) return '5519999654866';
+    if (!digits) return '5519999002288';
     return digits.startsWith('55') ? digits : `55${digits}`;
 }
 

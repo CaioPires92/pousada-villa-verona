@@ -39,7 +39,7 @@ export default function PoliticaDeCancelamentoPage() {
                                 <a className="text-brand-brown-dark underline" href="mailto:contato@pousadavillaverona.com.br">
                                     contato@pousadavillaverona.com.br
                                 </a>{' '}
-                                ou WhatsApp (19) 99965-4866.
+                                ou WhatsApp (19) 99900-2288.
                             </p>
                         </section>
                     </div>

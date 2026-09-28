@@ -41,7 +41,7 @@ export default function ReservationFaq() {
                     <Link href="/politica-de-cancelamento" className="font-medium text-brand-brown-dark underline underline-offset-2">
                         política de cancelamento
                     </Link>{' '}
-                    ou fale com a pousada pelo WhatsApp (19) 99965-4866.
+                    ou fale com a pousada pelo WhatsApp (19) 99900-2288.
                 </p>
             </div>
         </section>

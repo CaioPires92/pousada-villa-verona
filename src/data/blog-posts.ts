@@ -53,7 +53,7 @@ export const blogPosts: BlogPost[] = [
     category: "guias-sazonais",
     tags: ["Festa D'Italia", "Serra Negra", "eventos", "setembro", "2026"],
     coverImage: {
-      src: "/fotos/jardim-aptos/DJI_0903.jpg",
+      src: "/fotos/areas-externas/849035180.jpg",
       alt: "Área externa da Pousada Villa Verona em Serra Negra",
     },
     seo: {
@@ -84,7 +84,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/jardim-aptos/DJI_0903.jpg",
+        src: "/fotos/areas-externas/849035180.jpg",
         alt: "Área externa da Pousada Villa Verona em Serra Negra",
         caption: "Imagem institucional da Pousada Villa Verona para o planejamento da hospedagem durante o evento.",
       },
@@ -134,7 +134,7 @@ export const blogPosts: BlogPost[] = [
     category: "guias-sazonais",
     tags: ["eventos", "Serra Negra", "2026", "festival", "feriados"],
     coverImage: {
-      src: "/fotos/piscina-chale/DJI_0918.jpg",
+      src: "/fotos/areas-externas/881575120.jpg",
       alt: "Vista de Serra Negra em período de evento",
     },
     seo: {
@@ -157,7 +157,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/jardim-aptos/DJI_0903.jpg",
+        src: "/fotos/areas-externas/849035180.jpg",
         alt: "Vista geral da pousada e da atmosfera de Serra Negra",
         caption: "Ao longo do ano, o calendário de eventos muda o ritmo da cidade e a antecedência ideal para reservar.",
       },
@@ -176,7 +176,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/piscina-chale/DJI_0917.jpg",
+        src: "/fotos/areas-externas/881575135.jpg",
         alt: "Área externa da pousada em período propício para viagem",
       },
       {
@@ -216,7 +216,7 @@ export const blogPosts: BlogPost[] = [
     category: "o-que-fazer",
     tags: ["Serra Negra", "fim de semana", "roteiro", "planejamento"],
     coverImage: {
-      src: "/fotos/piscina-aptos/DJI_0908.jpg",
+      src: "/fotos/areas-externas/849034797.jpg",
       alt: "Área externa da Pousada Villa Verona em Serra Negra",
     },
     seo: {
@@ -239,7 +239,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/jardim-aptos/DSC_0262.jpg",
+        src: "/fotos/areas-externas/791712277.jpg",
         alt: "Jardins da pousada para estadia de fim de semana em Serra Negra",
         caption: "Em um roteiro curto, descanso e deslocamentos simples pesam tanto quanto os passeios.",
       },
@@ -263,7 +263,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/piscina-aptos/DJI_0908.jpg",
+        src: "/fotos/areas-externas/849034797.jpg",
         alt: "Vista da pousada para um fim de semana em Serra Negra",
       },
       {
@@ -304,7 +304,7 @@ export const blogPosts: BlogPost[] = [
     category: "onde-ficar",
     tags: ["onde ficar", "hospedagem", "Serra Negra", "reserva"],
     coverImage: {
-      src: "/fotos/ala-principal/apartamentos/superior/DSC_0069-1200.webp",
+      src: "/fotos/quartos/triplo/849059556.jpg",
       alt: "Acomodação da Pousada Villa Verona",
     },
     seo: {
@@ -326,7 +326,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/ala-principal/apartamentos/superior/DSC_0069-1200.webp",
+        src: "/fotos/quartos/triplo/849059556.jpg",
         alt: "Apartamento da ala principal da pousada",
         caption: "Ver fotos reais da hospedagem ajuda mais do que listas genéricas de vantagens.",
       },
@@ -345,7 +345,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/jardim-aptos/DJI_0889.jpg",
+        src: "/fotos/areas-externas/849035415.jpg",
         alt: "Área verde da pousada em ambiente mais tranquilo",
       },
       {
@@ -377,7 +377,7 @@ export const blogPosts: BlogPost[] = [
     category: "dicas-de-viagem",
     tags: ["pousada", "hotel", "comparativo", "Serra Negra"],
     coverImage: {
-      src: "/fotos/ala-chales/chales/IMG_0125-1200.webp",
+      src: "/fotos/quartos/familia/849062686.jpg",
       alt: "Área de hospedagem da Pousada Villa Verona",
     },
     seo: {
@@ -399,7 +399,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/ala-chales/chales/IMG_0125-1200.webp",
+        src: "/fotos/quartos/familia/849062686.jpg",
         alt: "Ala de hospedagem da pousada em Serra Negra",
       },
       {
@@ -416,7 +416,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/restaurante/DSC_0056.jpg",
+        src: "/fotos/cafe-da-manha/791641806.jpg",
         alt: "Café da manhã da pousada em Serra Negra",
         caption: "Hospitalidade, café da manhã e ritmo de estadia contam mais do que comparação abstrata.",
       },
@@ -443,7 +443,7 @@ export const blogPosts: BlogPost[] = [
     category: "guias-sazonais",
     tags: ["quando ir", "Serra Negra", "planejamento", "viagem"],
     coverImage: {
-      src: "/fotos/jardim-aptos/DSC_0258.jpg",
+      src: "/fotos/areas-externas/849034796.jpg",
       alt: "Jardins e área verde da Pousada Villa Verona",
     },
     seo: {
@@ -470,7 +470,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/jardim-aptos/DSC_0258.jpg",
+        src: "/fotos/areas-externas/849034796.jpg",
         alt: "Jardins da pousada em uma época mais tranquila do ano",
       },
       {
@@ -488,7 +488,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/piscina-chale/DJI_0918.jpg",
+        src: "/fotos/areas-externas/881575120.jpg",
         alt: "Vista da pousada em período de maior movimento turístico",
       },
       {
@@ -516,7 +516,7 @@ export const blogPosts: BlogPost[] = [
     category: "villaverona",
     tags: ["Villa Verona", "hospedagem", "pousada", "Serra Negra"],
     coverImage: {
-      src: "/fotos/piscina-aptos/DJI_0845.jpg",
+      src: "/fotos/areas-externas/849028896.jpg",
       alt: "Piscina da Pousada Villa Verona em Serra Negra",
     },
     seo: {
@@ -538,7 +538,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/piscina-aptos/DJI_0845.jpg",
+        src: "/fotos/areas-externas/849028896.jpg",
         alt: "Piscina e área externa da Pousada Villa Verona",
         caption: "A proposta da Villa Verona mistura descanso, lazer e uma leitura mais familiar da hospedagem.",
       },
@@ -558,7 +558,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "/fotos/restaurante/IMG_0025.webp",
+        src: "/fotos/cafe-da-manha/791641805.jpg",
         alt: "Ambiente de café da manhã da pousada",
       },
       {

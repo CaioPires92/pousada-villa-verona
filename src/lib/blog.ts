@@ -145,13 +145,13 @@ export function buildBlogIndexMetadata(category?: BlogCategory) {
       title,
       description,
       path: canonicalPath,
-      image: "/fotos/piscina-aptos/DJI_0845.jpg",
+      image: "/fotos/areas-externas/849028896.jpg",
     }),
     twitter: {
       card: "summary_large_image" as const,
       title,
       description,
-      images: [absoluteUrl("/fotos/piscina-aptos/DJI_0845.jpg")],
+      images: [absoluteUrl("/fotos/areas-externas/849028896.jpg")],
     },
   } satisfies Metadata;
 }
@@ -237,7 +237,7 @@ export function buildBlogArticleSchema(post: BlogPost, category: BlogCategory) {
       name: "Pousada Villa Verona",
       logo: {
         "@type": "ImageObject",
-        url: absoluteUrl("/fotos/logo.png"),
+        url: absoluteUrl("/logo.png"),
       },
     },
     about: [

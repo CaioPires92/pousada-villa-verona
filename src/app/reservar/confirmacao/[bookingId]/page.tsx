@@ -209,11 +209,11 @@ function getStatusPresentation(status: PaymentStatus) {
 }
 
 function getRoomImage(booking: BookingData | null) {
-    const backendPhoto = booking?.roomType?.photos?.[0]?.url;
-    if (backendPhoto) return backendPhoto;
-
     const roomName = String(booking?.roomType?.name || '');
-    return getLocalRoomPhotos(roomName)?.[0] || null;
+    const localPhoto = getLocalRoomPhotos(roomName)?.[0];
+    if (localPhoto) return localPhoto;
+
+    return booking?.roomType?.photos?.[0]?.url || null;
 }
 
 function getStayNights(checkIn?: string, checkOut?: string) {

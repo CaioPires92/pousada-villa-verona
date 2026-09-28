@@ -336,15 +336,15 @@ function ReservarContent() {
     };
 
     const getRoomDisplayPhotos = (room: Room) => {
+        const localPhotos = getLocalRoomPhotos(room.name);
+        if (localPhotos?.length) return localPhotos;
+
         const backendUrls = (room.photos ?? [])
             .map((p) => p?.url?.trim())
             .filter((url): url is string => Boolean(url))
             .filter((url) => !isPlaceholderUrl(url));
 
-        if (backendUrls.length > 0) return backendUrls;
-
-        const localPhotos = getLocalRoomPhotos(room.name);
-        return localPhotos ?? [];
+        return backendUrls;
     };
 
     const getRoomPrimaryImageSrc = (room: Room) => {
@@ -1461,7 +1461,7 @@ function ReservarContent() {
             <main className="relative flex min-h-[100svh] items-start justify-center bg-[color:var(--brand-black)] pb-10 pt-28 md:min-h-screen md:items-center md:py-28">
                 <div className="absolute inset-0 z-0">
                     <Image
-                        src="/fotos/piscina-aptos/DJI_0845.jpg"
+                        src="/fotos/areas-externas/849028896.jpg"
                         alt="Background"
                         fill
                         sizes="100vw"
@@ -2543,4 +2543,3 @@ export default function ReservarPage() {
         </Suspense>
     );
 }
-

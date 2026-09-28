@@ -3,13 +3,13 @@ import { buildBookingWhatsAppUrl, normalizeWhatsAppPhone } from './booking-whats
 
 describe('booking WhatsApp support URL', () => {
     it('normalizes configured Brazilian phone numbers', () => {
-        expect(normalizeWhatsAppPhone('(19) 99965-4866')).toBe('5519999654866');
-        expect(normalizeWhatsAppPhone('5519999654866')).toBe('5519999654866');
+        expect(normalizeWhatsAppPhone('(19) 99900-2288')).toBe('5519999002288');
+        expect(normalizeWhatsAppPhone('5519999002288')).toBe('5519999002288');
     });
 
     it('encodes payment error context and available booking details', () => {
         const url = buildBookingWhatsAppUrl({
-            phone: '(19) 99965-4866',
+            phone: '(19) 99900-2288',
             context: 'error_payment',
             bookingId: 'booking-123',
             guestName: 'Maria Silva',
@@ -23,7 +23,7 @@ describe('booking WhatsApp support URL', () => {
 
         const parsed = new URL(url);
         expect(parsed.hostname).toBe('wa.me');
-        expect(parsed.pathname).toBe('/5519999654866');
+        expect(parsed.pathname).toBe('/5519999002288');
         expect(parsed.searchParams.get('text')).toContain('Tive um problema ao finalizar o pagamento');
         expect(parsed.searchParams.get('text')).toContain('Reserva: booking-123');
         expect(parsed.searchParams.get('text')).toContain('Hóspede: Maria Silva');

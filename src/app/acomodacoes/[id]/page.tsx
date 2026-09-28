@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import styles from "./room-details.module.css";
 import { buildPageMetadata, stripHtml } from "@/lib/seo";
 import { getRoomAmenitiesList } from "@/lib/rooms";
+import { getLocalRoomPhotos } from "@/lib/room-photos";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -43,6 +44,7 @@ export async function generateMetadata({
     }
 
     const summary = stripHtml(room.description ?? "").slice(0, 155);
+    const displayPhotos = getLocalRoomPhotos(room.name) ?? room.photos.map((photo) => photo.url);
 
     return buildPageMetadata({
         title: `${room.name} em Serra Negra | Pousada Villa Verona`,
@@ -51,7 +53,7 @@ export async function generateMetadata({
                 ? summary
                 : `Veja detalhes da acomodação ${room.name}, capacidade, comodidades e disponibilidade na Pousada Villa Verona.`,
         path: `/acomodacoes/${room.id}`,
-        image: room.photos[0]?.url,
+        image: displayPhotos[0],
         keywords: [
             room.name,
             "acomodação em Serra Negra",
@@ -73,6 +75,7 @@ export default async function RoomDetailsPage({
     }
 
     const amenities = getRoomAmenitiesList(room.amenities);
+    const displayPhotos = getLocalRoomPhotos(room.name) ?? room.photos.map((photo) => photo.url);
 
     return (
         <main className="container section">
@@ -85,10 +88,10 @@ export default async function RoomDetailsPage({
 
             <div className={styles.grid}>
                 <div className={styles.gallery}>
-                    {room.photos.length > 0 ? (
+                    {displayPhotos.length > 0 ? (
                         <div className={styles.mainImageContainer}>
                             <Image
-                                src={room.photos[0].url}
+                                src={displayPhotos[0]}
                                 alt={room.name}
                                 className={styles.mainImage}
                                 width={1200}
@@ -101,10 +104,10 @@ export default async function RoomDetailsPage({
                         <div className={styles.placeholderImage}>Sem Foto</div>
                     )}
                     <div className={styles.thumbnails}>
-                        {room.photos.slice(1).map((photo, index) => (
+                        {displayPhotos.slice(1).map((photoUrl, index) => (
                             <Image
-                                key={photo.id}
-                                src={photo.url}
+                                key={photoUrl}
+                                src={photoUrl}
                                 alt={`${room.name} - foto ${index + 2}`}
                                 className={styles.thumbnail}
                                 width={240}

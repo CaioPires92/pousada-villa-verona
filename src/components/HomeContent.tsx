@@ -33,114 +33,114 @@ import {
 
 const siteImages = {
   hero: {
-    src: "/fotos/piscina-aptos/DJI_0845.jpg",
+    src: "/fotos/areas-externas/849028896.jpg",
     alt: "Piscina da Pousada Villa Verona em Serra Negra",
   },
   accommodations: {
     mainWing: {
-      src: "/fotos/ala-principal/apartamentos/superior/DSC_0069-1200.webp",
-      alt: "Ala Principal da Pousada Villa Verona",
+      src: "/fotos/quartos/triplo/849059556.jpg",
+      alt: "Quarto Triplo da Pousada Villa Verona",
     },
     annexWing: {
-      src: "/fotos/ala-chales/chales/IMG_0125-1200.webp",
-      alt: "Ala Chalés e Anexos da Pousada Villa Verona",
+      src: "/fotos/quartos/familia/849062686.jpg",
+      alt: "Quarto Família da Pousada Villa Verona",
     },
   },
   leisure: {
-    src: "/fotos/piscina-aptos/DJI_0863.jpg",
+    src: "/fotos/areas-externas/881575120.jpg",
     alt: "Área de lazer com piscina",
   },
   breakfast: {
-    src: "/fotos/restaurante/DSC_0056.jpg",
+    src: "/fotos/cafe-da-manha/791641806.jpg",
     alt: "Café da manhã da pousada",
   },
   experiences: {
     pool: {
-      src: "/fotos/piscina-aptos/DJI_0863.jpg",
+      src: "/fotos/areas-externas/881575120.jpg",
       alt: "Piscina da Pousada Villa Verona",
     },
     breakfast: {
-      src: "/fotos/restaurante/IMG_0025.webp",
+      src: "/fotos/cafe-da-manha/791641805.jpg",
       alt: "Mesa de café da manhã da Pousada Villa Verona",
     },
     family: {
-      src: "/fotos/jardim-aptos/DJI_0904.jpg",
+      src: "/fotos/areas-externas/849034796.jpg",
       alt: "Área verde da Pousada Villa Verona para famílias",
     },
     nature: {
-      src: "/fotos/jardim-aptos/DSC_0267.jpg",
+      src: "/fotos/areas-externas/849035185.jpg",
       alt: "Jardins da Pousada Villa Verona em Serra Negra",
     },
   },
   cta: {
-    src: "/fotos/piscina-aptos/DJI_0908.jpg",
+    src: "/fotos/areas-externas/849034797.jpg",
     alt: "Vista da área da piscina para reserva",
   },
   galleryPages: [
     {
-      title: "Piscina e hotel",
+      title: "Piscina e áreas externas",
       images: [
-        { src: "/fotos/piscina-aptos/DJI_0863.jpg", alt: "Piscina da pousada" },
-        { src: "/fotos/piscina-aptos/DJI_0864.jpg", alt: "Vista aérea da piscina" },
-        { src: "/fotos/piscina-aptos/DJI_0900.jpg", alt: "Piscina e estrutura da pousada" },
-        { src: "/fotos/piscina-aptos/DJI_0908.jpg", alt: "Vista da piscina com hotel ao fundo" },
-        { src: "/fotos/jardim-aptos/DJI_0889.jpg", alt: "Área externa do hotel" },
-        { src: "/fotos/jardim-aptos/DJI_0896.jpg", alt: "Vista do hotel e jardins" },
+        { src: "/fotos/areas-externas/849028896.jpg", alt: "Vista aérea da piscina" },
+        { src: "/fotos/areas-externas/881575120.jpg", alt: "Piscina da pousada" },
+        { src: "/fotos/areas-externas/881575135.jpg", alt: "Piscina e jardins" },
+        { src: "/fotos/areas-externas/849034797.jpg", alt: "Vista aérea da pousada" },
+        { src: "/fotos/areas-externas/849035180.jpg", alt: "Área verde da pousada" },
+        { src: "/fotos/areas-externas/849035185.jpg", alt: "Pôr do sol na propriedade" },
       ],
     },
     {
-      title: "Piscina dos chalés",
+      title: "Jardins e natureza",
       images: [
-        { src: "/fotos/piscina-chale/DJI_0916.jpg", alt: "Piscina da área dos chalés" },
-        { src: "/fotos/piscina-chale/DJI_0917.jpg", alt: "Vista da piscina dos chalés" },
-        { src: "/fotos/piscina-chale/DJI_0918.jpg", alt: "Piscina próxima aos chalés" },
-        { src: "/fotos/piscina-chale/DSC_0370.jpg", alt: "Detalhe da piscina dos chalés" },
-        { src: "/fotos/piscina-chale/DSC_0374.jpg", alt: "Área de lazer da piscina dos chalés" },
-        { src: "/fotos/piscina-chale/DSC_0380.jpg", alt: "Piscina da ala de chalés" },
+        { src: "/fotos/areas-externas/849035415.jpg", alt: "Gramado e jardins" },
+        { src: "/fotos/areas-externas/849034796.jpg", alt: "Área verde e parquinho" },
+        { src: "/fotos/areas-externas/791712290.jpg", alt: "Lago da pousada" },
+        { src: "/fotos/areas-externas/791712277.jpg", alt: "Lago e roda d'água" },
+        { src: "/fotos/areas-externas/881575151.jpg", alt: "Pergolado no jardim" },
+        { src: "/fotos/areas-externas/881575153.jpg", alt: "Redes no jardim" },
       ],
     },
     {
-      title: "Churrasqueiras",
+      title: "Lazer ao ar livre",
       images: [
-        { src: "/fotos/churrasqueira-aptos/DJI_0902.jpg", alt: "Churrasqueira da área dos apartamentos" },
-        { src: "/fotos/churrasqueira-aptos/DSC_0269.jpg", alt: "Área de churrasqueira dos apartamentos" },
-        { src: "/fotos/churrasqueira-aptos/DSC_0273.jpg", alt: "Espaço de churrasqueira da pousada" },
-        { src: "/fotos/churrasqueira-chale/DJI_0920.jpg", alt: "Churrasqueira próxima aos chalés" },
-        { src: "/fotos/churrasqueira-chale/DSC_0394.jpg", alt: "Área de churrasqueira dos chalés" },
-        { src: "/fotos/churrasqueira-chale/DSC_0396.jpg", alt: "Detalhe da churrasqueira da ala de chalés" },
+        { src: "/fotos/areas-externas/849030894.jpg", alt: "Campo de futebol" },
+        { src: "/fotos/areas-externas/849032553.jpg", alt: "Quadra esportiva" },
+        { src: "/fotos/areas-externas/881575127.jpg", alt: "Quadra de vôlei" },
+        { src: "/fotos/areas-externas/881575145.jpg", alt: "Área de areia para esportes" },
+        { src: "/fotos/areas-externas/881575149.jpg", alt: "Parquinho infantil" },
+        { src: "/fotos/areas-externas/849036361.jpg", alt: "Redes para descanso" },
       ],
     },
     {
-      title: "Jardins",
+      title: "Café da manhã",
       images: [
-        { src: "/fotos/jardim-aptos/DJI_0903.jpg", alt: "Vista dos jardins da pousada" },
-        { src: "/fotos/jardim-aptos/DJI_0904.jpg", alt: "Área verde da pousada" },
-        { src: "/fotos/jardim-aptos/DSC_0258.jpg", alt: "Jardins e área externa" },
-        { src: "/fotos/jardim-aptos/DSC_0262.jpg", alt: "Caminho pelos jardins" },
-        { src: "/fotos/jardim-aptos/DSC_0267.jpg", alt: "Jardins da pousada em Serra Negra" },
-        { src: "/fotos/jardim-aptos/DSC_0275.jpg", alt: "Área verde e paisagismo da pousada" },
+        { src: "/fotos/cafe-da-manha/791641807.jpg", alt: "Bolo servido no café da manhã" },
+        { src: "/fotos/cafe-da-manha/791641806.jpg", alt: "Mesa de café da manhã" },
+        { src: "/fotos/cafe-da-manha/791641805.jpg", alt: "Pães e quitutes do café da manhã" },
+        { src: "/fotos/cafe-da-manha/791641804.jpg", alt: "Buffet de café da manhã" },
+        { src: "/fotos/cafe-da-manha/791641795.jpg", alt: "Frutas e bebidas do café da manhã" },
+        { src: "/fotos/cafe-da-manha/881575157.jpg", alt: "Café da manhã da pousada" },
       ],
     },
     {
       title: "Sala de jogos",
       images: [
-        { src: "/fotos/Sala de jogos/DSC_0228.jpg", alt: "Sala de jogos da pousada" },
-        { src: "/fotos/Sala de jogos/DSC_0232.jpg", alt: "Área interna da sala de jogos" },
-        { src: "/fotos/Sala de jogos/DSC_0333.jpg", alt: "Mesa e ambiente da sala de jogos" },
-        { src: "/fotos/Sala de jogos/DSC_0334.jpg", alt: "Vista da sala de jogos" },
-        { src: "/fotos/Sala de jogos/DSC_0337.jpg", alt: "Detalhes da sala de jogos" },
-        { src: "/fotos/Sala de jogos/DSC_0346.jpg", alt: "Espaço de lazer com jogos" },
+        { src: "/fotos/sala-de-jogos/881575082.jpg", alt: "Sala de jogos da pousada" },
+        { src: "/fotos/sala-de-jogos/672531136.jpg", alt: "Mesa de bilhar e pebolim" },
+        { src: "/fotos/sala-de-jogos/672531128.jpg", alt: "Tênis de mesa e jogos" },
+        { src: "/fotos/sala-de-jogos/881575079.jpg", alt: "Espaço infantil" },
+        { src: "/fotos/sala-de-jogos/881575100.jpg", alt: "Mesa de tênis de mesa" },
+        { src: "/fotos/sala-de-jogos/881575132.jpg", alt: "Área de jogos" },
       ],
     },
     {
-      title: "Barzinho",
+      title: "Acomodações",
       images: [
-        { src: "/fotos/bar-principal/DJI_0893.jpg", alt: "Vista do bar principal da pousada" },
-        { src: "/fotos/bar-principal/DSC_0256.jpg", alt: "Ambiente do barzinho" },
-        { src: "/fotos/bar-principal/DSC_0276.jpg", alt: "Bar principal da pousada" },
-        { src: "/fotos/bar-principal/DSC_0349.jpg", alt: "Detalhes do bar principal" },
-        { src: "/fotos/bar-principal/porcoes/DSC_0279.jpg", alt: "Porções servidas no barzinho" },
-        { src: "/fotos/bar-principal/porcoes/IMG_6983.jpg", alt: "Petiscos e porções do barzinho" },
+        { src: "/fotos/quartos/triplo/849059556.jpg", alt: "Quarto Triplo" },
+        { src: "/fotos/quartos/triplo/881559363.jpg", alt: "Quarto Triplo da pousada" },
+        { src: "/fotos/quartos/quadruplo/849061453.jpg", alt: "Quarto Quádruplo" },
+        { src: "/fotos/quartos/quadruplo/883982181.jpg", alt: "Quarto Quádruplo da pousada" },
+        { src: "/fotos/quartos/quadruplo-comfort/883982350.jpg", alt: "Quarto Quádruplo Comfort" },
+        { src: "/fotos/quartos/familia/849062686.jpg", alt: "Quarto Família" },
       ],
     },
   ],
@@ -195,7 +195,7 @@ export default function HomeContent({ hotelConfig }: { hotelConfig?: any }) {
     },
   ] as const;
 
-  const WHATSAPP_PHONE = "5519999654866";
+  const WHATSAPP_PHONE = "5519999002288";
   const WHATSAPP_MESSAGE = "Olá! Tenho uma dúvida sobre a hospedagem. Já consultei no site, pode me ajudar?";
   const WHATSAPP_URL = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
   const [activeGalleryPage, setActiveGalleryPage] = useState(0);
@@ -225,7 +225,7 @@ export default function HomeContent({ hotelConfig }: { hotelConfig?: any }) {
             fill
             sizes="100vw"
             className="object-cover object-center"
-            quality={75}
+            quality={90}
             priority
           />
           <div className="absolute inset-0 bg-black/40" />

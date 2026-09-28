@@ -8,7 +8,7 @@ export const metadata = buildPageMetadata({
     description:
         "Fale com a Pousada Villa Verona para tirar dúvidas, solicitar informações sobre hospedagem e receber suporte para sua reserva em Serra Negra.",
     path: "/contato",
-    image: "/fotos/jardim-aptos/DSC_0258.jpg",
+    image: "/fotos/areas-externas/849035185.jpg",
 });
 
 export default function ContactPage() {
@@ -17,7 +17,7 @@ export default function ContactPage() {
             <section className="relative flex min-h-[42vh] items-center justify-center overflow-hidden bg-[color:var(--brand-black)]">
                 <div className="absolute inset-0">
                     <Image
-                        src="/fotos/jardim-aptos/DSC_0258.jpg"
+                        src="/fotos/areas-externas/849035185.jpg"
                         alt="Contato Pousada Villa Verona"
                         fill
                         className="object-cover object-center"
@@ -57,8 +57,8 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-sans font-semibold text-brand-brown-dark">Endereço</h3>
-                                        <p className="text-foreground/72">R. Vicente Frederico Leporas, 151</p>
-                                        <p className="text-foreground/72">Bairro das Posses, Serra Negra - SP, 13930-000</p>
+                                        <p className="text-foreground/72">Rodovia SP-360 (Eng. Geraldo Mantovani), Km 143, s/n – Bairro Almeidas</p>
+                                        <p className="text-foreground/72">Serra Negra - SP, 13930-000</p>
                                     </div>
                                 </div>
 
@@ -69,7 +69,7 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="font-sans font-semibold text-brand-brown-dark">Telefone</h3>
                                         <p className="text-foreground/72">
-                                            <a href="tel:+551938422559" className="hover:text-brand-brown-dark transition-colors">(19) 3842-2559</a>
+                                            <a href="tel:+5519999002288" className="hover:text-brand-brown-dark transition-colors"></a>
                                         </p>
                                     </div>
                                 </div>
@@ -81,8 +81,8 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="font-sans font-semibold text-brand-brown-dark">WhatsApp</h3>
                                         <p className="text-foreground/72">
-                                            <a href="https://wa.me/5519999654866" target="_blank" rel="noopener noreferrer" className="hover:text-brand-brown-dark transition-colors">
-                                                (19) 99965-4866
+                                            <a href="https://wa.me/5519999002288" target="_blank" rel="noopener noreferrer" className="hover:text-brand-brown-dark transition-colors">
+                                                (19) 99900-2288
                                             </a>
                                         </p>
                                     </div>
@@ -116,7 +116,7 @@ export default function ContactPage() {
 
                         <div className="h-[300px] w-full overflow-hidden border border-brand-brown-dark/10">
                             <iframe 
-                                src="https://maps.google.com/maps?q=R.+Vicente+Frederico+Leporas,+151,+Bairro+das+Posses,+Serra+Negra+-+SP,+13930-000&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                src="https://maps.google.com/maps?q=Rodovia+SP-360+Km+143+Bairro+Almeidas+Serra+Negra+SP&t=&z=15&ie=UTF8&iwloc=&output=embed"
                                 width="100%" 
                                 height="100%" 
                                 style={{ border: 0 }} 

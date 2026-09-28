@@ -8,9 +8,9 @@ export default function APousadaPage() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const images = [
-        { src: '/fotos/jardim-aptos/DSC_0267.jpg', alt: 'Piscina e Área de Lazer' },
-        { src: '/fotos/jardim-aptos/DJI_0904.jpg', alt: 'Jardins da Pousada' },
-        { src: '/fotos/Sala de jogos/DSC_0228.jpg', alt: 'Salão de Jogos' }
+        { src: '/fotos/areas-externas/881575120.jpg', alt: 'Piscina e Área de Lazer' },
+        { src: '/fotos/areas-externas/849035180.jpg', alt: 'Jardins da Pousada' },
+        { src: '/fotos/sala-de-jogos/881575082.jpg', alt: 'Salão de Jogos' }
     ];
 
     return (
@@ -18,7 +18,7 @@ export default function APousadaPage() {
             <section className="relative flex min-h-[42vh] items-center justify-center overflow-hidden bg-[color:var(--brand-black)]">
                 <div className="absolute inset-0">
                     <Image
-                        src="/fotos/jardim-aptos/DSC_0267.jpg"
+                        src="/fotos/areas-externas/849035180.jpg"
                         alt="A Pousada Villa Verona"
                         fill
                         className="object-cover object-center"

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 const FALLBACK_SITE_URL = "http://localhost:3005";
 
-export const DEFAULT_OG_IMAGE = "/fotos/piscina-aptos/DJI_0845.jpg";
+export const DEFAULT_OG_IMAGE = "/fotos/areas-externas/849028896.jpg";
 
 const BUSINESS_NAME = "Pousada Villa Verona";
 const BUSINESS_DESCRIPTION =
@@ -121,11 +121,11 @@ export function buildLodgingBusinessSchema() {
     description: BUSINESS_DESCRIPTION,
     url: absoluteUrl("/"),
     image: absoluteUrl(DEFAULT_OG_IMAGE),
-    telephone: "+55 19 3842-2559",
+    telephone: "+55 19 99900-2288",
     email: "contato@pousadavillaverona.com.br",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "R. Vicente Frederico Leporas, 151",
+      streetAddress: "Rodovia SP-360 (Eng. Geraldo Mantovani), Km 143, s/n – Bairro Almeidas",
       addressLocality: "Serra Negra",
       addressRegion: "SP",
       postalCode: "13930-000",

@@ -161,7 +161,7 @@ export default function SearchWidget({
             `Datas: ${checkInStr} a ${checkOutStr}.\n` +
             `(Nossas acomodações comportam até 4 pessoas por quarto, conforme disponibilidade. Para grupos maiores, fale com a gente no WhatsApp.)`;
 
-        const whatsappPhone = '5519999654866';
+        const whatsappPhone = '5519999002288';
         const url = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`;
         trackClickWhatsApp('search_widget_capacidade');
         window.open(url, '_blank');

@@ -13,7 +13,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const WHATSAPP_PHONE = '5519999654866';
+const WHATSAPP_PHONE = '5519999002288';
 const WHATSAPP_MESSAGE = 'Olá! Tenho uma dúvida sobre a hospedagem. Já consultei no site, pode me ajudar?';
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 const SCROLL_SHOW_THRESHOLD = 0.25;

@@ -1,111 +1,30 @@
-/**
- * Mapeamento de tipos de quartos para suas respectivas pastas de fotos locais
- */
+/** Fotos locais dos quartos da Pousada Villa Verona. */
 
-export const ROOM_PHOTO_MAPPING: Record<string, string> = {
-    'Apartamento Anexo': '/fotos/ala-chales/apartamentos-anexo',
-    'Chalé': '/fotos/ala-chales/chales',
-    'Apartamento Superior': '/fotos/ala-principal/apartamentos/superior',
-    'Apartamento Térreo': '/fotos/ala-principal/apartamentos/terreo',
+const ROOM_PHOTO_IDS: Record<string, string[]> = {
+    'Quarto Triplo': '849059554 849059556 849059561 849059564 849059574 881559248 881559363 881559374 881559465 881559500 881559529 881559608 881559624 881559694 881559897 883979181 883979187 883979188 883979191 883979193 883979195 883979197 883979201 883979312 883979329 883979340 883979346 883979347 883979356 883979359 883979361 883979365 883979381 883979383 883979386 883979387 883979929 883979931 883979941 883981966 883981970 883981973 883981982 883981989 883982006'.split(' '),
+    'Quarto Quádruplo': '883982143 849061453 849061460 849061466 849061486 849061495 881571908 881571947 881571962 881571966 883982109 883982110 883982144 883982164 883982171 883982181 883982189 883982191 883982210 883982226 883982227 883982237 883982246 883982251 883982263 883982269 883982272 883982273 883982284 883982288 883982315 883982318 883982321 883982326 883982331 883982333 883982334 883982342'.split(' '),
+    'Quarto Quádruplo Comfort': '883982387 849062238 849062247 881559694 883979931 883982350 883982358 883982371 883982374 883982379 883982388 883982389 883982396 883982399 883982418 883982423 883982424 883982428 883982431 883982432 883982441 883982449 883982463 883982465 883982473'.split(' '),
+    'Quarto Família': '849062226 849062247 849062686 849062725 849062736 881559694 881573029 883982425 883982446 883982459 883982466 883982467 883982480 883982482 883982484 883982487 883982488'.split(' '),
 };
 
-/**
- * Função para obter fotos locais de um quarto baseado no seu tipo
- * @param roomName - Nome do tipo de quarto
- * @returns Array de URLs de fotos locais ou null se não houver mapeamento
- */
+const ROOM_FOLDERS: Record<string, string> = {
+    'Quarto Triplo': 'triplo',
+    'Quarto Quádruplo': 'quadruplo',
+    'Quarto Quádruplo Comfort': 'quadruplo-comfort',
+    'Quarto Família': 'familia',
+};
+
+export const ROOM_PHOTO_MAPPING: Record<string, string> = Object.fromEntries(
+    Object.entries(ROOM_FOLDERS).map(([roomName, folder]) => [roomName, `/fotos/quartos/${folder}`]),
+);
+
 export function getLocalRoomPhotos(roomName: string): string[] | null {
-    const basePath = ROOM_PHOTO_MAPPING[roomName];
-    if (!basePath) {
+    const folder = ROOM_FOLDERS[roomName];
+    const photoIds = ROOM_PHOTO_IDS[roomName];
+
+    if (!folder || !photoIds) {
         return null;
     }
 
-    // Mapeamento específico de fotos para cada tipo de quarto
-    const roomPhotoMap: Record<string, string[]> = {
-        'Apartamento Anexo': [
-            `${basePath}/IMG_0029-1200.webp`,
-            `${basePath}/IMG_0030-1200.webp`,
-            `${basePath}/IMG_0031-1200.webp`,
-            `${basePath}/IMG_0033-1200.webp`,
-            `${basePath}/IMG_0034-1200.webp`,
-            `${basePath}/IMG_0037-1200.webp`,
-            `${basePath}/IMG_0038-1200.webp`,
-            `${basePath}/IMG_0040-1200.webp`,
-            `${basePath}/IMG_0042-1200.webp`,
-            `${basePath}/IMG_0044-1200.webp`,
-            `${basePath}/IMG_0046-1200.webp`,
-            `${basePath}/IMG_0048-1200.webp`,
-            `${basePath}/IMG_0050-1200.webp`,
-            `${basePath}/IMG_0051-1200.webp`,
-            `${basePath}/IMG_0054-1200.webp`,
-            `${basePath}/IMG_0055-1200.webp`,
-            `${basePath}/IMG_0056-1200.webp`,
-            `${basePath}/IMG_0058-1200.webp`,
-            `${basePath}/IMG_0059-1200.webp`,
-            `${basePath}/IMG_0069-1200.webp`,
-            `${basePath}/IMG_0070-1200.webp`,
-            `${basePath}/IMG_0072-1200.webp`,
-            `${basePath}/IMG_0073-1200.webp`,
-            `${basePath}/IMG_0074-1200.webp`,
-            `${basePath}/IMG_0075-1200.webp`,
-            `${basePath}/IMG_0077-1200.webp`,
-            `${basePath}/IMG_0078-1200.webp`,
-            `${basePath}/IMG_0080-1200.webp`,
-            `${basePath}/IMG_0081-1200.webp`,
-            `${basePath}/IMG_0085-1200.webp`,
-            `${basePath}/IMG_0087-1200.webp`,
-            `${basePath}/IMG_0088-1200.webp`,
-            `${basePath}/IMG_0089-1200.webp`,
-            `${basePath}/IMG_0094-1200.webp`,
-            `${basePath}/IMG_0096-1200.webp`,
-            `${basePath}/IMG_0097-1200.webp`,
-            `${basePath}/IMG_0100-1200.webp`,
-            `${basePath}/IMG_0101-1200.webp`,
-            `${basePath}/IMG_0103-1200.webp`,
-            `${basePath}/IMG_0104-1200.webp`,
-            `${basePath}/IMG_0106-1200.webp`,
-            `${basePath}/IMG_0107-1200.webp`,
-        ],
-        'Chalé': [
-            `${basePath}/IMG_0109-1200.webp`,
-            `${basePath}/IMG_0110-1200.webp`,
-            `${basePath}/IMG_0111-1200.webp`,
-            `${basePath}/IMG_0112-1200.webp`,
-            `${basePath}/IMG_0114-1200.webp`,
-            `${basePath}/IMG_0115-1200.webp`,
-            `${basePath}/IMG_0117-1200.webp`,
-            `${basePath}/IMG_0118-1200.webp`,
-            `${basePath}/IMG_0120-1200.webp`,
-            `${basePath}/IMG_0121-1200.webp`,
-            `${basePath}/IMG_0122-1200.webp`,
-            `${basePath}/IMG_0125-1200.webp`,
-        ],
-        'Apartamento Superior': [
-            `${basePath}/DSC_0039-1200.webp`,
-            `${basePath}/DSC_0041-1200.webp`,
-            `${basePath}/DSC_0043-1200.webp`,
-            `${basePath}/DSC_0045-1200.webp`,
-            `${basePath}/DSC_0046-1200.webp`,
-            `${basePath}/DSC_0047-1200.webp`,
-            `${basePath}/DSC_0050-1200.webp`,
-            `${basePath}/DSC_0051-1200.webp`,
-            `${basePath}/DSC_0058-1200.webp`,
-        ],
-        'Apartamento Térreo': [
-            `${basePath}/com-janela/DSC_0001-1200.webp`,
-            `${basePath}/com-janela/DSC_0003-1200.webp`,
-            `${basePath}/com-janela/DSC_0005-1200.webp`,
-            `${basePath}/com-janela/DSC_0006-1200.webp`,
-            `${basePath}/com-janela/DSC_0009-1200.webp`,
-            `${basePath}/com-janela/DSC_0010-1200.webp`,
-            `${basePath}/com-janela/DSC_0015-1200.webp`,
-            `${basePath}/com-janela/DSC_0017-1200.webp`,
-            `${basePath}/com-janela/DSC_0018-1200.webp`,
-            `${basePath}/com-janela/DSC_0022-1200.webp`,
-            `${basePath}/com-janela/DSC_0024-1200.webp`,
-            `${basePath}/com-janela/DSC_0027-1200.webp`,
-        ],
-    };
-
-    return roomPhotoMap[roomName] || [`${basePath}/DSC_0001-1200.webp`];
+    return photoIds.map((photoId) => `/fotos/quartos/${folder}/${photoId}.jpg`);
 }

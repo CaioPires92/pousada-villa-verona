@@ -7,45 +7,22 @@ export const metadata = buildPageMetadata({
     description:
         "Conheça o restaurante e o café da manhã da Pousada Villa Verona em Serra Negra. Ambiente acolhedor para começar o dia com tranquilidade.",
     path: "/restaurante",
-    image: "/fotos/restaurante/DSC_0002.jpg",
+    image: "/fotos/cafe-da-manha/791641806.jpg",
 });
 
 const restaurantImages = [
-    '/fotos/restaurante/DSC_0002.jpg',
-    '/fotos/restaurante/DSC_0006.jpg',
-    '/fotos/restaurante/DSC_0007.jpg',
-    '/fotos/restaurante/DSC_0009.jpg',
-    '/fotos/restaurante/DSC_0010.jpg',
-    '/fotos/restaurante/DSC_0011.jpg',
-    '/fotos/restaurante/DSC_0013.jpg',
-    '/fotos/restaurante/DSC_0018.jpg',
-    '/fotos/restaurante/DSC_0025.jpg',
-    '/fotos/restaurante/DSC_0026.jpg',
-    '/fotos/restaurante/DSC_0033.jpg',
-    '/fotos/restaurante/DSC_0035.jpg',
-    '/fotos/restaurante/DSC_0045.jpg',
-    '/fotos/restaurante/DSC_0051.jpg',
-    '/fotos/restaurante/DSC_0052.jpg',
-    '/fotos/restaurante/DSC_0053.jpg',
-    '/fotos/restaurante/DSC_0056.jpg',
-    '/fotos/restaurante/DSC_0060.jpg',
-    '/fotos/restaurante/DSC_0063.jpg',
-    '/fotos/restaurante/DSC_0068.jpg',
-    '/fotos/restaurante/DSC_0072.jpg',
-    '/fotos/restaurante/DSC_0074.jpg',
-    '/fotos/restaurante/DSC_0075.jpg',
-    '/fotos/restaurante/DSC_0076.jpg',
-    '/fotos/restaurante/DSC_0082.jpg',
-    '/fotos/restaurante/DSC_0084.jpg',
-    '/fotos/restaurante/DSC_0094.jpg',
-    '/fotos/restaurante/IMG_0001.jpg',
-    '/fotos/restaurante/IMG_0003.jpg',
-    '/fotos/restaurante/IMG_0009.jpg',
-    '/fotos/restaurante/IMG_0012.jpg',
-    '/fotos/restaurante/IMG_0018.jpg',
-    '/fotos/restaurante/IMG_0020.jpg',
-    '/fotos/restaurante/IMG_0024.jpg',
-    '/fotos/restaurante/IMG_0025.webp'
+    '/fotos/cafe-da-manha/791641807.jpg',
+    '/fotos/cafe-da-manha/791641806.jpg',
+    '/fotos/cafe-da-manha/791641805.jpg',
+    '/fotos/cafe-da-manha/791641801.jpg',
+    '/fotos/cafe-da-manha/791641804.jpg',
+    '/fotos/cafe-da-manha/791641803.jpg',
+    '/fotos/cafe-da-manha/791641795.jpg',
+    '/fotos/cafe-da-manha/791641809.jpg',
+    '/fotos/cafe-da-manha/791641783.jpg',
+    '/fotos/cafe-da-manha/791641802.jpg',
+    '/fotos/cafe-da-manha/791641618.jpg',
+    '/fotos/cafe-da-manha/881575157.jpg'
 ];
 
 export default function RestaurantPage() {
@@ -54,7 +31,7 @@ export default function RestaurantPage() {
             <section className="relative flex min-h-[42vh] items-center justify-center overflow-hidden bg-[color:var(--brand-black)]">
                 <div className="absolute inset-0">
                     <Image
-                        src="/fotos/restaurante/DSC_0002.jpg"
+                        src="/fotos/cafe-da-manha/791641806.jpg"
                         alt="Restaurante Pousada Villa Verona"
                         fill
                         className="object-cover object-center"

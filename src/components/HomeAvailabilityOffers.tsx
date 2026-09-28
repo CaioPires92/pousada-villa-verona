@@ -110,13 +110,14 @@ function isValidOfferPhotoUrl(url: string) {
 }
 
 function getOfferPhotos(room: HomeOffer) {
+  const localPhotos = getLocalRoomPhotos(room.name);
+  if (localPhotos?.length) return localPhotos;
+
   const registeredPhotos = (room.photos ?? [])
     .map((photo) => String(photo?.url || "").trim())
     .filter(isValidOfferPhotoUrl);
 
-  if (registeredPhotos.length > 0) return registeredPhotos;
-
-  return getLocalRoomPhotos(room.name) ?? [];
+  return registeredPhotos;
 }
 
 async function requestOffers(search: OfferSearch, signal: AbortSignal) {

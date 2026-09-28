@@ -23,8 +23,8 @@ export default function HomePage() {
             <HomeContent hotelConfig={{
                 name: process.env.HOTEL_NAME || "Pousada",
                 email: process.env.HOTEL_EMAIL || process.env.CONTACT_RECEIVER_EMAIL || "reservas@villaverona.com.br",
-                whatsapp: process.env.NEXT_PUBLIC_HOTEL_WHATSAPP || process.env.HOTEL_WHATSAPP || "551938422559",
-                whatsappLink: process.env.NEXT_PUBLIC_HOTEL_WHATSAPP_LINK || process.env.HOTEL_WHATSAPP_LINK || "https://wa.me/551938422559",
+                whatsapp: process.env.NEXT_PUBLIC_HOTEL_WHATSAPP || process.env.HOTEL_WHATSAPP || "5519999002288",
+                whatsappLink: process.env.NEXT_PUBLIC_HOTEL_WHATSAPP_LINK || process.env.HOTEL_WHATSAPP_LINK || "https://wa.me/5519999002288",
                 address: process.env.HOTEL_ADDRESS || "Serra Negra - SP"
             }} />
         </Suspense>

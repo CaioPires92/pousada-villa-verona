@@ -1,6 +1,6 @@
 import { formatDatePtBrLong } from "@/lib/date";
 
-const DEFAULT_WHATSAPP_PHONE = '5519999654866';
+const DEFAULT_WHATSAPP_PHONE = '5519999002288';
 
 export function normalizeWhatsAppPhone(value: unknown) {
     const digits = String(value || '').replace(/\D/g, '');

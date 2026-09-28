@@ -8,10 +8,10 @@ export default function Testimonials() {
       initial: "D",
       text: "Minha experiência foi incrível. Tudo impecável! Café da manhã, localização, vista, instalações, limpeza, tudo maravilho. Indico!!!...",
       photos: [
-        "/fotos/piscina-aptos/DJI_0845.jpg", 
-        "/fotos/ala-principal/apartamentos/superior/DSC_0069-1200.webp", 
-        "/fotos/piscina-aptos/DJI_0863.jpg", 
-        "/fotos/restaurante/DSC_0056.jpg"
+        "/fotos/areas-externas/849028896.jpg",
+        "/fotos/quartos/triplo/849059556.jpg",
+        "/fotos/areas-externas/881575120.jpg",
+        "/fotos/cafe-da-manha/791641806.jpg"
       ],
       extraPhotos: 0
     },
@@ -20,10 +20,10 @@ export default function Testimonials() {
       initial: "S",
       text: "Experiência incrível! Tudo perfeito! Um lugar para carregar a bateria. Saímos de lá abastecidos. Já quero voltar. Vocês estão de parabéns!",
       photos: [
-        "/fotos/ala-chales/chales/IMG_0125-1200.webp", 
-        "/fotos/restaurante/IMG_0025.webp", 
-        "/fotos/jardim-aptos/DJI_0904.jpg", 
-        "/fotos/jardim-aptos/DSC_0267.jpg"
+        "/fotos/quartos/familia/849062686.jpg",
+        "/fotos/cafe-da-manha/791641805.jpg",
+        "/fotos/areas-externas/849034796.jpg",
+        "/fotos/areas-externas/849035180.jpg"
       ],
       extraPhotos: 2
     },
@@ -32,10 +32,10 @@ export default function Testimonials() {
       initial: "R",
       text: "Vivemos dias Incríveis nesse lugar!!!\n\n A Recepção da Luciana foi excepcional....",
       photos: [
-        "/fotos/bar-principal/porcoes/DSC_0279.jpg", 
-        "/fotos/bar-principal/porcoes/IMG_6983.jpg", 
-        "/fotos/piscina-chale/DJI_0916.jpg", 
-        "/fotos/piscina-chale/DSC_0370.jpg"
+        "/fotos/cafe-da-manha/791641807.jpg",
+        "/fotos/cafe-da-manha/791641804.jpg",
+        "/fotos/areas-externas/881575135.jpg",
+        "/fotos/areas-externas/849034797.jpg"
       ],
       extraPhotos: 6
     },
@@ -44,10 +44,10 @@ export default function Testimonials() {
       initial: "D",
       text: "Um lugar perfeito e romântico , olhando pelas fotos do site parece até ser de mentira , mas é real e muito melhor !!! Eu garanto , um luxo...",
       photos: [
-        "/fotos/churrasqueira-aptos/DJI_0902.jpg", 
-        "/fotos/churrasqueira-aptos/DSC_0273.jpg", 
-        "/fotos/Sala de jogos/DSC_0333.jpg", 
-        "/fotos/Sala de jogos/DSC_0334.jpg"
+        "/fotos/areas-externas/881575151.jpg",
+        "/fotos/areas-externas/881575153.jpg",
+        "/fotos/sala-de-jogos/881575082.jpg",
+        "/fotos/sala-de-jogos/672531136.jpg"
       ],
       extraPhotos: 2
     }

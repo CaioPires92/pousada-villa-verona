@@ -69,18 +69,18 @@ describe('ReservarPage', () => {
     const mockRooms = [
       {
         id: 'room-1',
-        name: 'Apartamento Térreo',
-        description: 'Quarto térreo',
-        capacity: 2,
+        name: 'Quarto Triplo',
+        description: 'Quarto para até três hóspedes',
+        capacity: 3,
         amenities: 'Wifi',
         totalPrice: 500,
         photos: [{ url: 'https://picsum.photos/seed/terreo1/600/400' }],
       },
       {
         id: 'room-2',
-        name: 'Apartamento Anexo',
-        description: 'Quarto anexo',
-        capacity: 2,
+        name: 'Outra acomodação',
+        description: 'Quarto sem mapeamento local',
+        capacity: 6,
         amenities: 'Wifi',
         totalPrice: 500,
         photos: [{ url: 'https://cdn.example.com/real-photo.jpg' }],
@@ -98,19 +98,19 @@ describe('ReservarPage', () => {
     render(<ReservarPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Apartamento Térreo')).toBeInTheDocument();
-      expect(screen.getByText('Apartamento Anexo')).toBeInTheDocument();
+      expect(screen.getByText('Quarto Triplo')).toBeInTheDocument();
+      expect(screen.getByText('Outra acomodação')).toBeInTheDocument();
     });
     expect(screen.getAllByRole('heading', { name: /Escolha sua Acomodação/i })).toHaveLength(1);
     const resultsContainer = screen.getByRole('heading', { name: /Escolha sua Acomodação/i })
       .closest('main')?.firstElementChild;
     expect(resultsContainer).toHaveClass('max-w-[1440px]');
 
-    const terreoImg = screen.getByAltText('Apartamento Térreo') as HTMLImageElement;
-    expect(terreoImg.getAttribute('src')).toBe('/fotos/ala-principal/apartamentos/terreo/com-janela/DSC_0001-1200.webp');
+    const triploImg = screen.getByAltText('Quarto Triplo') as HTMLImageElement;
+    expect(triploImg.getAttribute('src')).toBe('/fotos/quartos/triplo/849059554.jpg');
 
-    const anexoImg = screen.getByAltText('Apartamento Anexo') as HTMLImageElement;
-    expect(anexoImg.getAttribute('src')).toBe('https://cdn.example.com/real-photo.jpg');
+    const backendImg = screen.getByAltText('Outra acomodação') as HTMLImageElement;
+    expect(backendImg.getAttribute('src')).toBe('https://cdn.example.com/real-photo.jpg');
     expect(screen.queryByText(/Melhor tarifa garantida/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Reserva 100% Segura/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/criptografia SSL/i)).not.toBeInTheDocument();

@@ -58,11 +58,11 @@ export function RoomCard({ room }: RoomCardProps) {
         .filter((url): url is string => Boolean(url));
 
     const backendRealPhotoUrls = backendPhotoUrls.filter((url) => !isPlaceholderUrl(url));
-    const hasBackendPhoto = backendRealPhotoUrls.length > 0;
+    const localPhotos = getLocalRoomPhotos(room.name);
 
-    const localPhotos = !hasBackendPhoto ? getLocalRoomPhotos(room.name) : null;
-
-    const displayPhotos = hasBackendPhoto ? backendRealPhotoUrls : (localPhotos || []);
+    // Quartos conhecidos da Villa Verona sempre usam a galeria local correta.
+    // URLs do banco ficam como fallback apenas para acomodações sem mapeamento.
+    const displayPhotos = localPhotos?.length ? localPhotos : backendRealPhotoUrls;
 
     const hasPhoto = displayPhotos.length > 0;
     const primaryDisplayUrl = hasPhoto ? displayPhotos[0] : null;
