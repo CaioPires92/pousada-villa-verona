@@ -13,11 +13,8 @@ import {
     Clock,
     CheckCircle2,
     XCircle,
-    HelpCircle,
     MessageCircle,
-    Trash2,
     TestTube2,
-    Tag,
     Link2,
     MailCheck
 } from 'lucide-react';
@@ -87,7 +84,9 @@ export default function BookingRowCard(props: BookingRowCardProps) {
 
     const childrenAges = normalizeChildrenAges(booking.childrenAges);
     const bookingApproved = isBookingApproved(booking);
-    const bookingConfirmed = String(booking.status || '').toUpperCase() === 'CONFIRMED';
+    const bookingStatus = String(booking.status || '').toUpperCase();
+    const bookingConfirmed = bookingStatus === 'CONFIRMED';
+    const bookingPending = bookingStatus === 'PENDING';
     const checkIn = formatDateSafe(getBookingOperationalDate(booking));
     const checkOut = formatDateSafe(getBookingCheckOutDate(booking));
     const partialPayment = String(booking.payment?.paymentMode || '').toUpperCase() === 'PARTIAL'
@@ -141,34 +140,8 @@ export default function BookingRowCard(props: BookingRowCardProps) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56 rounded-xl border-slate-200 shadow-xl">
                             <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-slate-400 font-bold px-3 py-2">
-                                Comunicação
+                                Atendimento
                             </DropdownMenuLabel>
-                            <DropdownMenuItem 
-                                onClick={() => triggerAction('assist')}
-                                className="gap-2 cursor-pointer font-semibold py-2.5"
-                            >
-                                <HelpCircle className="w-4 h-4 text-blue-500" />
-                                Enviar Ajuda
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => triggerAction('discount')}
-                                disabled={!booking.guest.email && !booking.guest.phone}
-                                className="gap-2 cursor-pointer font-semibold py-2.5 text-violet-700"
-                            >
-                                <Tag className="w-4 h-4" />
-                                Convidar para voltar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => triggerAction('payment-link')}
-                                disabled={
-                                    bookingApproved
-                                    || ['CANCELLED', 'EXPIRED', 'REFUNDED'].includes(String(booking.status || '').toUpperCase())
-                                }
-                                className="gap-2 cursor-pointer font-semibold py-2.5 text-sky-700"
-                            >
-                                <Link2 className="w-4 h-4" />
-                                Gerar link de pagamento
-                            </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => {
                                     if (whatsappUrl) window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
@@ -177,36 +150,56 @@ export default function BookingRowCard(props: BookingRowCardProps) {
                                 className="gap-2 cursor-pointer font-semibold py-2.5"
                             >
                                 <MessageCircle className="w-4 h-4 text-emerald-500" />
-                                Chamar no WhatsApp
+                                Abrir WhatsApp
                             </DropdownMenuItem>
 
-                            <DropdownMenuSeparator />
-                            <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-slate-400 font-bold px-3 py-2">
-                                Gerenciar reserva
-                            </DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() => triggerAction('confirm')}
-                                disabled={bookingConfirmed}
-                                className="gap-2 cursor-pointer font-semibold py-2.5"
-                            >
-                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                Confirmar Reserva
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => triggerAction('hotel-confirmation')}
-                                disabled={!bookingConfirmed}
-                                className="gap-2 cursor-pointer font-semibold py-2.5 text-emerald-700"
-                            >
-                                <MailCheck className="w-4 h-4" />
-                                Reenviar confirmação ao hotel
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => triggerAction('expire')}
-                                className="gap-2 cursor-pointer font-semibold py-2.5"
-                            >
-                                <Clock className="w-4 h-4 text-amber-500" />
-                                Marcar como Expirada
-                            </DropdownMenuItem>
+                            {bookingPending && !bookingApproved ? (
+                                <DropdownMenuItem
+                                    onClick={() => triggerAction('payment-link')}
+                                    className="gap-2 cursor-pointer font-semibold py-2.5 text-sky-700"
+                                >
+                                    <Link2 className="w-4 h-4" />
+                                    Gerar link de pagamento
+                                </DropdownMenuItem>
+                            ) : null}
+
+                            {(bookingPending || bookingConfirmed || testPaymentsEnabled) ? (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-slate-400 font-bold px-3 py-2">
+                                        Reserva
+                                    </DropdownMenuLabel>
+                                </>
+                            ) : null}
+
+                            {bookingPending ? (
+                                <>
+                                    <DropdownMenuItem
+                                        onClick={() => triggerAction('confirm')}
+                                        className="gap-2 cursor-pointer font-semibold py-2.5"
+                                    >
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                        Confirmar reserva
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={() => triggerAction('expire')}
+                                        className="gap-2 cursor-pointer font-semibold py-2.5"
+                                    >
+                                        <Clock className="w-4 h-4 text-amber-500" />
+                                        Marcar como expirada
+                                    </DropdownMenuItem>
+                                </>
+                            ) : null}
+
+                            {bookingConfirmed ? (
+                                <DropdownMenuItem
+                                    onClick={() => triggerAction('hotel-confirmation')}
+                                    className="gap-2 cursor-pointer font-semibold py-2.5 text-emerald-700"
+                                >
+                                    <MailCheck className="w-4 h-4" />
+                                    Reenviar confirmação
+                                </DropdownMenuItem>
+                            ) : null}
 
                             {testPaymentsEnabled && (
                                 <DropdownMenuItem
@@ -218,15 +211,6 @@ export default function BookingRowCard(props: BookingRowCardProps) {
                                         Aprovar Teste
                                     </DropdownMenuItem>
                             )}
-                            
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                                onClick={() => triggerAction('delete')}
-                                className="gap-2 cursor-pointer font-semibold py-2.5 text-red-600 focus:text-red-700 focus:bg-red-50"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                                Excluir Permanentemente
-                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     {showActionBusy ? <small className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 text-right">Processando...</small> : null}

@@ -1,4 +1,5 @@
 {
+  "buildCommand": "node prisma/bootstrap-turso.js && npm run build",
   "crons": [
     {
       "path": "/api/cron/cleanup-bookings",
