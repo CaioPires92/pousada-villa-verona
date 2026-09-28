@@ -40,4 +40,56 @@ npm run dev:web
 
 O servidor local abre na porta `3005`.
 
+## Trabalhar em outro computador
+
+### Primeira vez: clonar o projeto
+
+```bash
+git clone https://github.com/CaioPires92/pousada-villa-verona.git
+cd pousada-villa-verona
+npm ci
+cp .env.example .env
+npm run dev:web
+```
+
+No Windows PowerShell, use `Copy-Item .env.example .env` no lugar de `cp .env.example .env`.
+
+O comando `npm ci` instala exatamente as versões registradas no `package-lock.json`. Neste projeto ele também executa `npm run prisma:generate` automaticamente, portanto normalmente não é necessário rodar o comando do Prisma separadamente.
+
+O arquivo `.env` não vem pelo Git porque contém senhas e tokens. Preencha o `.env` local com credenciais de desenvolvimento. As credenciais de produção permanecem protegidas nas variáveis da Vercel e não precisam ser copiadas para o computador.
+
+### Projeto já clonado: receber atualizações
+
+Antes de atualizar, confirme se existem alterações locais:
+
+```bash
+git status
+git pull origin main
+npm ci
+npm run dev:web
+```
+
+Use `npm ci` depois do `git pull` quando `package.json` ou `package-lock.json` tiver mudado. Caso contrário, normalmente basta executar `npm run dev:web`.
+
+### Quando usar `npm i`
+
+Use `npm i` ou `npm install` somente quando precisar adicionar ou atualizar uma biblioteca:
+
+```bash
+npm i nome-da-biblioteca
+```
+
+Esse comando pode alterar `package.json` e `package-lock.json`. Para apenas reproduzir o projeto em outro computador, prefira `npm ci`.
+
+### Enviar suas alterações
+
+```bash
+git status
+git add arquivos-alterados
+git commit -m "descrição da alteração"
+git push origin main
+```
+
+O push para a branch `main` inicia o deploy da Vercel usando as variáveis de produção cadastradas no projeto.
+
 Para uma orientação assistida, use a skill local [`new-pousada-reservas`](.codex/skills/new-pousada-reservas/SKILL.md).
