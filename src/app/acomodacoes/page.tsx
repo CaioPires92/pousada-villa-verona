@@ -15,7 +15,7 @@ export const metadata: Metadata = buildPageMetadata({
     description:
         "Conheça as acomodações da Pousada Villa Verona em Serra Negra. Compare alas, quartos, capacidade e consulte disponibilidade online.",
     path: "/acomodacoes",
-    image: "/fotos/quartos/triplo/849059556.jpg",
+    image: "/fotos/quartos/triplo/849059554.jpg",
     keywords: [
         "acomodações em Serra Negra",
         "quartos em Serra Negra",
@@ -46,7 +46,7 @@ export default async function RoomsPage() {
             <section className="relative flex min-h-[42vh] items-center justify-center overflow-hidden bg-[color:var(--brand-black)]">
                 <div className="absolute inset-0">
                     <Image
-                        src="/fotos/areas-externas/849034796.jpg"
+                        src="/fotos/quartos/triplo/849059554.jpg"
                         alt="Acomodações Pousada Villa Verona"
                         fill
                         className="object-cover object-center"
