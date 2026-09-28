@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "prisma:generate": "node ./node_modules/prisma/build/index.js generate",
+        "setup:local": "node scripts/shared/setup-local.js",
         "dev": "bash ./scripts/shared/dev-all.sh",
         "dev:web": "npm run prisma:generate && next dev --webpack -H 0.0.0.0 -p 3005",
         "dev:all": "bash ./scripts/shared/dev-all.sh",

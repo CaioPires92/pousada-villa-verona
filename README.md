@@ -47,16 +47,13 @@ O servidor local abre na porta `3005`.
 ```bash
 git clone https://github.com/CaioPires92/pousada-villa-verona.git
 cd pousada-villa-verona
-npm ci
-cp .env.example .env
+npm run setup:local
 npm run dev:web
 ```
 
-No Windows PowerShell, use `Copy-Item .env.example .env` no lugar de `cp .env.example .env`.
+O comando `npm run setup:local` funciona em Linux, macOS e Windows. Ele instala as dependências, solicita o login da Vercel, vincula o projeto, baixa as variáveis de desenvolvimento, cria segredos locais e prepara um banco SQLite local. As credenciais de produção permanecem protegidas na Vercel e não são copiadas para o computador.
 
-O comando `npm ci` instala exatamente as versões registradas no `package-lock.json`. Neste projeto ele também executa `npm run prisma:generate` automaticamente, portanto normalmente não é necessário rodar o comando do Prisma separadamente.
-
-O arquivo `.env` não vem pelo Git porque contém senhas e tokens. Preencha o `.env` local com credenciais de desenvolvimento. As credenciais de produção permanecem protegidas nas variáveis da Vercel e não precisam ser copiadas para o computador.
+O arquivo gerado é `.env.local`. Ele é ignorado pelo Git e não deve ser enviado manualmente para outro computador.
 
 ### Projeto já clonado: receber atualizações
 
