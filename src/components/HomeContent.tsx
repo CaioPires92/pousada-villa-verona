@@ -43,7 +43,7 @@ const siteImages = {
     },
     annexWing: {
       src: "/fotos/quartos/familia/849062686.jpg",
-      alt: "Quarto Família da Pousada Villa Verona",
+      alt: "Quarto Quíntuplo da Pousada Villa Verona",
     },
   },
   leisure: {
@@ -140,7 +140,7 @@ const siteImages = {
         { src: "/fotos/quartos/quadruplo/849061453.jpg", alt: "Quarto Quádruplo" },
         { src: "/fotos/quartos/quadruplo/883982181.jpg", alt: "Quarto Quádruplo da pousada" },
         { src: "/fotos/quartos/quadruplo-comfort/883982350.jpg", alt: "Quarto Quádruplo Comfort" },
-        { src: "/fotos/quartos/familia/849062686.jpg", alt: "Quarto Família" },
+        { src: "/fotos/quartos/familia/849062686.jpg", alt: "Quarto Quíntuplo" },
       ],
     },
   ],

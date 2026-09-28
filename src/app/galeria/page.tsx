@@ -18,7 +18,7 @@ const PHOTO_GROUPS = [
   { directory: "quartos/triplo", label: "Quarto Triplo", prefix: "Quarto Triplo" },
   { directory: "quartos/quadruplo", label: "Quarto Quádruplo", prefix: "Quarto Quádruplo" },
   { directory: "quartos/quadruplo-comfort", label: "Quarto Comfort", prefix: "Quarto Quádruplo Comfort" },
-  { directory: "quartos/familia", label: "Quarto Família", prefix: "Quarto Família" },
+  { directory: "quartos/familia", label: "Quarto Quíntuplo", prefix: "Quarto Quíntuplo" },
   { directory: "cafe-da-manha", label: "Café da manhã", prefix: "Café da manhã" },
   { directory: "sala-de-jogos", label: "Sala de jogos", prefix: "Sala de jogos" },
 ] as const;

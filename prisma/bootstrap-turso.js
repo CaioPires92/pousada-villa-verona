@@ -7,6 +7,7 @@ const { createClient } = require('@libsql/client');
 const rooms = [
   {
     name: 'Quarto Triplo',
+    externalId: '121672',
     description: 'Ideal para casais com 1 filho ou pequenos grupos de amigos que buscam conforto e ótimo custo-benefício.',
     capacity: 3,
     maxGuests: 3,
@@ -17,6 +18,7 @@ const rooms = [
   },
   {
     name: 'Quarto Quádruplo',
+    externalId: '121674',
     description: 'Prático e funcional para famílias com duas crianças ou grupos de amigos.',
     capacity: 4,
     maxGuests: 4,
@@ -27,6 +29,7 @@ const rooms = [
   },
   {
     name: 'Quarto Quádruplo Comfort',
+    externalId: '121673',
     description: 'Para hóspedes que priorizam mais espaço e conveniência durante a estadia.',
     capacity: 4,
     maxGuests: 4,
@@ -36,10 +39,12 @@ const rooms = [
     photo: '/fotos/quartos/quadruplo-comfort/883982350.jpg',
   },
   {
-    name: 'Quarto Família',
-    description: 'Perfeito para famílias grandes que desejam ficar juntas no mesmo ambiente.',
-    capacity: 6,
-    maxGuests: 6,
+    name: 'Quarto Quíntuplo',
+    previousName: 'Quarto Família',
+    externalId: '121675',
+    description: 'Perfeito para famílias e grupos de até cinco pessoas que desejam ficar juntos no mesmo ambiente.',
+    capacity: 5,
+    maxGuests: 5,
     totalUnits: 2,
     basePrice: 700,
     amenities: 'Espaço amplo com múltiplas camas; Banheiro privativo; TV de tela plana; Frigobar; Enxoval completo; Wi-Fi',
@@ -75,13 +80,32 @@ async function main() {
       console.log('[database] Estrutura inicial criada.');
     }
 
+    const now = new Date().toISOString();
     const roomCount = await client.execute('SELECT COUNT(*) AS total FROM "RoomType"');
     if (Number(roomCount.rows[0]?.total || 0) > 0) {
-      console.log('[database] Acomodações já cadastradas; nenhuma alteração realizada.');
+      for (const room of rooms) {
+        await client.execute({
+          sql: `UPDATE "RoomType"
+                SET "name" = ?, "description" = ?, "capacity" = ?, "maxGuests" = ?,
+                    "inventoryFor4Guests" = ?, "externalId" = ?, "updatedAt" = ?
+                WHERE "name" = ? OR "name" = ?`,
+          args: [
+            room.name,
+            room.description,
+            room.capacity,
+            room.maxGuests,
+            room.capacity >= 4 ? room.totalUnits : 0,
+            room.externalId,
+            now,
+            room.name,
+            room.previousName || room.name,
+          ],
+        });
+      }
+      console.log('[database] Mapeamento Hospedin das acomodações atualizado.');
       return;
     }
 
-    const now = new Date().toISOString();
     const statements = [];
 
     for (const room of rooms) {
@@ -90,8 +114,8 @@ async function main() {
         sql: `INSERT INTO "RoomType" (
           "id", "name", "description", "capacity", "maxGuests",
           "inventoryFor4Guests", "includedAdults", "totalUnits", "basePrice",
-          "extraAdultFee", "child6To11Fee", "amenities", "createdAt", "updatedAt"
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          "extraAdultFee", "child6To11Fee", "amenities", "createdAt", "updatedAt", "externalId"
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
           roomId,
           room.name,
@@ -107,6 +131,7 @@ async function main() {
           room.amenities,
           now,
           now,
+          room.externalId,
         ],
       });
       statements.push({

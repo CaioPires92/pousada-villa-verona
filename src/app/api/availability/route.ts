@@ -4,6 +4,7 @@ import { queryAvailabilityQuote } from "@/lib/availability/quote-service";
 import { normalizeCouponCode } from "@/lib/coupons/hash";
 import { validateCoupon } from "@/lib/coupons/validate";
 import { getDiscountPolicy } from "@/lib/discount-policy-store";
+import { syncHospedinAvailability } from "@/lib/hospedin-sync";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,11 @@ export async function GET(request: Request) {
     const adults = Number.parseInt(searchParams.get("adults") || "2", 10);
     const childrenAges = searchParams.get("childrenAges")?.split(",").map(Number) || [];
     const promoCode = normalizeCouponCode(searchParams.get("promo") || searchParams.get("coupon") || "");
+    try {
+      await syncHospedinAvailability({ beginDate: checkIn, endDate: checkOut });
+    } catch (error) {
+      console.error('[availability] Hospedin sync failed; using local inventory fallback.', error);
+    }
     const quote = await queryAvailabilityQuote({
       checkin: checkIn,
       checkout: checkOut,
