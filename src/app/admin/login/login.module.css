@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #430F03 0%, #652609 100%);
     padding: 2rem;
 }
 
@@ -17,7 +17,7 @@
 }
 
 .logo {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #430F03 0%, #652609 100%);
     color: white;
     padding: 3rem 2rem;
     text-align: center;
@@ -78,8 +78,8 @@
 
 .formField input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #FDB32C;
+    box-shadow: 0 0 0 3px rgba(253, 179, 44, 0.2);
 }
 
 .formField input:disabled {
@@ -90,19 +90,19 @@
 .submitButton {
     width: 100%;
     padding: 1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #FDB32C 0%, #e09915 100%);
+    color: #430F03;
     border: none;
     border-radius: 8px;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .submitButton:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 20px rgba(253, 179, 44, 0.4);
 }
 
 .submitButton:active:not(:disabled) {

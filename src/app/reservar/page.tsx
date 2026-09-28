@@ -2310,7 +2310,7 @@ function ReservarContent() {
                                             </div>
                                         ) : null}
 
-                                        <Button type="submit" className="h-12 w-full rounded-none text-lg shadow-none" size="lg" disabled={processing}>
+                                        <Button type="submit" className="h-12 w-full rounded-none text-lg shadow-none bg-brand-brown-dark text-white hover:bg-brand-brown" size="lg" disabled={processing}>
                                             {processing ? (
                                                 <span className="flex items-center gap-2">
                                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -2342,11 +2342,7 @@ function ReservarContent() {
                                             </div>
                                         </div>
 
-                                        <div className="grid gap-3 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-4 md:grid-cols-2">
-                                            <div>
-                                                <p className="text-sm font-semibold text-brand-brown-dark">4,8/5 no Google</p>
-                                                <p className="mt-1 text-xs text-foreground/72">Mais de 500 hóspedes avaliando</p>
-                                            </div>
+                                        <div className="grid gap-3 border border-brand-brown-dark/10 bg-[color:var(--brand-white)] px-4 py-4 md:grid-cols-1">
                                             <div>
                                                 <p className="text-sm font-semibold text-brand-brown-dark">Reserva direta e segura</p>
                                                 <p className="mt-1 text-xs text-foreground/72">Pagamento processado com proteção via Mercado Pago.</p>
