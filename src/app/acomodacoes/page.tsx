@@ -43,7 +43,7 @@ export default async function RoomsPage() {
 
     return (
         <main className="min-h-screen bg-background">
-            <section className="relative flex min-h-[42vh] items-center justify-center overflow-hidden bg-[color:var(--brand-black)]">
+            <section className="relative flex min-h-[360px] items-center justify-center overflow-hidden bg-[color:var(--brand-black)] md:min-h-[42vh]">
                 <div className="absolute inset-0">
                     <Image
                         src="/fotos/quartos/triplo/849059554.jpg"
@@ -55,14 +55,14 @@ export default async function RoomsPage() {
                     <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(40,50,35,0.78)_0%,rgba(40,50,35,0.52)_42%,rgba(9,9,9,0.24)_100%)]" />
                 </div>
 
-                <div className="container relative z-10 py-24 text-center text-white md:py-28">
+                <div className="container relative z-10 px-5 py-20 text-center text-white md:py-28">
                     <p className="font-accent text-[0.72rem] font-medium uppercase tracking-[0.18em] text-brand-gold">
                         Hospedagem
                     </p>
-                    <h1 className="font-hero-display mt-4 text-[2.9rem] font-semibold leading-[0.96] md:text-[4rem]">
+                    <h1 className="font-hero-display mt-4 text-[2.45rem] font-semibold leading-[0.98] sm:text-[2.9rem] md:text-[4rem]">
                         Nossas Acomodações
                     </h1>
-                    <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/88 md:text-lg">
+                    <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-white/88 sm:text-base sm:leading-7 md:text-lg md:leading-8">
                         Conforto e aconchego preparados especialmente para o seu descanso.
                         Escolha o ambiente ideal para sua estadia na Serra da Mantiqueira.
                     </p>
@@ -72,14 +72,14 @@ export default async function RoomsPage() {
             <div className="space-y-0">
                 <section className="section-space-md bg-[color:var(--brand-cream)]">
                     <div className="container">
-                        <div className="mb-10 border-b border-brand-brown-dark/10 pb-4 text-center">
-                            <h2 className="font-hero-display text-[2.2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">Escolha seu Quarto</h2>
+                        <div className="mb-7 border-b border-brand-brown-dark/10 pb-5 text-center md:mb-10">
+                            <h2 className="font-hero-display text-[2rem] font-semibold leading-tight text-brand-brown-dark md:text-[3rem]">Escolha seu Quarto</h2>
                             <p className="mt-2 text-[1.02rem] leading-7 text-foreground/72">
                                 Diferentes opções para atender casais, pequenas e grandes famílias.
                             </p>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
                             {rooms.map((room: any) => (
                                 <RoomCard
                                     key={room.id}

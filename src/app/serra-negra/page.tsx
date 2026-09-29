@@ -34,7 +34,7 @@ export default function SerraNegraPage() {
     return (
         <main className="min-h-screen bg-brand-sand">
             {/* Hero Section */}
-            <section className="relative h-[80vh] min-h-[600px] w-full flex items-center justify-center overflow-hidden">
+            <section className="relative flex h-[68svh] min-h-[460px] w-full items-center justify-center overflow-hidden md:h-[80vh] md:min-h-[600px]">
                 <div className="absolute inset-0 z-0">
                     <Image
                         src="/fotos/serra-negra/01-SerraNegraCover.a6716675.png"
@@ -48,7 +48,7 @@ export default function SerraNegraPage() {
                     <div className="absolute inset-0 bg-black/40" />
                 </div>
                 <div className="relative z-10 text-center px-4">
-                    <h1 className="font-hero-display text-5xl md:text-7xl text-white font-medium mb-6 leading-tight">
+                    <h1 className="font-hero-display mb-5 text-[2.75rem] font-medium leading-[1.08] text-white sm:text-5xl md:mb-6 md:text-7xl">
                         Encante-se <br/> com Serra Negra
                     </h1>
                     <p className="text-white/90 text-lg md:text-xl font-light tracking-wide">
@@ -58,8 +58,8 @@ export default function SerraNegraPage() {
             </section>
 
             {/* Intro Text */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
-                <div className="space-y-6 text-foreground/70 leading-relaxed text-lg font-light">
+            <section className="mx-auto max-w-4xl px-5 py-16 text-center sm:px-6 md:py-24 lg:px-8">
+                <div className="space-y-5 text-base font-light leading-7 text-foreground/70 md:space-y-6 md:text-lg md:leading-relaxed">
                     <p>
                         Localizada no coração do Circuito das Águas Paulista, Serra Negra é um dos destinos mais encantadores do interior de São Paulo. Cercada por montanhas e com clima agradável durante todo o ano, a cidade combina natureza, lazer, compras e experiências únicas em um só lugar.
                     </p>
@@ -73,10 +73,10 @@ export default function SerraNegraPage() {
             </section>
 
             {/* Cards Section */}
-            <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-white/50">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <section className="mx-auto max-w-7xl bg-white/50 px-4 py-10 sm:px-6 md:py-12 lg:px-8">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-8">
                     {/* Card 1 */}
-                    <div className="bg-white rounded-3xl p-10 shadow-sm border border-brand-brown/5 flex flex-col h-full">
+                    <div className="flex h-full flex-col rounded-2xl border border-brand-brown/5 bg-white p-6 shadow-sm sm:rounded-3xl md:p-10">
                         <div className="w-12 h-12 rounded-full bg-brand-sand flex items-center justify-center mb-8 text-brand-brown">
                             <Leaf className="w-6 h-6" />
                         </div>
@@ -101,7 +101,7 @@ export default function SerraNegraPage() {
                     </div>
 
                     {/* Card 2 */}
-                    <div className="bg-white rounded-3xl p-10 shadow-sm border border-brand-brown/5 flex flex-col h-full">
+                    <div className="flex h-full flex-col rounded-2xl border border-brand-brown/5 bg-white p-6 shadow-sm sm:rounded-3xl md:p-10">
                         <div className="w-12 h-12 rounded-full bg-brand-sand flex items-center justify-center mb-8 text-brand-brown">
                             <MapPin className="w-6 h-6" />
                         </div>
@@ -124,7 +124,7 @@ export default function SerraNegraPage() {
                     </div>
 
                     {/* Card 3 */}
-                    <div className="bg-white rounded-3xl p-10 shadow-sm border border-brand-brown/5 flex flex-col h-full">
+                    <div className="flex h-full flex-col rounded-2xl border border-brand-brown/5 bg-white p-6 shadow-sm sm:rounded-3xl md:p-10">
                         <div className="w-12 h-12 rounded-full bg-brand-sand flex items-center justify-center mb-8 text-brand-brown">
                             <ShoppingBag className="w-6 h-6" />
                         </div>
@@ -145,7 +145,7 @@ export default function SerraNegraPage() {
                     </div>
 
                     {/* Card 4 */}
-                    <div className="bg-white rounded-3xl p-10 shadow-sm border border-brand-brown/5 flex flex-col h-full">
+                    <div className="flex h-full flex-col rounded-2xl border border-brand-brown/5 bg-white p-6 shadow-sm sm:rounded-3xl md:p-10">
                         <div className="w-12 h-12 rounded-full bg-brand-sand flex items-center justify-center mb-8 text-brand-brown">
                             <Coffee className="w-6 h-6" />
                         </div>
@@ -174,8 +174,8 @@ export default function SerraNegraPage() {
             </section>
 
             {/* Gallery Section */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-                <div className="text-center mb-16">
+            <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
+                <div className="mb-10 text-center md:mb-16">
                     <p className="font-accent text-xs font-bold uppercase tracking-widest text-brand-gold mb-4">GALERIA VISUAL</p>
                     <h2 className="font-hero-display text-4xl text-brand-brown-dark">Retratos da cidade</h2>
                     <div className="w-12 h-px bg-brand-gold mx-auto mt-6"></div>

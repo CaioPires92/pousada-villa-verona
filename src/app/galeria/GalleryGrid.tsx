@@ -47,7 +47,7 @@ export default function GalleryGrid({ categories, photos, showFilters = true }: 
 
   return (
     <>
-      {showFilters ? <div className="mb-8 flex flex-wrap justify-center gap-2 md:mb-10">
+      {showFilters ? <div className="scrollbar-hide -mx-4 mb-7 flex snap-x gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:mb-10 md:flex-wrap md:justify-center md:overflow-visible md:px-0">
         {["Todas", ...categories].map((category) => (
           <button
             key={category}
@@ -56,7 +56,7 @@ export default function GalleryGrid({ categories, photos, showFilters = true }: 
               setActiveCategory(category);
               setSelectedIndex(null);
             }}
-            className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${
+            className={`shrink-0 snap-start rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition-colors ${
               activeCategory === category
                 ? "border-brand-brown-dark bg-brand-brown-dark text-white"
                 : "border-brand-brown-dark/15 bg-white text-brand-brown-dark hover:border-brand-gold hover:text-brand-gold"

@@ -26,20 +26,20 @@ export default function Header() {
     return (
         <header className="sticky top-0 left-0 right-0 z-50 bg-[#F9F9F7] shadow-sm">
             <div className="container mx-auto px-4 lg:px-8">
-                <div className="flex items-center justify-between h-20 md:h-24">
+                <div className="flex h-16 items-center justify-between md:h-24">
                     {/* Logo Area */}
-                    <div className="h-full flex items-start relative w-20 md:w-28">
+                    <div className="relative flex h-full w-20 items-start md:w-28">
                         <Link
                             href="/"
                             aria-label="Ir para a página inicial"
-                            className="absolute top-0 left-0 w-20 md:w-28 h-24 md:h-32 bg-brand-gold rounded-b-[1rem] md:rounded-b-[1.2rem] flex items-center justify-center p-2 transition-transform hover:scale-105 z-50 shadow-lg border border-t-0 border-brand-brown-dark/20 overflow-hidden"
+                            className="absolute left-0 top-0 z-50 flex h-20 w-20 items-center justify-center overflow-hidden rounded-b-[1rem] border border-t-0 border-brand-brown-dark/20 bg-brand-gold p-2 shadow-lg transition-transform hover:scale-105 md:h-32 md:w-28 md:rounded-b-[1.2rem]"
                         >
                             <Image
                                 src="/logo.png"
                                 alt="Pousada Villa Verona"
                                 fill
                                 sizes="(max-width: 768px) 80px, 112px"
-                                className="object-cover md:object-contain scale-[1.5] md:scale-125 object-center"
+                                className="object-contain object-center scale-110 md:scale-125"
                             />
                         </Link>
                     </div>
@@ -77,7 +77,7 @@ export default function Header() {
                         aria-label={isMobileMenuOpen ? "Fechar menu" : "Abrir menu"}
                         aria-expanded={isMobileMenuOpen}
                         aria-controls="mobile-navigation"
-                        className="lg:hidden p-2 text-brand-brown-dark"
+                        className="lg:hidden flex h-11 w-11 items-center justify-center text-brand-brown-dark"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     >
                         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

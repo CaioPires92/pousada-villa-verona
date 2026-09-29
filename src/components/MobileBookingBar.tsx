@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Calendar, Users, ArrowRight, MessageCircle, Plus, Minus } from "lucide-react";
+import { Calendar, Users, ArrowRight, Plus, Minus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -75,8 +75,21 @@ export default function MobileBookingBar() {
     return (
         <div className="fixed inset-x-0 bottom-0 z-40">
             <div className="w-full bg-brand-brown-dark border-t border-brand-brown-red shadow-2xl relative">
+                <div className="flex items-center gap-3 px-3 py-2.5 md:hidden">
+                    <div className="min-w-0 flex-1 text-white">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/60">Reserve direto</p>
+                        <p className="text-xs font-semibold">Melhor tarifa</p>
+                    </div>
+                    <Link
+                        href="/reservar"
+                        onClick={handleSimulate}
+                        className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-sm bg-brand-gold px-4 text-[11px] font-bold uppercase tracking-[0.1em] text-brand-brown-dark"
+                    >
+                        Consultar datas <ArrowRight className="h-4 w-4" />
+                    </Link>
+                </div>
                 
-                <div className="container mx-auto px-4 sm:px-16 lg:px-32 py-3 flex flex-wrap md:flex-nowrap items-center justify-between md:justify-end lg:justify-center gap-2 md:gap-4 lg:gap-8">
+                <div className="container mx-auto hidden px-4 py-3 md:flex md:flex-nowrap md:items-center md:justify-end md:gap-4 sm:px-16 lg:justify-center lg:gap-8 lg:px-32">
                     
                     {/* Form Fields container */}
                     <div className="flex flex-1 items-center justify-end gap-2 md:gap-4 lg:gap-8 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
