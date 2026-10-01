@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 export type GalleryPhoto = {
   alt: string;
@@ -19,6 +20,11 @@ type GalleryGridProps = {
 export default function GalleryGrid({ categories, photos, showFilters = true }: GalleryGridProps) {
   const [activeCategory, setActiveCategory] = useState("Todas");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalTarget(document.body);
+  }, []);
 
   const visiblePhotos = useMemo(
     () => activeCategory === "Todas" ? photos : photos.filter((photo) => photo.category === activeCategory),
@@ -90,30 +96,31 @@ export default function GalleryGrid({ categories, photos, showFilters = true }: 
         ))}
       </div>
 
-      {selectedIndex !== null && visiblePhotos[selectedIndex] ? (
+      {portalTarget && selectedIndex !== null && visiblePhotos[selectedIndex] ? createPortal(
         <div
           role="dialog"
           aria-modal="true"
           aria-label={`Foto ampliada: ${visiblePhotos[selectedIndex].alt}`}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/92 p-4 md:p-10"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm md:p-10"
           onClick={() => setSelectedIndex(null)}
         >
-          <button type="button" aria-label="Fechar galeria" onClick={() => setSelectedIndex(null)} className="absolute right-5 top-5 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20">
+          <button type="button" aria-label="Fechar galeria" onClick={() => setSelectedIndex(null)} className="absolute right-5 top-5 z-20 rounded-full border border-white/30 bg-black/70 p-3 text-white shadow-lg hover:bg-black/90">
             <X size={26} />
           </button>
-          <button type="button" aria-label="Foto anterior" onClick={(event) => { event.stopPropagation(); showPrevious(); }} className="absolute left-3 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 md:left-8">
-            <ChevronLeft size={30} />
-          </button>
+          {visiblePhotos.length > 1 ? <button type="button" aria-label="Foto anterior" onClick={(event) => { event.stopPropagation(); showPrevious(); }} className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/40 bg-black/70 p-3 text-white shadow-lg hover:bg-black/90 md:left-8 md:p-4">
+            <ChevronLeft size={34} />
+          </button> : null}
           <div className="relative h-[82vh] w-[88vw]" onClick={(event) => event.stopPropagation()}>
             <Image src={visiblePhotos[selectedIndex].src} alt={visiblePhotos[selectedIndex].alt} fill sizes="90vw" quality={90} className="object-contain" priority />
           </div>
-          <button type="button" aria-label="Próxima foto" onClick={(event) => { event.stopPropagation(); showNext(); }} className="absolute right-3 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 md:right-8">
-            <ChevronRight size={30} />
-          </button>
+          {visiblePhotos.length > 1 ? <button type="button" aria-label="Próxima foto" onClick={(event) => { event.stopPropagation(); showNext(); }} className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/40 bg-black/70 p-3 text-white shadow-lg hover:bg-black/90 md:right-8 md:p-4">
+            <ChevronRight size={34} />
+          </button> : null}
           <div className="absolute bottom-4 text-sm text-white/80">
             {selectedIndex + 1} / {visiblePhotos.length}
           </div>
-        </div>
+        </div>,
+        portalTarget,
       ) : null}
     </>
   );

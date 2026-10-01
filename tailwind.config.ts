@@ -24,7 +24,10 @@ const config: Config = {
 						foreground: 'var(--brand-brown-dark)'
 					},
 					beige: 'var(--brand-beige)',
-					'brown-dark': 'var(--brand-brown-dark)',
+					'brown-dark': {
+						DEFAULT: 'var(--brand-brown-dark)',
+						foreground: 'var(--brand-white)'
+					},
     				'brown-red': '#652609'
     			},
     			    				primary: {

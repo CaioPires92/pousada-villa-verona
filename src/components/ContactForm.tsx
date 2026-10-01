@@ -109,7 +109,11 @@ export function ContactForm() {
                 />
             </div>
 
-            <Button type="submit" className="h-12 w-full rounded-none text-lg" disabled={loading}>
+            <Button
+                type="submit"
+                className="h-12 w-full rounded-none bg-brand-brown-dark text-lg !text-white hover:bg-brand-brown-dark/90 hover:!text-white"
+                disabled={loading}
+            >
                 {loading ? (
                     <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
