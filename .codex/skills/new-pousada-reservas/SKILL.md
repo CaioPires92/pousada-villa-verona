@@ -28,7 +28,7 @@ Prepare a new property without carrying operational data, credentials or identit
    npx prisma migrate dev --name initial-reservation-schema
    ```
 
-The template intentionally has no inherited Prisma migrations. Do not point a new project at an existing Delplata database.
+The template intentionally has no inherited Prisma migrations. Do not point a new project at another property's database.
 
 ## Antes de publicar
 

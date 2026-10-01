@@ -822,7 +822,7 @@ export default function SearchWidget({
                                 ? cn(
                                     'flex w-full items-center justify-center gap-2 rounded-none px-5 font-sans text-[0.78rem] font-semibold uppercase tracking-[0.13em] shadow-none transition-all duration-200 focus-visible:ring-secondary focus-visible:ring-offset-0',
                                     isHeroHorizontal
-                                        ? 'h-full min-h-[64px] border border-[#c5a06a] bg-[#D1B07C] text-brand-brown-dark hover:bg-[#c9a66f] hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]'
+                                        ? 'h-full min-h-[64px] border border-brand-brown-dark/20 bg-brand-gold text-brand-gold-foreground hover:bg-brand-gold/85 hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]'
                                         : 'h-[52px] border border-white/16 bg-brand-brown-dark text-white hover:bg-[color:var(--forest-soft)] hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)]'
                                 )
                             : 'flex h-[56px] w-full min-w-[170px] items-center justify-center gap-2 border border-brand-brown-dark bg-brand-brown-dark px-5 text-sm font-semibold text-white shadow-none transition-all duration-300 hover:-translate-y-px hover:bg-brand-brown-dark/90 hover:shadow-[0_10px_24px_rgba(40,50,35,0.12)] focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary md:text-base'}

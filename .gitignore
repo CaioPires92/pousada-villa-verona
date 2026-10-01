@@ -52,8 +52,6 @@ next-env.d.ts
 
 deploy-hostinger.zip
 deploy-hostinger-lean
-/delplata-arquivos.zip
-
 .artifacts/
 
 # raw photos (optimized versions in /public/fotos)

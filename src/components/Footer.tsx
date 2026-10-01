@@ -15,7 +15,7 @@ export default function Footer() {
                     <div className="flex-shrink-0">
                         <div className="relative h-20 w-32 md:h-24 md:w-40">
                             <Image
-                                src="/logo.png"
+                                src="/logo-white.png"
                                 alt="Pousada Villa Verona"
                                 fill
                                 sizes="(max-width: 768px) 128px, 160px"

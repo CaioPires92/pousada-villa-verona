@@ -6,14 +6,18 @@
   --font-inter: "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
   --font-playfair-display: "Bodoni Moda", "Times New Roman", Georgia, serif;
   --brand-forest: var(--brand-brown-dark);
-  --brand-gold: #FDB32C;
-  --brand-cream: #f5f5f5;
+  /* Brand surfaces: edit these tokens to update the palette site-wide. */
+  --brand-gold: #d1b892;
+  --brand-beige: #e8d7bd;
+  --brand-brown-dark: #430f03;
+  --brand-cream: #f7f1e8;
+  --brand-navbar: #f9f9f7;
   --brand-white: #ffffff;
   --brand-black: #090909;
   --brand-whatsapp: #00e676;
   --ink-soft: rgba(9, 9, 9, 0.82);
   --forest-soft: rgba(40, 50, 35, 0.72);
-  --gold-soft: rgba(187, 184, 99, 0.18);
+  --gold-soft: rgba(209, 184, 146, 0.2);
   --line-light: rgba(255, 255, 255, 0.16);
   --line-dark: rgba(40, 50, 35, 0.12);
   --background: 0 0% 96%;

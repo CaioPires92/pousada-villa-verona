@@ -1076,7 +1076,7 @@ export function buildAdminRecoveryAlertEmailHtml(data: BookingEmailData) {
     <div class="container">
         <!-- Logo -->
         <div class="logo-section">
-            <img src="https://pousada-villaverona.vercel.app/fotos/logo.png" alt="Villa Verona Pousada" />
+            <img src="https://pousada-villaverona.vercel.app/logo-no-background.png" alt="Villa Verona Pousada" />
             <div class="logo-divider"></div>
         </div>
 

@@ -17,10 +17,14 @@ const config: Config = {
     		}
     	},
     		extend: {
-    			colors: {
-    			brand: {
-    				gold: '#FDB32C',
-    				'brown-dark': '#430F03',
+			colors: {
+				brand: {
+					gold: {
+						DEFAULT: 'var(--brand-gold)',
+						foreground: 'var(--brand-brown-dark)'
+					},
+					beige: 'var(--brand-beige)',
+					'brown-dark': 'var(--brand-brown-dark)',
     				'brown-red': '#652609'
     			},
     			    				primary: {

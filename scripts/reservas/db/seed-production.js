@@ -22,7 +22,7 @@ async function safeSeed() {
     console.log('⚠️  Checking for Admin User...');
 
     // Create Admin User if not exists
-    const adminEmail = 'admin@delplata.com.br';
+    const adminEmail = 'admin@villaveronapousada.com.br';
     const adminExists = await prisma.adminUser.findUnique({
         where: { email: adminEmail }
     });

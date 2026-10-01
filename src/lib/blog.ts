@@ -237,7 +237,7 @@ export function buildBlogArticleSchema(post: BlogPost, category: BlogCategory) {
       name: "Pousada Villa Verona",
       logo: {
         "@type": "ImageObject",
-        url: absoluteUrl("/logo.png"),
+        url: absoluteUrl("/logo-no-background.png"),
       },
     },
     about: [

@@ -229,7 +229,7 @@ async function runTests() {
     let adminCookie = null;
     await test('3.1 - API de login admin funciona', async () => {
         const response = await makeLocalRequest('/api/admin/login', 'POST', {
-            email: 'admin@delplata.com.br',
+            email: 'admin@villaveronapousada.com.br',
             password: 'admin123'
         });
 

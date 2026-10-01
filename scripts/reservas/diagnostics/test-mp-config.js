@@ -36,9 +36,9 @@ const preferenceData = JSON.stringify({
         currency_id: 'BRL'
     }],
     back_urls: {
-        success: 'https://pousada-delplata.vercel.app/reservar/confirmacao/test-123?status=approved',
-        failure: 'https://pousada-delplata.vercel.app/reservar/confirmacao/test-123?status=rejected',
-        pending: 'https://pousada-delplata.vercel.app/reservar/confirmacao/test-123?status=pending'
+        success: 'https://pousada-villaverona.vercel.app/reservar/confirmacao/test-123?status=approved',
+        failure: 'https://pousada-villaverona.vercel.app/reservar/confirmacao/test-123?status=rejected',
+        pending: 'https://pousada-villaverona.vercel.app/reservar/confirmacao/test-123?status=pending'
     },
     auto_return: 'approved',
     external_reference: 'test-123'

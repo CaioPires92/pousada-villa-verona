@@ -98,9 +98,9 @@ async function runTests() {
                 currency_id: 'BRL'
             }],
             back_urls: {
-                success: 'https://pousada-delplata.vercel.app/success',
-                failure: 'https://pousada-delplata.vercel.app/failure',
-                pending: 'https://pousada-delplata.vercel.app/pending'
+                success: 'https://pousada-villaverona.vercel.app/success',
+                failure: 'https://pousada-villaverona.vercel.app/failure',
+                pending: 'https://pousada-villaverona.vercel.app/pending'
             },
             auto_return: 'approved',
             external_reference: 'test-' + Date.now()

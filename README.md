@@ -2,7 +2,7 @@
 
 Base independente para criar um novo site de pousada com motor de reservas. Ela inclui o fluxo público de reservas, painel administrativo, disponibilidade, preços, cupons, pagamentos por Mercado Pago, e-mails, banco Prisma/SQLite, testes e scripts de deploy.
 
-Esta pasta não contém `node_modules`, `.next`, arquivos `.env`, bancos locais, backups, CRM, Evolution API, n8n, histórico Git nem credenciais da Delplata.
+Esta pasta não contém `node_modules`, `.next`, arquivos `.env`, bancos locais, backups, CRM, Evolution API, n8n, histórico Git nem credenciais de outra pousada.
 
 ## Começar um novo projeto
 
@@ -10,7 +10,7 @@ Esta pasta não contém `node_modules`, `.next`, arquivos `.env`, bancos locais,
 2. Crie um repositório Git novo, se desejar versioná-la: `git init -b main`.
 3. Copie `.env.example` para `.env` e preencha todas as credenciais da nova pousada.
 4. Rode `npm ci` para instalar dependências exatamente conforme `package-lock.json`.
-5. Rode `npm run prisma:generate`, depois `npx prisma migrate dev --name initial-reservation-schema` para criar um banco e o primeiro migration desta nova pousada. Não copie nenhum banco da Delplata.
+5. Rode `npm run prisma:generate`, depois `npx prisma migrate dev --name initial-reservation-schema` para criar um banco e o primeiro migration desta nova pousada. Não copie bancos de outros projetos.
 6. Troque logo, fotos, textos, domínio, e-mails de operação e configurações de pagamento antes do deploy.
 7. Rode `npm run typecheck`, `npm run test` e `npm run build` antes de publicar.
 
@@ -27,9 +27,9 @@ Esta pasta não contém `node_modules`, `.next`, arquivos `.env`, bancos locais,
 
 ## Itens mantidos de propósito
 
-As imagens e textos públicos ainda são os da Delplata para que a interface permaneça funcional como referência visual. Troque-os antes de publicar uma nova pousada. Não reutilize credenciais, banco ou dados de hóspedes da Delplata.
+As imagens e os textos públicos devem pertencer exclusivamente à Pousada Villa Verona. Não reutilize credenciais, bancos ou dados de hóspedes de outros projetos.
 
-O diretório `prisma/migrations` começa vazio de propósito. A base usa o schema atual de reservas, mas não leva o histórico de migrations da Delplata, que continha fases já removidas do CRM. Gere o primeiro migration próprio no passo 5.
+O diretório `prisma/migrations` começa vazio de propósito. A base usa o schema atual de reservas sem carregar históricos de outros projetos. Gere o primeiro migration próprio no passo 5.
 
 ## Rotina local
 

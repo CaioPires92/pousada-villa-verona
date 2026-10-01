@@ -24,22 +24,22 @@ export default function Header() {
     if (pathname.startsWith('/admin')) return null;
 
     return (
-        <header className="sticky top-0 left-0 right-0 z-50 bg-[#F9F9F7] shadow-sm">
+        <header className="sticky top-0 left-0 right-0 z-50 bg-[color:var(--brand-navbar)] shadow-sm">
             <div className="container mx-auto px-4 lg:px-8">
                 <div className="flex h-16 items-center justify-between md:h-24">
                     {/* Logo Area */}
-                    <div className="relative flex h-full w-20 items-start md:w-28">
+                    <div className="relative flex h-full w-32 items-start md:w-44">
                         <Link
                             href="/"
                             aria-label="Ir para a página inicial"
-                            className="absolute left-0 top-0 z-50 flex h-20 w-20 items-center justify-center overflow-hidden rounded-b-[1rem] border border-t-0 border-brand-brown-dark/20 bg-brand-gold p-2 shadow-lg transition-transform hover:scale-105 md:h-32 md:w-28 md:rounded-b-[1.2rem]"
+                            className="absolute left-0 top-0 z-50 flex h-20 w-32 items-center justify-center overflow-hidden rounded-b-[1rem] border border-t-0 border-brand-brown-dark/20 bg-[color:var(--brand-navbar)] p-2 shadow-lg transition-transform hover:scale-105 md:h-28 md:w-44 md:rounded-b-[1.2rem]"
                         >
                             <Image
-                                src="/logo.png"
+                                src="/logo-no-background.png"
                                 alt="Pousada Villa Verona"
                                 fill
-                                sizes="(max-width: 768px) 80px, 112px"
-                                className="object-contain object-center scale-110 md:scale-125"
+                                sizes="(max-width: 768px) 128px, 176px"
+                                className="object-contain object-center"
                             />
                         </Link>
                     </div>
@@ -86,7 +86,7 @@ export default function Header() {
 
                 {/* Mobile Navigation */}
                 {isMobileMenuOpen && (
-                    <nav id="mobile-navigation" aria-label="Navegação mobile" className="lg:hidden absolute top-full left-0 right-0 bg-[#F9F9F7] border-t border-gray-200 shadow-lg px-4 pb-6 pt-2 space-y-4">
+                    <nav id="mobile-navigation" aria-label="Navegação mobile" className="lg:hidden absolute top-full left-0 right-0 bg-[color:var(--brand-navbar)] border-t border-gray-200 shadow-lg px-4 pb-6 pt-2 space-y-4">
                         {navLinks.map((link) => (
                             <Link
                                 key={`${link.href}-${link.label}`}

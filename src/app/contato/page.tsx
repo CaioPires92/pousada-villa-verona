@@ -116,7 +116,8 @@ export default function ContactPage() {
 
                         <div className="h-[300px] w-full overflow-hidden border border-brand-brown-dark/10">
                             <iframe 
-                                src="https://maps.google.com/maps?q=Rodovia+SP-360+Km+143+Bairro+Almeidas+Serra+Negra+SP&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                src="https://maps.google.com/maps?q=Pousada+Villa+Verona%2C+SP-360+Km+143%2C+Almeidas%2C+Serra+Negra%2C+SP&z=16&ie=UTF8&iwloc=A&output=embed"
+                                title="Localização da Pousada Villa Verona no Google Maps"
                                 width="100%" 
                                 height="100%" 
                                 style={{ border: 0 }} 

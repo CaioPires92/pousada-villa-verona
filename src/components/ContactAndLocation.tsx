@@ -115,7 +115,7 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
                 <textarea rows={3} placeholder="Como podemos ajudar?" className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400 resize-none"></textarea>
               </div>
 
-              <Button type="button" className="w-full h-14 rounded-xl bg-brand-gold hover:bg-brand-gold/90 text-white font-bold tracking-wide mt-4">
+              <Button type="button" className="w-full h-14 rounded-xl bg-brand-gold hover:bg-brand-gold/85 text-brand-gold-foreground font-bold tracking-wide mt-4">
                 ENVIAR MENSAGEM <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </form>

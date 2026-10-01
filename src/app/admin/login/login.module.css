@@ -78,8 +78,8 @@
 
 .formField input:focus {
     outline: none;
-    border-color: #FDB32C;
-    box-shadow: 0 0 0 3px rgba(253, 179, 44, 0.2);
+    border-color: var(--brand-gold);
+    box-shadow: 0 0 0 3px rgba(209, 184, 146, 0.28);
 }
 
 .formField input:disabled {
@@ -90,7 +90,7 @@
 .submitButton {
     width: 100%;
     padding: 1rem;
-    background: linear-gradient(135deg, #FDB32C 0%, #e09915 100%);
+    background: linear-gradient(135deg, var(--brand-beige) 0%, var(--brand-gold) 100%);
     color: #430F03;
     border: none;
     border-radius: 8px;
@@ -102,7 +102,7 @@
 
 .submitButton:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(253, 179, 44, 0.4);
+    box-shadow: 0 8px 20px rgba(209, 184, 146, 0.42);
 }
 
 .submitButton:active:not(:disabled) {
