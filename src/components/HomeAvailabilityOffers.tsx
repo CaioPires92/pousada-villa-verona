@@ -499,7 +499,8 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
           <div className="relative group/carousel">
             <button 
               type="button" 
-              className="absolute left-2 md:left-4 top-[35%] -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.15)] text-brand-brown-dark opacity-100 md:opacity-0 transition-opacity md:group-hover/carousel:opacity-100 disabled:opacity-0"
+              aria-label="Acomodação anterior"
+              className="absolute left-2 top-[calc((100vw-2rem)*0.3125+1rem)] z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-brand-brown-dark shadow-[0_4px_14px_rgba(0,0,0,0.15)] transition-opacity md:left-4 md:top-[35%] md:h-12 md:w-12 md:opacity-0 md:group-hover/carousel:opacity-100 disabled:opacity-0"
               onClick={() => {
                 const container = document.getElementById('offers-carousel');
                 if (container) {
@@ -515,7 +516,8 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
             </button>
             <button 
               type="button" 
-              className="absolute right-2 md:right-4 top-[35%] -translate-y-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_rgba(0,0,0,0.15)] text-brand-brown-dark opacity-100 md:opacity-0 transition-opacity md:group-hover/carousel:opacity-100 disabled:opacity-0"
+              aria-label="Próxima acomodação"
+              className="absolute right-2 top-[calc((100vw-2rem)*0.3125+1rem)] z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-brand-brown-dark shadow-[0_4px_14px_rgba(0,0,0,0.15)] transition-opacity md:right-4 md:top-[35%] md:h-12 md:w-12 md:opacity-0 md:group-hover/carousel:opacity-100 disabled:opacity-0"
               onClick={() => {
                 const container = document.getElementById('offers-carousel');
                 if (container) {
@@ -531,7 +533,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
               <ChevronRight className="h-6 w-6" />
             </button>
             
-            <div id="offers-carousel" className="flex w-full snap-x snap-mandatory gap-5 md:gap-8 overflow-x-auto pb-8 pt-4 px-4 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div id="offers-carousel" className="flex w-full snap-x snap-mandatory gap-5 overflow-x-auto pb-8 pt-4 md:gap-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {offers.map((room) => {
               const photos = getOfferPhotos(room);
               const image = photos[0] ?? null;
@@ -545,9 +547,9 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
               const roomUrl = `${resultUrl}&roomTypeId=${encodeURIComponent(room.id)}`;
 
               return (
-                <article key={room.id} className="w-[85%] sm:w-[65%] lg:w-[48%] xl:w-[40%] shrink-0 snap-center group flex h-full flex-col overflow-hidden bg-transparent border-0">
+                <article key={room.id} className="group flex h-full w-full shrink-0 snap-start flex-col overflow-hidden border-0 bg-transparent sm:w-[65%] sm:snap-center lg:w-[48%] xl:w-[40%]">
                   <div
-                    className={`relative aspect-[4/3] overflow-hidden bg-brand-brown-dark/5 ${canOpenGallery ? "cursor-zoom-in" : ""}`}
+                    className={`relative aspect-[16/10] overflow-hidden bg-brand-brown-dark/5 sm:aspect-[4/3] ${canOpenGallery ? "cursor-zoom-in" : ""}`}
                     role={canOpenGallery ? "button" : undefined}
                     tabIndex={canOpenGallery ? 0 : undefined}
                     aria-label={canOpenGallery ? `Abrir galeria de fotos de ${room.name}` : undefined}
@@ -580,10 +582,10 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     </div>
                   </div>
 
-                  <div className="flex flex-1 flex-col pt-6 pb-2">
-                    <h3 className="font-serif text-3xl md:text-4xl font-normal leading-tight text-brand-brown-dark mb-3">{room.name}</h3>
+                  <div className="flex flex-1 flex-col pb-2 pt-4 sm:pt-6">
+                    <h3 className="mb-2 font-serif text-[1.75rem] font-normal leading-tight text-brand-brown-dark sm:mb-3 md:text-4xl">{room.name}</h3>
                     {room.description ? (
-                      <p className="text-[0.95rem] font-light leading-[1.8] text-brand-brown-dark/80 mb-5">
+                      <p className="mb-4 text-[0.95rem] font-light leading-7 text-brand-brown-dark/80 sm:mb-5 sm:leading-[1.8]">
                         {room.description}
                       </p>
                     ) : null}
