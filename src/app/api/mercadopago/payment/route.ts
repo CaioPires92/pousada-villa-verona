@@ -156,7 +156,11 @@ function getMercadoPagoErrorMessage(error: any) {
 }
 
 function isMercadoPagoTestMode(accessToken: string) {
-    return accessToken.startsWith('TEST-');
+    const localTestPaymentsEnabled =
+        process.env.NODE_ENV !== 'production' &&
+        String(process.env.ENABLE_TEST_PAYMENTS || '').trim().toLowerCase() === 'true';
+
+    return accessToken.startsWith('TEST-') || localTestPaymentsEnabled;
 }
 
 function isLocalCardSandboxEnabled(params: {

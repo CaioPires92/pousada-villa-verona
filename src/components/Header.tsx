@@ -12,6 +12,17 @@ export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const pathname = usePathname();
 
+    useEffect(() => {
+        if (!isMobileMenuOpen) return;
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [isMobileMenuOpen]);
+
     const navLinks = [
         { href: "/", label: "HOME" },
         { href: "/a-pousada", label: "A POUSADA VILLA VERONA" },
@@ -86,7 +97,7 @@ export default function Header() {
 
                 {/* Mobile Navigation */}
                 {isMobileMenuOpen && (
-                    <nav id="mobile-navigation" aria-label="Navegação mobile" className="absolute left-0 right-0 top-full space-y-4 border-t border-gray-200 bg-[color:var(--brand-navbar)] px-4 pb-6 pt-4 shadow-lg lg:hidden">
+                    <nav id="mobile-navigation" aria-label="Navegação mobile" className="absolute left-0 right-0 top-full max-h-[calc(100dvh-4rem)] space-y-4 overflow-y-auto overscroll-contain border-t border-gray-200 bg-[color:var(--brand-navbar)] px-4 pb-6 pt-4 shadow-lg lg:hidden">
                         {navLinks.map((link) => (
                             <Link
                                 key={`${link.href}-${link.label}`}
