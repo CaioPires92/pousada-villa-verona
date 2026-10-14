@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarUI } from "@/components/ui/calendar";
+import { MAX_BOOKING_GUESTS } from "@/lib/booking-capacity";
 
 export default function MobileBookingBar() {
     const pathname = usePathname();
@@ -166,7 +167,7 @@ export default function MobileBookingBar() {
                                     <div>
                                         <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-widest">Configurar Ocupação</h4>
                                         <p className="text-sm text-white/70 leading-relaxed">
-                                            Até 4 hóspedes por quarto. Crianças de 0 a 5 anos não pagam, mas contam na ocupação.
+                                            Até {MAX_BOOKING_GUESTS} hóspedes por quarto. Crianças de 0 a 5 anos não pagam, mas contam na ocupação.
                                         </p>
                                     </div>
 
@@ -187,8 +188,8 @@ export default function MobileBookingBar() {
                                                 </button>
                                                 <span className="w-4 text-center font-bold text-white">{adults}</span>
                                                 <button 
-                                                    onClick={() => setAdults(Math.min(4, adults + 1))}
-                                                    disabled={adults >= 4 || (adults + children >= 4)}
+                                                    onClick={() => setAdults(Math.min(MAX_BOOKING_GUESTS, adults + 1))}
+                                                    disabled={adults >= MAX_BOOKING_GUESTS || (adults + children >= MAX_BOOKING_GUESTS)}
                                                     className="w-8 h-8 flex items-center justify-center border border-white/20 bg-brand-brown-dark rounded hover:border-brand-gold text-white hover:text-brand-gold transition-colors disabled:opacity-50 disabled:hover:border-white/20 disabled:hover:text-white"
                                                 >
                                                     <Plus className="w-4 h-4" />
@@ -212,8 +213,8 @@ export default function MobileBookingBar() {
                                                 </button>
                                                 <span className="w-4 text-center font-bold text-white">{children}</span>
                                                 <button 
-                                                    onClick={() => updateChildrenCount(Math.min(3, children + 1))}
-                                                    disabled={children >= 3 || (adults + children >= 4)}
+                                                    onClick={() => updateChildrenCount(Math.min(MAX_BOOKING_GUESTS - 1, children + 1))}
+                                                    disabled={children >= MAX_BOOKING_GUESTS - 1 || (adults + children >= MAX_BOOKING_GUESTS)}
                                                     className="w-8 h-8 flex items-center justify-center border border-white/20 bg-brand-brown-dark rounded hover:border-brand-gold text-white hover:text-brand-gold transition-colors disabled:opacity-50 disabled:hover:border-white/20 disabled:hover:text-white"
                                                 >
                                                     <Plus className="w-4 h-4" />

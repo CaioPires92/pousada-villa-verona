@@ -23,6 +23,7 @@ import {
 import { cn } from '@/lib/utils';
 import { trackBookingError, trackClickWhatsApp, trackSearch } from '@/lib/analytics';
 import { appendCampaignAttribution } from '@/lib/campaign-attribution';
+import { MAX_BOOKING_GUESTS } from '@/lib/booking-capacity';
 
 const RESERVA_INTERACTION_EVENT = 'reservar-cta-interaction';
 const AVAILABILITY_TIMEOUT_MS = 12_000;
@@ -87,7 +88,7 @@ export default function SearchWidget({
     const [isHeroExpanded, setIsHeroExpanded] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<SearchFieldErrors>({});
 
-    const maxGuests = 4;
+    const maxGuests = MAX_BOOKING_GUESTS;
     const numAdults = Number.parseInt(adults, 10) || 0;
     const numChildren = Number.parseInt(children, 10) || 0;
     const totalGuests = numAdults + numChildren;
@@ -159,7 +160,7 @@ export default function SearchWidget({
 
         const message = `Olá! Gostaria de cotar hospedagem para *${adults} adultos* e *${children} crianças*.\n` +
             `Datas: ${checkInStr} a ${checkOutStr}.\n` +
-            `(Nossas acomodações comportam até 4 pessoas por quarto, conforme disponibilidade. Para grupos maiores, fale com a gente no WhatsApp.)`;
+            `(Nossas acomodações comportam até ${MAX_BOOKING_GUESTS} pessoas por quarto, conforme disponibilidade. Para grupos maiores, fale com a gente no WhatsApp.)`;
 
         const whatsappPhone = '5519999002288';
         const url = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`;
@@ -243,7 +244,7 @@ export default function SearchWidget({
         const effectiveTotalGuests = effectiveAdults + childrenUnder12;
 
         if (effectiveTotalGuests > maxGuests) {
-            setFieldErrors({ guests: 'Cada acomodação recebe até 4 hóspedes. Se precisar de mais espaço, fale com a pousada para montar a melhor combinação.' });
+            setFieldErrors({ guests: `Cada acomodação recebe até ${MAX_BOOKING_GUESTS} hóspedes. Se precisar de mais espaço, fale com a pousada para montar a melhor combinação.` });
             setShowCapacityFallback(true);
             return;
         }
@@ -408,7 +409,7 @@ export default function SearchWidget({
             ? 'h-[52px] w-full appearance-none rounded-none border-0 bg-transparent px-0 font-sans text-[1rem] font-semibold text-[#2f261f] transition-colors duration-300 cursor-pointer'
             : 'w-full px-4 rounded-none border-2 border-muted-foreground/20 bg-background text-foreground font-medium transition-all duration-300 text-base shadow-sm hover:shadow-md cursor-pointer h-[56px] appearance-none';
 
-    const adultOptions = [1, 2, 3, 4];
+    const adultOptions = Array.from({ length: MAX_BOOKING_GUESTS }, (_, index) => index + 1);
     const childOptions = [0, 1, 2, 3];
     const shouldShowCapacityFallback = showCapacityFallback || isOverCapacity;
     const agesMissing = numChildren > 0 && (childrenAges.length !== numChildren || childrenAges.some((age) => age === null));
@@ -665,7 +666,7 @@ export default function SearchWidget({
                                             Configurar ocupação
                                         </p>
                                         <p className="text-sm text-brand-brown-dark/75">
-                                            Até 4 hóspedes por quarto. Crianças de 0 a 5 anos não pagam, mas contam na ocupação.
+                                            Até {MAX_BOOKING_GUESTS} hóspedes por quarto. Crianças de 0 a 5 anos não pagam, mas contam na ocupação.
                                         </p>
                                     </div>
 
@@ -991,7 +992,7 @@ export default function SearchWidget({
             {shouldShowCapacityFallback ? (
                 <div className="mt-4 rounded-none border border-amber-200 bg-amber-50 p-4 text-amber-900">
                         <p className="text-sm font-medium">
-                        Nossas acomodações comportam até 4 pessoas por quarto, conforme disponibilidade. Para grupos maiores, fale com a gente no WhatsApp.
+                        Nossas acomodações comportam até {MAX_BOOKING_GUESTS} pessoas por quarto, conforme disponibilidade. Para grupos maiores, fale com a gente no WhatsApp.
                     </p>
                     <div className="mt-3">
                         <Button type="button" onClick={handleWhatsAppClick}>

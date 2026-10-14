@@ -9,6 +9,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { getLocalRoomPhotos } from "@/lib/room-photos";
+import { MAX_BOOKING_GUESTS } from "@/lib/booking-capacity";
 
 type HomeOffer = {
   id: string;
@@ -274,7 +275,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
   const canApplyDraft = Boolean(draftSearch.checkIn && draftSearch.checkOut)
     && new Date(`${draftSearch.checkOut}T12:00:00`) > new Date(`${draftSearch.checkIn}T12:00:00`)
     && draftSearch.adults >= 1
-    && draftSearch.adults + draftSearch.children <= 4;
+    && draftSearch.adults + draftSearch.children <= MAX_BOOKING_GUESTS;
 
   const openSearchModal = () => {
     setDraftSearch(offerSearch);
@@ -308,7 +309,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
   };
 
   const updateDraftChildren = (children: number) => {
-    const normalizedChildren = Math.min(Math.max(children, 0), Math.max(0, 4 - draftSearch.adults));
+    const normalizedChildren = Math.min(Math.max(children, 0), Math.max(0, MAX_BOOKING_GUESTS - draftSearch.adults));
     setDraftSearch((current) => {
       const nextAges = current.childrenAges.slice(0, normalizedChildren);
       while (nextAges.length < normalizedChildren) nextAges.push(0);
@@ -406,13 +407,13 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     onChange={(event) => {
                       const adults = Number(event.target.value);
                       setDraftSearch((current) => {
-                        const children = Math.min(current.children, Math.max(0, 4 - adults));
+                        const children = Math.min(current.children, Math.max(0, MAX_BOOKING_GUESTS - adults));
                         return { ...current, adults, children, childrenAges: current.childrenAges.slice(0, children) };
                       });
                     }}
                     className="h-12 w-full rounded-none border border-brand-brown-dark/15 bg-white px-3 font-medium text-foreground"
                   >
-                    {[1, 2, 3, 4].map((value) => <option key={value} value={value}>{value}</option>)}
+                    {Array.from({ length: MAX_BOOKING_GUESTS }, (_, index) => index + 1).map((value) => <option key={value} value={value}>{value}</option>)}
                   </select>
                 </label>
                 <label className="space-y-2 text-sm font-semibold text-brand-brown-dark">
@@ -422,7 +423,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
                     onChange={(event) => updateDraftChildren(Number(event.target.value))}
                     className="h-12 w-full rounded-none border border-brand-brown-dark/15 bg-white px-3 font-medium text-foreground"
                   >
-                    {Array.from({ length: Math.max(0, 4 - draftSearch.adults) + 1 }, (_, index) => (
+                    {Array.from({ length: Math.max(0, MAX_BOOKING_GUESTS - draftSearch.adults) + 1 }, (_, index) => (
                       <option key={index} value={index}>{index}</option>
                     ))}
                   </select>
@@ -456,7 +457,7 @@ export default function HomeAvailabilityOffers({ onLowestOfferChange }: HomeAvai
               ) : null}
 
               {!canApplyDraft ? (
-                <p className="mt-4 text-sm text-destructive">Revise as datas e mantenha até 4 hóspedes por acomodação.</p>
+                <p className="mt-4 text-sm text-destructive">Revise as datas e mantenha até {MAX_BOOKING_GUESTS} hóspedes por acomodação.</p>
               ) : null}
 
               <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">

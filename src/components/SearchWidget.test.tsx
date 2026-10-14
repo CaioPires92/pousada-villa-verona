@@ -53,6 +53,22 @@ describe('SearchWidget', () => {
     await waitFor(() => expect(button).not.toBeDisabled());
   });
 
+  it('permite pesquisar para cinco hóspedes', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: 'room-5-guests' }],
+      headers: { get: vi.fn(() => null) },
+    });
+    render(<SearchWidget />);
+
+    fireEvent.change(screen.getByLabelText('Hóspedes'), { target: { value: '5' } });
+    fireEvent.click(screen.getByRole('button', { name: /Buscar/i }));
+
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith(expect.stringContaining('adults=5&children=0'));
+    });
+  });
+
   it('faz fetch com parâmetros corretos ao buscar', async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
