@@ -78,8 +78,10 @@ export function calculateBookingPrice(input: BookingPriceInput): BookingPriceBre
     const effectiveGuests = effectiveAdults + childrenUnder12;
     if (effectiveGuests > maxGuests) throw new BookingPriceError('capacity_exceeded', 'Capacity exceeded');
 
-    const children6To11 = childrenUnder12Ages.filter((age) => age >= 6 && age <= 11).length;
+    const children6To11Count = childrenUnder12Ages.filter((age) => age >= 6 && age <= 11).length;
     const extraAdults = Math.max(0, effectiveAdults - includedAdults);
+    const includedSpotsForChildren = Math.max(0, includedAdults - effectiveAdults);
+    const children6To11 = Math.max(0, children6To11Count - includedSpotsForChildren);
 
 
     console.log(`[DEBUG] Noites: ${nights} | Adultos Reais: ${adults} | Crianças 12+: ${adultsFromChildren}`);

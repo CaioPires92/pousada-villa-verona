@@ -53,6 +53,50 @@ describe('calculateBookingPrice', () => {
         expect(breakdown.total).toBe(460);
     });
 
+    it('includes two paying guests in the base price regardless of age group', () => {
+        const twoGuests = calculateBookingPrice({
+            nights: 2,
+            baseTotalForStay: 700,
+            adults: 1,
+            childrenAges: [8],
+            includedAdults: 2,
+            maxGuests: 3,
+            extraAdultFee: 100,
+            child6To11Fee: 80,
+        });
+        const thirdGuest = calculateBookingPrice({
+            nights: 2,
+            baseTotalForStay: 700,
+            adults: 1,
+            childrenAges: [8, 10],
+            includedAdults: 2,
+            maxGuests: 3,
+            extraAdultFee: 100,
+            child6To11Fee: 80,
+        });
+
+        expect(twoGuests.total).toBe(700);
+        expect(twoGuests.children6To11).toBe(0);
+        expect(thirdGuest.total).toBe(860);
+        expect(thirdGuest.children6To11).toBe(1);
+    });
+
+    it('keeps a child under six free even as the third guest', () => {
+        const breakdown = calculateBookingPrice({
+            nights: 2,
+            baseTotalForStay: 700,
+            adults: 2,
+            childrenAges: [5],
+            includedAdults: 2,
+            maxGuests: 3,
+            extraAdultFee: 100,
+            child6To11Fee: 80,
+        });
+
+        expect(breakdown.total).toBe(700);
+        expect(breakdown.childTotal).toBe(0);
+    });
+
     it('treats child 12+ as adult for included adults and extra adult', () => {
         const breakdown = calculateBookingPrice({
             nights: 1,
