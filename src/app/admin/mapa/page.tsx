@@ -1443,7 +1443,7 @@ export default function MapaReservas() {
                                 onDragEnter={extendInventoryDrag}
                                 inventoryDragState={inventoryDragState}
                                 inventorySelection={inventorySelection}
-                                is4PNA={normalizeRoomName(room.name).includes('anexo') || (room.inventoryFor4Guests === 0)}
+                                show4P={false}
                             />
                         ))}
                     </div>

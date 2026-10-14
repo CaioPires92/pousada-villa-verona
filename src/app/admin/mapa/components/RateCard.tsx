@@ -17,6 +17,7 @@ interface RateCardProps {
   cta: boolean;
   ctd: boolean;
   is4PNA?: boolean;
+  show4P?: boolean;
   onStatusToggle: () => void;
   onInventorySTDChange: (val: number) => void;
   onInventory4PChange: (val: number) => void;
@@ -41,6 +42,7 @@ export const RateCard: React.FC<RateCardProps> = ({
   cta,
   ctd,
   is4PNA = false,
+  show4P = true,
   onStatusToggle,
   onInventorySTDChange,
   onInventory4PChange,
@@ -162,25 +164,27 @@ export const RateCard: React.FC<RateCardProps> = ({
       </div>
 
       {/* 5. Inventory 4P Row */}
-      <div 
-        onMouseDown={(e) => onDragStart?.(e, 'fourGuestInventory')}
-        onMouseEnter={(e) => onDragEnter?.(e, 'fourGuestInventory')}
-        data-inventory-selection-cell="true"
-        className={cn(
-          "h-12 flex items-center justify-center border-b border-slate-100 px-2 cursor-cell select-none",
-          selectedFields.includes('fourGuestInventory') && styles.inventorySelectionCell
-        )}
-      >
-        <InventoryControl
-          label="4P"
-          value={inventory4P}
-          onIncrement={() => onInventory4PChange(inventory4P + 1)}
-          onDecrement={() => onInventory4PChange(inventory4P - 1)}
-          disabled={disabled}
-          isNA={is4PNA}
-          hideLabel
-        />
-      </div>
+      {show4P && (
+        <div
+          onMouseDown={(e) => onDragStart?.(e, 'fourGuestInventory')}
+          onMouseEnter={(e) => onDragEnter?.(e, 'fourGuestInventory')}
+          data-inventory-selection-cell="true"
+          className={cn(
+            "h-12 flex items-center justify-center border-b border-slate-100 px-2 cursor-cell select-none",
+            selectedFields.includes('fourGuestInventory') && styles.inventorySelectionCell
+          )}
+        >
+          <InventoryControl
+            label="4P"
+            value={inventory4P}
+            onIncrement={() => onInventory4PChange(inventory4P + 1)}
+            onDecrement={() => onInventory4PChange(inventory4P - 1)}
+            disabled={disabled}
+            isNA={is4PNA}
+            hideLabel
+          />
+        </div>
+      )}
 
       {/* 6. MinLos Row */}
       <div 

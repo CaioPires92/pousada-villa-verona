@@ -20,6 +20,7 @@ interface RoomRowProps {
   inventoryDragState: any;
   inventorySelection: any;
   is4PNA?: boolean;
+  show4P?: boolean;
 }
 
 export const RoomRow: React.FC<RoomRowProps> = ({
@@ -32,6 +33,7 @@ export const RoomRow: React.FC<RoomRowProps> = ({
   inventoryDragState,
   inventorySelection,
   is4PNA = false,
+  show4P = true,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -101,9 +103,11 @@ export const RoomRow: React.FC<RoomRowProps> = ({
           <div className="h-12 border-b border-slate-100 flex items-center px-4">
             <span className="text-[9px] font-black text-slate-400 uppercase">STD</span>
           </div>
-          <div className="h-12 border-b border-slate-100 flex items-center px-4">
-            <span className="text-[9px] font-black text-slate-400 uppercase">4P</span>
-          </div>
+          {show4P && (
+            <div className="h-12 border-b border-slate-100 flex items-center px-4">
+              <span className="text-[9px] font-black text-slate-400 uppercase">4P</span>
+            </div>
+          )}
           <div className="h-12 border-b border-slate-100 flex items-center px-4">
             <span className="text-[9px] font-black text-slate-400 uppercase">Min. Noites</span>
           </div>
@@ -181,6 +185,7 @@ export const RoomRow: React.FC<RoomRowProps> = ({
                   cta={cta}
                   ctd={ctd}
                   is4PNA={is4PNA}
+                  show4P={show4P}
                   selectedFields={selectedFields}
                   onStatusToggle={() => onRateUpdate(date, 'stopSell', !data.stopSell)}
                   onInventorySTDChange={(val) => onRateUpdate(date, 'inventory', val)}

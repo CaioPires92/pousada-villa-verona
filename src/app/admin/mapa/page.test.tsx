@@ -172,7 +172,7 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
         });
     }, 30000);
 
-    it('exibe a linha compacta de quadruplo no mapa', async () => {
+    it('oculta a linha 4P e mantém apenas o inventário STD no mapa', async () => {
         setupMapFetch({
             date: fixedTodayKey,
             price: 350,
@@ -195,7 +195,7 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
         render(<MapaPage />);
 
         await waitFor(() => {
-            expect(screen.getByText('4P')).toBeInTheDocument();
+            expect(screen.queryByText('4P')).not.toBeInTheDocument();
             expect(screen.getByText('STD')).toBeInTheDocument();
         });
     }, 30000);
@@ -286,7 +286,7 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
         });
     }, 30000);
 
-    it('envia inventário em lote de quadruplo para a rota administrativa correta', async () => {
+    it('oculta 4P na edição em lote e mantém o envio do inventário STD', async () => {
         let ratePayload: Record<string, unknown> | null = null;
         let inventoryPayload: Record<string, unknown> | null = null;
 
@@ -342,9 +342,11 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
             expect(screen.getByTestId('bulk-modal')).toBeInTheDocument();
         });
 
+        expect(screen.queryByText('QUADRUPLO')).not.toBeInTheDocument();
+
         fireEvent.change(screen.getByLabelText('Data inicial'), { target: { value: '2026-03-09' } });
         fireEvent.change(screen.getByLabelText('Data final'), { target: { value: '2026-03-11' } });
-        fireEvent.change(screen.getByLabelText('Alterar quantidade de quartos disponíveis (quadruplo)'), { target: { value: '1' } });
+        fireEvent.change(screen.getByLabelText('Alterar quantidade de quartos disponíveis'), { target: { value: '1' } });
         fireEvent.click(screen.getByRole('button', { name: /Aplicar alterações em lote/i }));
 
         await waitFor(() => {
@@ -354,9 +356,9 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
                 startDate: '2026-03-09',
                 endDate: '2026-03-11',
                 updates: {
-                    fourGuestInventory: 1,
+                    inventory: 1,
                 },
-                inventoryType: 'fourGuests',
+                inventoryType: 'standard',
                 daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
             });
         });
