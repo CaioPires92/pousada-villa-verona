@@ -11,6 +11,7 @@ import {
     normalizePartialPaymentSettings,
     type PaymentMode,
 } from '@/lib/partial-payment';
+import { applyPixDiscount, isPixDiscountEnabled } from '@/lib/pix-discount';
 
 type MercadoPagoCause = {
     code?: number | string;
@@ -18,7 +19,6 @@ type MercadoPagoCause = {
     data?: string;
 };
 
-const PIX_DISCOUNT_RATE = 0.05;
 const PARTIAL_PAYMENT_SETTINGS_ID = 'default';
 
 function normalizeInstallments(value: unknown) {
@@ -111,10 +111,6 @@ function detectInvalidTransactionAmount(error: any) {
     });
 
     return status === 400 && (message.includes('transaction_amount') || causeMentionsAmount);
-}
-
-function applyPixDiscount(amount: number) {
-    return Number((amount * (1 - PIX_DISCOUNT_RATE)).toFixed(2));
 }
 
 function normalizePaymentMode(value: unknown): PaymentMode {
@@ -433,7 +429,8 @@ export async function POST(request: Request) {
 
         const amountDueNow = paymentPlan.amountDueNow;
         const remainingAmount = paymentPlan.remainingAmount;
-        const expectedAmount = pixPayment ? applyPixDiscount(amountDueNow) : amountDueNow;
+        const pixDiscountEnabled = pixPayment && isPixDiscountEnabled();
+        const expectedAmount = pixDiscountEnabled ? applyPixDiscount(amountDueNow) : amountDueNow;
         const minTransactionAmount = getMinTransactionAmount(pixPayment);
 
         ctxRequestedAmount = requestedAmount;

@@ -108,6 +108,7 @@ interface RoomGalleryState {
 type PaymentMode = 'FULL' | 'PARTIAL';
 
 type PartialPaymentEvaluation = {
+    pixDiscountEnabled: boolean;
     enabled: boolean;
     eligible: boolean;
     reasons: string[];
@@ -120,10 +121,8 @@ type PartialPaymentEvaluation = {
     balanceDueDate: string | null;
 };
 
-const PIX_DISCOUNT_RATE = 0.05;
-
 function applyPixDiscount(amount: number) {
-    return Number((amount * (1 - PIX_DISCOUNT_RATE)).toFixed(2));
+    return Number((amount * 0.95).toFixed(2));
 }
 
 function isPixBrickPayment(formData: any) {
@@ -1196,7 +1195,8 @@ function ReservarContent() {
                                 guestName: guest.name,
                                 guestEmail: guest.email,
                             });
-                            const finalPaymentAmount = isPixBrickPayment(formData)
+                            const pixDiscountEnabled = Boolean(partialPaymentEvaluation?.pixDiscountEnabled);
+                            const finalPaymentAmount = isPixBrickPayment(formData) && pixDiscountEnabled
                                 ? applyPixDiscount(paymentAmount)
                                 : paymentAmount;
                             const paymentType = isPixBrickPayment(formData)
@@ -1273,7 +1273,9 @@ function ReservarContent() {
 
                                 setPaymentStatus('pending');
                                 if (pix?.qr_code || pix?.qr_code_base64) {
-                                    setPaymentStatusMessage(`Pix gerado com sucesso com 5% de desconto (${formatCurrencyBRL(finalPaymentAmount)}). Use o QR Code ou copie o código abaixo para concluir sua reserva.`);
+                                    setPaymentStatusMessage(pixDiscountEnabled
+                                        ? `Pix gerado com sucesso com 5% de desconto (${formatCurrencyBRL(finalPaymentAmount)}). Use o QR Code ou copie o código abaixo para concluir sua reserva.`
+                                        : `Pix gerado com sucesso (${formatCurrencyBRL(finalPaymentAmount)}). Use o QR Code ou copie o código abaixo para concluir sua reserva.`);
                                 } else {
                                     setPaymentStatusMessage('Pagamento em análise. Assim que houver confirmação, sua reserva será atualizada automaticamente.');
                                 }
@@ -1821,13 +1823,15 @@ function ReservarContent() {
                                             <span className="text-sm text-muted-foreground">Valor no cartão</span>
                                             <strong className="text-lg font-bold text-brand-brown-dark">{formatCurrencyBRL(Number(paymentAmount || 0))}</strong>
                                         </div>
-                                        <div className="flex items-center justify-between gap-4 border-t border-brand-brown-dark/10 pt-3">
-                                            <span className="text-sm font-semibold text-emerald-700">Valor no Pix com 5% de desconto</span>
-                                            <strong className="text-lg font-bold text-emerald-700">{formatCurrencyBRL(applyPixDiscount(Number(paymentAmount || 0)))}</strong>
-                                        </div>
+                                        {partialPaymentEvaluation?.pixDiscountEnabled ? (
+                                            <div className="flex items-center justify-between gap-4 border-t border-brand-brown-dark/10 pt-3">
+                                                <span className="text-sm font-semibold text-emerald-700">Valor no Pix com 5% de desconto</span>
+                                                <strong className="text-lg font-bold text-emerald-700">{formatCurrencyBRL(applyPixDiscount(Number(paymentAmount || 0)))}</strong>
+                                            </div>
+                                        ) : null}
                                     </div>
                                 ) : null}
-                                {Number(paymentAmount || 0) > 0 ? (
+                                {Number(paymentAmount || 0) > 0 && partialPaymentEvaluation?.pixDiscountEnabled ? (
                                     <div className="mb-4 border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                                         O desconto é aplicado automaticamente ao escolher Pix. Pagamentos por cartão permanecem no valor integral da reserva.
                                     </div>

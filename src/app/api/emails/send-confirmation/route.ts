@@ -27,10 +27,11 @@ export async function POST(request: NextRequest) {
         opsLog('info', 'EMAIL_CONFIRMATION_SEND_START', { bookingId, bookingIdShort: bookingId?.slice?.(0, 8) });
 
         // Configurar transporter do nodemailer
+        const smtpPort = parseInt(process.env.SMTP_PORT || '587');
         const transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
-            port: parseInt(process.env.SMTP_PORT || '587'),
-            secure: false, // true para 465, false para outras portas
+            port: smtpPort,
+            secure: smtpPort === 465,
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS,
