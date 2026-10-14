@@ -277,7 +277,7 @@ export default function AdminReservasPage() {
             action: 'hotel-confirmation',
             endpoint: `/api/admin/bookings/${bookingId}/resend-hotel-confirmation`,
             method: 'POST',
-            successMessage: `Confirmação da reserva ${bookingId.slice(0, 8).toUpperCase()} reenviada ao hotel.`,
+            successMessage: `Voucher da reserva ${bookingId.slice(0, 8).toUpperCase()} reenviado ao hóspede e à pousada.`,
         });
     }, [runBookingAction]);
 
