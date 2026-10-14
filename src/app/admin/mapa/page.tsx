@@ -3,7 +3,7 @@
 import { Fragment, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
+import {
     format, 
     startOfMonth, 
     endOfMonth, 
@@ -44,6 +44,7 @@ import {
     getInventoryMaxAllowed,
     type InventoryField,
 } from './inventory-grid';
+import { getRoomSortPriority, normalizeRoomName } from './room-order';
 
 interface RoomType {
     id: string;
@@ -102,19 +103,6 @@ type InventorySelectionState = {
 };
 
 const ALL_ROOMS_VALUE = 'all';
-const ROOM_ORDER_KEYWORDS = ['terreo', 'superior', 'chale', 'anexo'];
-
-const normalizeRoomName = (name: string) =>
-    name
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase();
-
-const getRoomSortPriority = (name: string) => {
-    const normalized = normalizeRoomName(name);
-    const idx = ROOM_ORDER_KEYWORDS.findIndex(keyword => normalized.includes(keyword));
-    return idx >= 0 ? idx : ROOM_ORDER_KEYWORDS.length;
-};
 
 const isInventorySelectionField = (field: DragSelectionField): field is InventoryField =>
     field === 'inventory' || field === 'fourGuestInventory';
