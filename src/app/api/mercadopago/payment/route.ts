@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
+import { isIP } from 'node:net';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import prisma from '@/lib/prisma';
 import { opsLog } from '@/lib/ops-log';
 import { sendBookingConfirmationEmail, sendBookingCreatedAlertEmail, sendDifficultyAlertEmail } from '@/lib/email';
-import { sendBookingStatusAlertEmail } from '@/lib/booking-status-alert';
 import { sendGa4PurchaseServerEvent } from '@/lib/ga4-measurement';
+import {
+    buildMercadoPagoPaymentContext,
+    isRetryablePaymentRejection,
+} from '@/lib/mercadopago/payment-context';
 import {
     DEFAULT_PARTIAL_PAYMENT_SETTINGS,
     calculatePaymentPlan,
@@ -309,7 +313,15 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { bookingId, transaction_amount, description, skipGuestEmail, paymentMode: rawPaymentMode, ...formData } = body || {};
+        const {
+            bookingId,
+            transaction_amount,
+            description,
+            deviceId,
+            skipGuestEmail,
+            paymentMode: rawPaymentMode,
+            ...formData
+        } = body || {};
 
         ctxBookingId = typeof bookingId === 'string' ? bookingId : undefined;
 
@@ -400,6 +412,7 @@ export async function POST(request: Request) {
             paymentMethodId: String(paymentMethodId || ''),
             paymentTypeId,
         });
+        const cardPayment = normalizedPaymentMethod === 'CREDIT_CARD' || normalizedPaymentMethod === 'DEBIT_CARD';
         const settingsRow = await prisma.partialPaymentSettings.findUnique({
             where: { id: PARTIAL_PAYMENT_SETTINGS_ID },
         });
@@ -521,6 +534,21 @@ export async function POST(request: Request) {
             accessToken,
             pixPayment,
         });
+        const forwardedIpCandidate = String(request.headers.get('x-forwarded-for') || '').split(',')[0]?.trim();
+        const forwardedIp = isIP(forwardedIpCandidate) ? forwardedIpCandidate : '';
+        const paymentContext = buildMercadoPagoPaymentContext({
+            bookingId: booking.id,
+            roomTypeId: booking.roomType.id,
+            roomName: booking.roomType.name,
+            checkIn: booking.checkIn,
+            checkOut: booking.checkOut,
+            adults: booking.adults,
+            children: booking.children,
+            amount: requestedAmount,
+            guestName: booking.guest.name,
+            guestPhone: booking.guest.phone,
+            ipAddress: forwardedIp || null,
+        });
         const result: any = localCardSandbox
             ? {
                   id: `LOCAL_SANDBOX_${bookingId}_${Date.now()}`,
@@ -540,10 +568,19 @@ export async function POST(request: Request) {
                       payer: {
                           ...(formData?.payer || {}),
                           email: resolvedPayerEmail,
+                          ...(paymentContext.payerPhone ? { phone: paymentContext.payerPhone } : {}),
                       },
                       transaction_amount: requestedAmount,
                       description: description || `Reserva ${bookingId}`,
                       external_reference: bookingId,
+                      additional_info: paymentContext.additionalInfo,
+                      statement_descriptor: 'VILLA VERONA',
+                      ...(cardPayment ? { three_d_secure_mode: 'optional', binary_mode: false } : {}),
+                  },
+                  requestOptions: {
+                      ...(typeof deviceId === 'string' && deviceId.trim()
+                          ? { meliSessionId: deviceId.trim().slice(0, 256) }
+                          : {}),
                   },
               });
 
@@ -604,7 +641,7 @@ export async function POST(request: Request) {
                     ? 'PAYMENT_REJECTED'
                     : 'PAYMENT_PENDING',
             message: ['REJECTED', 'CANCELLED', 'REFUNDED', 'CHARGED_BACK'].includes(normalizedStatus)
-                ? normalizedStatus.toLowerCase()
+                ? String(result.status_detail || normalizedStatus).toLowerCase()
                 : null,
         });
 
@@ -697,39 +734,22 @@ export async function POST(request: Request) {
                 });
             }
         } else if (['REJECTED', 'CANCELLED', 'REFUNDED', 'CHARGED_BACK'].includes(normalizedStatus)) {
+            const rejectionDetail = String(result.status_detail || normalizedStatus).toLowerCase();
+            const retryableRejection = isRetryablePaymentRejection(normalizedStatus);
             await prisma.booking.updateMany({
                 where: { id: bookingId, status: 'PENDING' },
                 data: {
-                    status: 'CANCELLED',
+                    status: retryableRejection ? 'PENDING' : 'CANCELLED',
                     funnelStage: 'PAYMENT_REJECTED',
                     funnelUpdatedAt: new Date(),
-                    lastErrorMessage: normalizedStatus.toLowerCase(),
+                    lastErrorMessage: rejectionDetail,
                 },
             });
-            await sendBookingStatusAlertEmail(
-                {
-                    ...booking,
-                    payment: {
-                        method: normalizedPaymentMethod,
-                        installments: normalizedInstallments,
-                        status: normalizedStatus,
-                        paymentMode: paymentPlan.paymentMode,
-                        amount: requestedAmount,
-                        remainingAmount,
-                        balanceDueAt: paymentPlan.balanceDueAt,
-                        balanceDueDate: paymentPlan.balanceDueDate,
-                    },
-                },
-                {
-                    bookingStatus: 'CANCELLED',
-                    paymentStatus: normalizedStatus,
-                }
-            );
             await sendPaymentDifficultyAlert({
                 bookingId,
                 step: 'Retorno do Mercado Pago',
                 reason: 'Pagamento recusado pelo Mercado Pago',
-                error: String(result.status_detail || normalizedStatus).toLowerCase(),
+                error: rejectionDetail,
                 funnelStage: 'PAYMENT_REJECTED',
                 cardBrand: normalizedCardBrand,
                 paymentStatusDetail: result.status_detail || null,

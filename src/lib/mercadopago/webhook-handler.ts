@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/nextjs';
 import prisma from '@/lib/prisma';
 import { opsLog } from '@/lib/ops-log';
 import { sendGa4PurchaseServerEvent } from '@/lib/ga4-measurement';
+import { isRetryablePaymentRejection } from '@/lib/mercadopago/payment-context';
 
 type MercadoPagoWebhookBody = {
     type?: string;
@@ -81,7 +82,10 @@ function mapPaymentStatus(mpStatus: string | null | undefined) {
     if (s === 'approved') {
         return { bookingStatus: 'CONFIRMED', paymentStatus: 'APPROVED' } as const;
     }
-    if (s === 'rejected' || s === 'cancelled') {
+    if (isRetryablePaymentRejection(s)) {
+        return { bookingStatus: 'PENDING', paymentStatus: 'REJECTED' } as const;
+    }
+    if (s === 'cancelled') {
         return { bookingStatus: 'CANCELLED', paymentStatus: 'REJECTED' } as const;
     }
     if (s === 'refunded' || s === 'charged_back') {
@@ -185,6 +189,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
 
         const paymentData = await paymentResponse.json();
         const mpStatus = paymentData?.status as string | undefined;
+        const paymentStatusDetail = String(paymentData?.status_detail || '').trim().toLowerCase();
         const paymentInstallments = normalizeInstallments(paymentData?.installments);
         const paymentCardBrand = normalizeCardBrand({
             paymentMethodId: paymentData?.payment_method_id,
@@ -385,7 +390,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
                         data: {
                             funnelStage: 'PAYMENT_REJECTED',
                             funnelUpdatedAt: new Date(),
-                            lastErrorMessage: normalizedMpStatus || 'rejected',
+                            lastErrorMessage: paymentStatusDetail || normalizedMpStatus || 'rejected',
                         },
                     });
                 } else if (mapped.paymentStatus === 'REFUNDED') {
@@ -463,7 +468,9 @@ export async function handleMercadoPagoWebhook(request: Request) {
                                 ? 'PAYMENT_REJECTED'
                                 : 'PAYMENT_PENDING',
                         funnelUpdatedAt: new Date(),
-                        lastErrorMessage: initialStatus === 'REJECTED' ? (normalizedMpStatus || 'rejected') : null,
+                        lastErrorMessage: initialStatus === 'REJECTED'
+                            ? (paymentStatusDetail || normalizedMpStatus || 'rejected')
+                            : null,
                     },
                 });
             }

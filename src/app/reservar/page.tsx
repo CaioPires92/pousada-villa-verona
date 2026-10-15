@@ -47,6 +47,7 @@ import { trackAddPaymentInfo, trackBeginCheckout, trackClickWhatsApp, trackReser
 import { buildBookingWhatsAppUrl } from '@/lib/booking-whatsapp';
 import { SOCIAL_PROOF_RATINGS } from '@/constants/socialProof';
 import { MAX_BOOKING_GUESTS } from '@/lib/booking-capacity';
+import { getPaymentRejectionMessage } from '@/lib/mercadopago/payment-context';
 import {
     mountLatestPaymentBrick,
     safelyUnmountPaymentBrick,
@@ -1238,6 +1239,7 @@ function ReservarContent() {
                                         description: `Reserva ${paymentBookingId}`,
                                         transaction_amount: finalPaymentAmount,
                                         paymentMode,
+                                        deviceId: String((window as any).MP_DEVICE_SESSION_ID || '').trim() || undefined,
                                     }),
                                 });
                                 const data = await res.json().catch(() => ({}));
@@ -1250,6 +1252,7 @@ function ReservarContent() {
                                 }
 
                                 const status = data?.status;
+                                const statusDetail = String(data?.status_detail || '').trim().toLowerCase();
                                 const pix = data?.pix;
                                 if (pix) setPixData(pix);
                                 if (status === 'approved') {
@@ -1268,15 +1271,56 @@ function ReservarContent() {
                                     return;
                                 }
 
+                                if (
+                                    status === 'pending'
+                                    && statusDetail === 'pending_challenge'
+                                    && data?.id
+                                    && data?.three_ds_info?.external_resource_url
+                                    && data?.three_ds_info?.creq
+                                ) {
+                                    setPaymentStatus('pending');
+                                    setPaymentStatusMessage('Confirme a compra na tela segura do seu banco.');
+                                    const statusBrick = await mountLatestPaymentBrick({
+                                        requestId,
+                                        latestRequestRef: paymentBrickRequestRef,
+                                        activeBrickRef: paymentBrickRef,
+                                        create: () => bricksBuilder.create('statusScreen', paymentContainerId, {
+                                            initialization: {
+                                                paymentId: String(data.id),
+                                                additionalInfo: {
+                                                    externalResourceURL: data.three_ds_info.external_resource_url,
+                                                    creq: data.three_ds_info.creq,
+                                                },
+                                            },
+                                            callbacks: {
+                                                onReady: () => {},
+                                                onError: (challengeError: unknown) => {
+                                                    console.error('Mercado Pago 3DS Error:', challengeError);
+                                                    setPaymentError('Não foi possível abrir a confirmação do banco. Atualize a página e tente novamente.');
+                                                },
+                                            },
+                                        }),
+                                    });
+                                    if (statusBrick) mountedBrick = statusBrick;
+                                    trackReservationFunnel({
+                                        step: 'payment_result',
+                                        status: 'pending',
+                                        bookingId: paymentBookingId,
+                                        value: finalPaymentAmount,
+                                        message: '3ds_pending_challenge',
+                                    });
+                                    return;
+                                }
+
                                 if (status === 'rejected') {
                                     setPaymentStatus('rejected');
-                                    setPaymentStatusMessage('Pagamento não aprovado. Você pode revisar os dados ou tentar outro método com segurança.');
+                                    setPaymentStatusMessage(getPaymentRejectionMessage(statusDetail));
                                     trackReservationFunnel({
                                         step: 'payment_result',
                                         status: 'error',
                                         bookingId: paymentBookingId,
                                         value: finalPaymentAmount,
-                                        message: 'rejected',
+                                        message: statusDetail || 'rejected',
                                     });
                                     return;
                                 }
