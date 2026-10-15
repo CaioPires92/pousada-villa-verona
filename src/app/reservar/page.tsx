@@ -207,6 +207,14 @@ const PAYMENT_LOADING_STEPS = [
     'Preparando a confirmacao',
 ];
 
+const PAYMENT_APPROVAL_FEEDBACK_MS = 1500;
+
+function waitForPaymentApprovalFeedback() {
+    return new Promise<void>((resolve) => {
+        window.setTimeout(resolve, PAYMENT_APPROVAL_FEEDBACK_MS);
+    });
+}
+
 function getAmenityIcon(amenity: string) {
     const normalized = String(amenity || '').toLowerCase();
 
@@ -1247,7 +1255,7 @@ function ReservarContent() {
                                 if (status === 'approved') {
                                     keepOverlayUntilRedirect = true;
                                     setPaymentStatus('approved');
-                                    setPaymentStatusMessage('Pagamento aprovado! Redirecionando...');
+                                    setPaymentStatusMessage('Pagamento identificado, confirmando sua reserva...');
                                     trackReservationFunnel({
                                         step: 'payment_result',
                                         status: 'success',
@@ -1255,6 +1263,7 @@ function ReservarContent() {
                                         value: finalPaymentAmount,
                                         message: 'approved',
                                     });
+                                    await waitForPaymentApprovalFeedback();
                                     router.push(`/reservar/confirmacao/${paymentBookingId}`);
                                     return;
                                 }
@@ -1423,7 +1432,7 @@ function ReservarContent() {
                 const data = await res.json();
                 if (data?.status === 'CONFIRMED') {
                     setPaymentStatus('approved');
-                    setPaymentStatusMessage('Pagamento aprovado! Redirecionando...');
+                    setPaymentStatusMessage('Pagamento identificado, confirmando sua reserva...');
                     trackReservationFunnel({
                         step: 'payment_result',
                         status: 'success',
@@ -1432,6 +1441,7 @@ function ReservarContent() {
                         message: 'confirmed_polling',
                     });
                     if (pollRef.current) clearInterval(pollRef.current);
+                    await waitForPaymentApprovalFeedback();
                     router.push(`/reservar/confirmacao/${paymentBookingId}`);
                 } else if (data?.status === 'CANCELLED') {
                     setPaymentStatus('rejected');
@@ -1957,7 +1967,7 @@ function ReservarContent() {
                                             Parcelamento e opções disponíveis aparecem automaticamente conforme o método escolhido.
                                         </p>
                                         <div className="relative border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-4">
-                                            {isSubmittingPayment ? (
+                                            {isSubmittingPayment || paymentStatus === 'approved' ? (
                                                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-[2px] px-6">
                                                     <div className="w-full max-w-md border border-white/10 bg-zinc-900 p-6 shadow-2xl">
                                                         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/15 bg-white/10">
@@ -1968,10 +1978,12 @@ function ReservarContent() {
                                                                 Mercado Pago
                                                             </p>
                                                             <p className="text-lg font-semibold text-white">
-                                                                Enviando seu pagamento
+                                                                {paymentStatus === 'approved' ? 'Pagamento identificado' : 'Enviando seu pagamento'}
                                                             </p>
                                                             <p className="text-sm leading-6 text-white/78">
-                                                                Isso pode levar alguns segundos. Nao feche esta pagina ate a confirmacao.
+                                                                {paymentStatus === 'approved'
+                                                                    ? 'Confirmando sua reserva. Você será redirecionado em instantes.'
+                                                                    : 'Isso pode levar alguns segundos. Nao feche esta pagina ate a confirmacao.'}
                                                             </p>
                                                         </div>
 
