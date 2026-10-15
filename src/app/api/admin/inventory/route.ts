@@ -50,7 +50,7 @@ export async function POST(request: Request) {
                 const activeBookings = await prisma.booking.findMany({
                     where: {
                         roomTypeId: id,
-                    status: { in: ['CONFIRMED', 'PAID'] },
+                        hospedinRegisteredAt: null,
                         OR: [
                             { status: { in: ['CONFIRMED', 'PAID'] } },
                             {
@@ -172,6 +172,7 @@ export async function POST(request: Request) {
                     checkIn: { lt: new Date(`${dKey}T23:59:59Z`) },
                     checkOut: { gt: new Date(`${dKey}T00:00:00Z`) },
                     status: { in: ['CONFIRMED', 'PAID'] },
+                    hospedinRegisteredAt: null,
                 },
                 select: {
                     adults: true,

@@ -195,6 +195,7 @@ describe("queryAvailabilityQuote", () => {
     expect(client.booking.findMany).toHaveBeenCalledWith(expect.objectContaining({
       where: expect.objectContaining({
         roomTypeId: { in: ["room-1", "room-2", "room-3"] },
+        hospedinRegisteredAt: null,
       }),
     }));
   });

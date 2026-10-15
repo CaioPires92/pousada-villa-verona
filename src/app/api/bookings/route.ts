@@ -60,6 +60,7 @@ export async function POST(request: Request) {
                     checkIn: { lt: new Date(`${checkOut}T00:00:00Z`) },
                     checkOut: { gt: new Date(`${checkIn}T00:00:00Z`) },
                     status: { in: ['CONFIRMED', 'PAID'] },
+                    hospedinRegisteredAt: null,
                 },
                 select: {
                     checkIn: true,

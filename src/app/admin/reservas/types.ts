@@ -11,6 +11,8 @@ export interface Booking {
     funnelUpdatedAt?: string | null;
     lastErrorMessage?: string | null;
     createdAt?: string | null;
+    hospedinReservationId?: string | null;
+    hospedinRegisteredAt?: string | null;
     guest: {
         name: string;
         email: string;
@@ -34,4 +36,4 @@ export interface Booking {
     } | null;
 }
 
-export type BookingAction = 'confirm' | 'test' | 'expire' | 'assist' | 'discount' | 'payment-link' | 'hotel-confirmation' | 'delete';
+export type BookingAction = 'confirm' | 'test' | 'expire' | 'assist' | 'discount' | 'payment-link' | 'hotel-confirmation' | 'hospedin' | 'delete';

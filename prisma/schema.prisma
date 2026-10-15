@@ -116,6 +116,8 @@ model Booking {
   expiredEmailSentAt      DateTime?
   confirmationEmailSentAt DateTime?
   checkoutConfirmedAt     DateTime?
+  hospedinReservationId   String?
+  hospedinRegisteredAt    DateTime?
   createdAt               DateTime          @default(now())
   updatedAt               DateTime          @updatedAt
   roomType                RoomType          @relation(fields: [roomTypeId], references: [id])
@@ -125,6 +127,7 @@ model Booking {
   payment                 Payment?
 
   @@index([checkoutConfirmedAt])
+  @@index([hospedinRegisteredAt])
 }
 
 model PartialPaymentSettings {

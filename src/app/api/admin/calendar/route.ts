@@ -89,6 +89,7 @@ export async function GET(request: Request) {
             where: {
                 roomTypeId,
                 status: { in: ['CONFIRMED', 'PAID'] },
+                hospedinRegisteredAt: null,
                 // Filtro de sobreposição
                 checkIn: { lte: rangeEnd },
                 checkOut: { gt: rangeStart }

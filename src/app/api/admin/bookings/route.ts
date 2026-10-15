@@ -148,6 +148,8 @@ function normalizeBooking(booking: Row, guest?: Row, roomType?: Row, payment?: R
         funnelUpdatedAt: booking.funnelUpdatedAt ?? null,
         lastErrorMessage: asNullableString(booking.lastErrorMessage),
         createdAt: booking.createdAt ?? null,
+        hospedinReservationId: asNullableString(booking.hospedinReservationId),
+        hospedinRegisteredAt: booking.hospedinRegisteredAt ?? null,
         guest: {
             name: asNullableString(guest?.name) ?? 'Não informado',
             email: asNullableString(guest?.email) ?? '-',
@@ -230,6 +232,8 @@ async function fetchBookingsViaPrisma(filters: BookingQueryFilters) {
                 funnelUpdatedAt: true,
                 lastErrorMessage: true,
                 createdAt: true,
+                hospedinReservationId: true,
+                hospedinRegisteredAt: true,
                 guest: {
                     select: {
                         name: true,
@@ -336,6 +340,8 @@ async function fetchBookingsViaRawSql(filters: BookingQueryFilters) {
         'funnelUpdatedAt',
         'lastErrorMessage',
         'createdAt',
+        'hospedinReservationId',
+        'hospedinRegisteredAt',
     ];
     const selectedBookingColumns = pickColumns(wantedBookingColumns, bookingColumns);
     const orderBy = bookingColumns.has('createdAt') ? quoteIdentifier('createdAt') : 'rowid';

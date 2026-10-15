@@ -123,6 +123,7 @@ export async function queryAvailabilityQuote(
         checkIn: { lt: dateFromDayKey(input.checkout) },
         checkOut: { gt: dateFromDayKey(input.checkin) },
         status: { in: ["CONFIRMED", "PAID"] },
+        hospedinRegisteredAt: null,
       },
       select: {
         roomTypeId: true,

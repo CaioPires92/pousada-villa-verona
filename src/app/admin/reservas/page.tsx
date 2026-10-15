@@ -41,6 +41,7 @@ type ActionModalState = {
 };
 
 type StatusFilter = 'ALL' | 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'REFUNDED' | 'EXPIRED';
+type HospedinFilter = 'ALL' | 'PENDING' | 'REGISTERED';
 
 const STATUS_TABS: Array<{ key: StatusFilter; label: string }> = [
     { key: 'ALL', label: 'Todas' },
@@ -71,6 +72,7 @@ function getActionLabel(action: BookingAction) {
         discount: 'Convidar para voltar',
         'payment-link': 'Gerar link de pagamento',
         'hotel-confirmation': 'Reenviar confirmação ao hotel',
+        hospedin: 'Marcar como lançada no Hospedin',
         delete: 'Excluir reserva',
         test: 'Aprovar pagamento de teste',
     };
@@ -90,6 +92,7 @@ function getActionDescription(action: BookingAction, booking: Booking) {
     if (action === 'discount') return 'Envie um convite de retorno ao hóspede. Você pode incluir um cupom ativo, se desejar.';
     if (action === 'payment-link') return 'Será criado um link seguro do Mercado Pago, copiado para a área de transferência e preparado para envio pelo WhatsApp.';
     if (action === 'hotel-confirmation') return 'A confirmação completa desta reserva será reenviada para o e-mail administrativo do hotel.';
+    if (action === 'hospedin') return 'Primeiro sincronizaremos esta acomodação e período. A reserva só será marcada como lançada se o Hospedin responder com sucesso.';
     return 'Pagamento de teste será aprovado para esta reserva.';
 }
 
@@ -110,6 +113,7 @@ export default function AdminReservasPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<StatusFilter>('ALL');
+    const [hospedinFilter, setHospedinFilter] = useState<HospedinFilter>('ALL');
     const [dateField, setDateField] = useState<'createdAt' | 'checkIn'>('createdAt');
     const [periodMode, setPeriodMode] = useState<PeriodMode>('all-time');
     const [periodAnchor, setPeriodAnchor] = useState(() => new Date());
@@ -125,6 +129,7 @@ export default function AdminReservasPage() {
     const [returnCoupon, setReturnCoupon] = useState({ enabled: false, code: '' });
     const [assistChannels, setAssistChannels] = useState({ email: true, whatsapp: false });
     const [assistCoupon, setAssistCoupon] = useState({ enabled: false, code: '' });
+    const [hospedinReservationId, setHospedinReservationId] = useState('');
 
     const testPaymentsEnabled = process.env.NODE_ENV !== 'production'
         && process.env.NEXT_PUBLIC_ENABLE_TEST_PAYMENTS === 'true';
@@ -280,6 +285,17 @@ export default function AdminReservasPage() {
             successMessage: `Voucher da reserva ${bookingId.slice(0, 8).toUpperCase()} reenviado ao hóspede e à pousada.`,
         });
     }, [runBookingAction]);
+
+    const markAsRegisteredInHospedin = useCallback(async (bookingId: string) => {
+        await runBookingAction({
+            bookingId,
+            action: 'hospedin',
+            endpoint: `/api/admin/bookings/${bookingId}/hospedin`,
+            method: 'POST',
+            successMessage: `Reserva ${bookingId.slice(0, 8).toUpperCase()} marcada como lançada no Hospedin.`,
+            payload: { hospedinReservationId: hospedinReservationId.trim() },
+        });
+    }, [hospedinReservationId, runBookingAction]);
 
     const sendAssistEmail = useCallback(async (booking: Booking) => {
         const whatsappWindow = assistChannels.whatsapp ? window.open('', '_blank') : null;
@@ -482,10 +498,15 @@ export default function AdminReservasPage() {
             return;
         }
 
+        if (action === 'hospedin') {
+            await markAsRegisteredInHospedin(booking.id);
+            return;
+        }
+
         if (action === 'test') {
             await approveTestPayment(booking.id);
         }
-    }, [approveTestPayment, confirmBooking, deleteBooking, generatePaymentLink, markBookingExpired, resendHotelConfirmation, sendAssistEmail, sendDiscount]);
+    }, [approveTestPayment, confirmBooking, deleteBooking, generatePaymentLink, markAsRegisteredInHospedin, markBookingExpired, resendHotelConfirmation, sendAssistEmail, sendDiscount]);
 
     const confirmActionModal = useCallback(async () => {
         if (!actionModal) return;
@@ -518,6 +539,7 @@ export default function AdminReservasPage() {
             });
             setAssistCoupon({ enabled: false, code: '' });
         }
+        if (action === 'hospedin') setHospedinReservationId(booking.hospedinReservationId || '');
         trackAdminEvent('admin_booking_action_selected', {
             action,
             booking_id_short: booking.id.slice(0, 8).toUpperCase(),
@@ -548,10 +570,13 @@ export default function AdminReservasPage() {
         });
     }, [periodMode, trackAdminEvent]);
 
-    const filteredBookings = useMemo(() => {
-        if (filter === 'ALL') return bookings;
-        return bookings.filter((booking) => String(booking.status || '').toUpperCase() === filter);
-    }, [bookings, filter]);
+    const filteredBookings = useMemo(() => bookings.filter((booking) => {
+        if (filter !== 'ALL' && String(booking.status || '').toUpperCase() !== filter) return false;
+        const eligible = ['CONFIRMED', 'PAID'].includes(String(booking.status || '').toUpperCase());
+        if (hospedinFilter === 'PENDING') return eligible && !booking.hospedinRegisteredAt;
+        if (hospedinFilter === 'REGISTERED') return eligible && Boolean(booking.hospedinRegisteredAt);
+        return true;
+    }), [bookings, filter, hospedinFilter]);
 
     const modalConfirmClass = useMemo(() => {
         if (!actionModal) return styles.modalConfirmButton;
@@ -612,6 +637,21 @@ export default function AdminReservasPage() {
                         </div>
 
                         {/* Divider */}
+                        <div className="w-[1px] h-10 bg-slate-200/80 hidden md:block mx-1"></div>
+
+                        <label className="flex flex-col gap-1.5 min-w-[190px]">
+                            <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 pl-1">Status no Hospedin</span>
+                            <select
+                                value={hospedinFilter}
+                                onChange={(event) => setHospedinFilter(event.target.value as HospedinFilter)}
+                                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-slate-700 shadow-sm outline-none"
+                            >
+                                <option value="ALL">Todas</option>
+                                <option value="PENDING">Pendentes no Hospedin</option>
+                                <option value="REGISTERED">Lançadas no Hospedin</option>
+                            </select>
+                        </label>
+
                         <div className="w-[1px] h-10 bg-slate-200/80 hidden md:block mx-1"></div>
 
                         {/* Date Filter Block */}
@@ -737,7 +777,7 @@ export default function AdminReservasPage() {
                             <p className="text-slate-900 font-extrabold text-xl">Nenhuma reserva encontrada</p>
                             <p className="text-slate-400 font-medium">Tente alterar os filtros ou o período de busca.</p>
                         </div>
-                        <Button variant="outline" onClick={() => {setFilter('ALL'); setPeriodMode('month');}} className="rounded-xl font-bold mt-4">
+                        <Button variant="outline" onClick={() => {setFilter('ALL'); setHospedinFilter('ALL'); setPeriodMode('month');}} className="rounded-xl font-bold mt-4">
                             Limpar Filtros
                         </Button>
                     </Card>
@@ -773,6 +813,20 @@ export default function AdminReservasPage() {
                         </div>
                         
                         <p className={styles.modalDescription}>{getActionDescription(actionModal.action, actionModal.booking)}</p>
+
+                        {actionModal.action === 'hospedin' ? (
+                            <label className="mb-6 block text-sm font-semibold text-slate-700">
+                                Código da reserva no Hospedin (opcional)
+                                <input
+                                    type="text"
+                                    value={hospedinReservationId}
+                                    maxLength={100}
+                                    onChange={(event) => setHospedinReservationId(event.target.value)}
+                                    placeholder="Ex.: 123456"
+                                    className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50"
+                                />
+                            </label>
+                        ) : null}
 
                         {actionModal.action === 'discount' ? (
                             <div className="mb-6 space-y-4">

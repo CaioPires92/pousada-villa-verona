@@ -96,5 +96,17 @@ describe('BookingRowCard', () => {
 
         expect(screen.getByTestId('booking-card-def123456789')).toHaveTextContent('Check-in: 15/04/2026');
         expect(screen.getByTestId('booking-card-def123456789')).toHaveTextContent('Check-out: -');
+        expect(screen.getByText('Pendente no Hospedin')).toBeInTheDocument();
+    });
+
+    it('mostra uma reserva já lançada no Hospedin', () => {
+        const booking: Booking = {
+            id: 'hospedin123456', adults: 2, children: 0, totalPrice: 400, status: 'PAID',
+            hospedinRegisteredAt: '2026-10-15T12:00:00.000Z',
+            guest: { name: 'Cliente', email: 'cliente@example.com', phone: '11999999999' },
+            roomType: { name: 'Quarto Triplo' }, payment: null,
+        };
+        render(<BookingRowCard booking={booking} statusText="Paga" statusClassName="status" actionValue="" actionBusy={false} showActionBusy={false} testPaymentsEnabled={false} onActionSelect={onActionSelect} />);
+        expect(screen.getByText('Lançada no Hospedin')).toBeInTheDocument();
     });
 });

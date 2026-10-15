@@ -16,7 +16,8 @@ import {
     MessageCircle,
     TestTube2,
     Link2,
-    MailCheck
+    MailCheck,
+    UploadCloud,
 } from 'lucide-react';
 import type { Booking } from './types';
 import {
@@ -86,6 +87,7 @@ export default function BookingRowCard(props: BookingRowCardProps) {
     const bookingApproved = isBookingApproved(booking);
     const bookingStatus = String(booking.status || '').toUpperCase();
     const bookingConfirmed = bookingStatus === 'CONFIRMED';
+    const hospedinEligible = bookingStatus === 'CONFIRMED' || bookingStatus === 'PAID';
     const bookingPending = bookingStatus === 'PENDING';
     const checkIn = formatDateSafe(getBookingOperationalDate(booking));
     const checkOut = formatDateSafe(getBookingCheckOutDate(booking));
@@ -112,6 +114,16 @@ export default function BookingRowCard(props: BookingRowCardProps) {
                         >
                             Reserva #{booking.id.slice(0, 8).toUpperCase()}
                         </span>
+                        {hospedinEligible ? (
+                            <span className={cn(
+                                'rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide',
+                                booking.hospedinRegisteredAt
+                                    ? 'bg-emerald-100 text-emerald-700'
+                                    : 'bg-amber-100 text-amber-700'
+                            )}>
+                                {booking.hospedinRegisteredAt ? 'Lançada no Hospedin' : 'Pendente no Hospedin'}
+                            </span>
+                        ) : null}
                     </div>
                     <div className={styles.dateLine}>
                         <div className="flex items-center gap-2">
@@ -198,6 +210,16 @@ export default function BookingRowCard(props: BookingRowCardProps) {
                                 >
                                     <MailCheck className="w-4 h-4" />
                                     Reenviar confirmação
+                                </DropdownMenuItem>
+                            ) : null}
+
+                            {hospedinEligible && !booking.hospedinRegisteredAt ? (
+                                <DropdownMenuItem
+                                    onClick={() => triggerAction('hospedin')}
+                                    className="gap-2 cursor-pointer font-semibold py-2.5 text-blue-700"
+                                >
+                                    <UploadCloud className="w-4 h-4" />
+                                    Marcar como lançada no Hospedin
                                 </DropdownMenuItem>
                             ) : null}
 
