@@ -1,9 +1,34 @@
 import React, { useState } from 'react';
-import { Mail, MessageCircle, MapPin, ArrowRight, Clock } from 'lucide-react';
+import { Mail, MessageCircle, MapPin, ArrowRight, Clock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any }) {
   const [activeTab, setActiveTab] = useState<'contato' | 'reserva'>('contato');
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitStatus('sending');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          subject: activeTab === 'reserva' ? 'Reserva' : 'Contato',
+        }),
+      });
+
+      if (!response.ok) throw new Error('Falha ao enviar mensagem');
+
+      setFormData({ name: '', email: '', phone: '', message: '' });
+      setSubmitStatus('success');
+    } catch {
+      setSubmitStatus('error');
+    }
+  };
 
   return (
     <section className="bg-[color:var(--brand-cream)] pt-20 pb-10">
@@ -93,30 +118,76 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
               </button>
             </div>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">Nome Completo</label>
-                  <input type="text" placeholder="Ex: João Silva" className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400" />
+                  <label htmlFor="contact-name" className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">Nome Completo</label>
+                  <input
+                    id="contact-name"
+                    type="text"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={(event) => setFormData((current) => ({ ...current, name: event.target.value }))}
+                    placeholder="Ex: João Silva"
+                    className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">E-mail</label>
-                  <input type="email" placeholder="joao@email.com" className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400" />
+                  <label htmlFor="contact-email" className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">E-mail</label>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={(event) => setFormData((current) => ({ ...current, email: event.target.value }))}
+                    placeholder="joao@email.com"
+                    className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400"
+                  />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">Telefone / WhatsApp</label>
-                <input type="text" placeholder="(00) 00000-0000" className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400" />
+                <label htmlFor="contact-phone" className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">Telefone / WhatsApp</label>
+                <input
+                  id="contact-phone"
+                  type="tel"
+                  name="phone"
+                  required
+                  value={formData.phone}
+                  onChange={(event) => setFormData((current) => ({ ...current, phone: event.target.value }))}
+                  placeholder="(00) 00000-0000"
+                  className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400"
+                />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">Mensagem</label>
-                <textarea rows={3} placeholder="Como podemos ajudar?" className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400 resize-none"></textarea>
+                <label htmlFor="contact-message" className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">Mensagem</label>
+                <textarea
+                  id="contact-message"
+                  name="message"
+                  required
+                  rows={3}
+                  value={formData.message}
+                  onChange={(event) => setFormData((current) => ({ ...current, message: event.target.value }))}
+                  placeholder="Como podemos ajudar?"
+                  className="w-full border-b border-gray-200 py-3 bg-transparent text-sm focus:outline-none focus:border-brand-brown-dark transition-colors placeholder:text-gray-400 resize-none"
+                />
               </div>
 
-              <Button type="button" className="w-full h-14 rounded-xl bg-brand-gold hover:bg-brand-gold/85 text-brand-gold-foreground font-bold tracking-wide mt-4">
-                ENVIAR MENSAGEM <ArrowRight className="w-4 h-4 ml-2" />
+              {submitStatus === 'success' ? (
+                <p role="status" className="text-sm font-medium text-emerald-700">Mensagem enviada com sucesso!</p>
+              ) : submitStatus === 'error' ? (
+                <p role="alert" className="text-sm font-medium text-red-700">Não foi possível enviar. Tente novamente.</p>
+              ) : null}
+
+              <Button type="submit" disabled={submitStatus === 'sending'} className="w-full h-14 rounded-xl bg-brand-gold hover:bg-brand-gold/85 text-brand-gold-foreground font-bold tracking-wide mt-4">
+                {submitStatus === 'sending' ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> ENVIANDO...</>
+                ) : (
+                  <>ENVIAR MENSAGEM <ArrowRight className="w-4 h-4 ml-2" /></>
+                )}
               </Button>
             </form>
           </div>
