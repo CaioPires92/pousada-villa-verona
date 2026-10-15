@@ -1,1 +1,1 @@
-export const MAX_BOOKING_GUESTS = 5;
+export const MAX_BOOKING_GUESTS = 6;

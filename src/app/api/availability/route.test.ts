@@ -279,7 +279,7 @@ describe('Availability API - Pricing Logic', () => {
 
   // NEW TESTS FROM PLAN
 
-  it('should not charge for child under 6 years old', async () => {
+  it('should allow two children under 6 with two adults in a triple room without charging them', async () => {
     const checkIn = '2026-02-01';
     const checkOut = '2026-02-02';
     const req = new Request(`http://localhost/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=2&childrenAges=3,5`);
@@ -288,9 +288,9 @@ describe('Availability API - Pricing Logic', () => {
       id: 'room-1',
       name: 'Test Room',
       basePrice: 100,
-      capacity: 4,
-      maxGuests: 4,
-      inventoryFor4Guests: 5,
+      capacity: 3,
+      maxGuests: 3,
+      inventoryFor4Guests: 0,
       includedAdults: 2,
       extraAdultFee: 50,
       child6To11Fee: 30,
@@ -421,7 +421,7 @@ describe('Availability API - Pricing Logic', () => {
         checkIn: new Date('2026-02-01T00:00:00.000Z'),
         checkOut: new Date('2026-02-02T00:00:00.000Z'),
         adults: 2,
-        childrenAges: JSON.stringify([5, 8]),
+        childrenAges: JSON.stringify([6, 8]),
       }
     ]);
 

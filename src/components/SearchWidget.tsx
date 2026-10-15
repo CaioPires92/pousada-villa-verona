@@ -666,7 +666,7 @@ export default function SearchWidget({
                                             Configurar ocupação
                                         </p>
                                         <p className="text-sm text-brand-brown-dark/75">
-                                            Até {MAX_BOOKING_GUESTS} hóspedes por quarto. Crianças de 0 a 5 anos não pagam, mas contam na ocupação.
+                                            Até 5 pagantes por quarto, com 1 lugar adicional para criança de 0 a 5 anos, conforme a acomodação.
                                         </p>
                                     </div>
 
