@@ -484,19 +484,19 @@ describe('ReservarPage', () => {
     });
   });
 
-  it('redireciona automaticamente reservas de alto valor para o Checkout Pro', async () => {
+  it('redireciona automaticamente qualquer reserva para o Checkout Pro', async () => {
     mockFetch.mockImplementation(async (input: RequestInfo | URL) => {
       const url = String(input);
       if (url.startsWith('/api/availability')) {
         return {
           ok: true,
           json: async () => [{
-            id: 'room-high-value',
+            id: 'room-standard-value',
             name: 'Suíte Especial',
-            description: 'Acomodação de alto valor',
+            description: 'Acomodação',
             capacity: 2,
             amenities: 'Wi-Fi',
-            totalPrice: 3000,
+            totalPrice: 1000,
             photos: [],
           }],
           headers: { get: vi.fn(() => null) },
@@ -505,14 +505,14 @@ describe('ReservarPage', () => {
       if (url === '/api/bookings') {
         return {
           ok: true,
-          json: async () => ({ id: 'booking-high-value', totalPrice: 3000 }),
+          json: async () => ({ id: 'booking-standard-value', totalPrice: 1000 }),
           headers: { get: vi.fn(() => null) },
         };
       }
       if (url.startsWith('/api/partial-payment/evaluate')) {
         return {
           ok: true,
-          json: async () => ({ eligible: false, defaultPaymentMode: 'FULL', fullAmount: 3000 }),
+          json: async () => ({ eligible: false, defaultPaymentMode: 'FULL', fullAmount: 1000 }),
           headers: { get: vi.fn(() => null) },
         };
       }

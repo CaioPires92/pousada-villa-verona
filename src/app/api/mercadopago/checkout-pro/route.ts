@@ -112,6 +112,7 @@ export async function POST(request: Request) {
             notification_url: `${publicBaseUrl}/api/webhooks/mercadopago`,
             statement_descriptor: 'VILLA VERONA',
             payment_methods: {
+                excluded_payment_types: [{ id: 'ticket' }],
                 installments: 12,
             },
         };

@@ -1,7 +1,7 @@
 export const PIX_DISCOUNT_RATE = 0.05;
 
 export function isPixDiscountEnabled() {
-    return String(process.env.PIX_DISCOUNT_ENABLED || '').trim().toLowerCase() === 'true';
+    return false;
 }
 
 export function applyPixDiscount(amount: number) {

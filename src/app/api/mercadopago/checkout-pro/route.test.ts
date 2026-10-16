@@ -88,7 +88,10 @@ describe('POST Mercado Pago hosted checkout', () => {
                 phone: { area_code: '19', number: '999002288' },
             },
             items: [{ unit_price: 3796, currency_id: 'BRL' }],
-            payment_methods: { installments: 12 },
+            payment_methods: {
+                excluded_payment_types: [{ id: 'ticket' }],
+                installments: 12,
+            },
         });
         expect(preference).not.toHaveProperty('purpose');
         expect(prisma.payment.upsert).toHaveBeenCalledWith(expect.objectContaining({
@@ -145,15 +148,20 @@ describe('POST Mercado Pago hosted checkout', () => {
         }));
     });
 
-    it('rejects hosted checkout below the high-value threshold', async () => {
-        (prisma.booking.findUnique as any).mockResolvedValue({ ...booking, totalPrice: 2499.99 });
+    it('allows hosted checkout for reservations below the former high-value threshold', async () => {
+        (prisma.booking.findUnique as any).mockResolvedValue({ ...booking, totalPrice: 500 });
+        vi.stubGlobal('fetch', vi.fn(async () => ({
+            ok: true,
+            status: 201,
+            json: async () => ({ id: 'pref-standard', init_point: 'https://mercadopago.test/standard' }),
+        })));
 
         const response = await POST(createRequest({
             bookingId: booking.id,
             guestEmail: booking.guest.email,
         }));
 
-        expect(response.status).toBe(400);
-        expect(await response.json()).toMatchObject({ error: 'HOSTED_CHECKOUT_NOT_REQUIRED' });
+        expect(response.status).toBe(200);
+        expect(await response.json()).toMatchObject({ initPoint: 'https://mercadopago.test/standard' });
     });
 });

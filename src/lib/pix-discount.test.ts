@@ -1,24 +1,8 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { applyPixDiscount, isPixDiscountEnabled } from './pix-discount';
 
-const originalValue = process.env.PIX_DISCOUNT_ENABLED;
-
-afterEach(() => {
-    if (originalValue === undefined) delete process.env.PIX_DISCOUNT_ENABLED;
-    else process.env.PIX_DISCOUNT_ENABLED = originalValue;
-});
-
 describe('pix discount', () => {
-    it('is disabled by default', () => {
-        delete process.env.PIX_DISCOUNT_ENABLED;
-        expect(isPixDiscountEnabled()).toBe(false);
-    });
-
-    it('is enabled only when explicitly configured', () => {
-        process.env.PIX_DISCOUNT_ENABLED = 'true';
-        expect(isPixDiscountEnabled()).toBe(true);
-
-        process.env.PIX_DISCOUNT_ENABLED = 'false';
+    it('stays disabled', () => {
         expect(isPixDiscountEnabled()).toBe(false);
     });
 
