@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
     buildMercadoPagoPaymentContext,
+    getPolledBookingPaymentStatus,
     getPaymentRejectionMessage,
     isRetryablePaymentRejection,
     normalizeBrazilianPhone,
@@ -55,5 +56,16 @@ describe('Mercado Pago payment context', () => {
         expect(isRetryablePaymentRejection('cancelled')).toBe(false);
         expect(isRetryablePaymentRejection('refunded')).toBe(false);
         expect(isRetryablePaymentRejection('charged_back')).toBe(false);
+    });
+
+    it('detects a rejected payment while its booking remains pending', () => {
+        expect(getPolledBookingPaymentStatus({
+            bookingStatus: 'PENDING',
+            paymentStatus: 'REJECTED',
+        })).toBe('REJECTED');
+        expect(getPolledBookingPaymentStatus({
+            bookingStatus: 'PENDING',
+            paymentStatus: 'PENDING',
+        })).toBe('PENDING');
     });
 });

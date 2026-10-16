@@ -88,3 +88,18 @@ export function getPaymentRejectionMessage(statusDetail: unknown) {
 export function isRetryablePaymentRejection(status: unknown) {
     return String(status || '').trim().toUpperCase() === 'REJECTED';
 }
+
+export function getPolledBookingPaymentStatus(input: {
+    bookingStatus: unknown;
+    paymentStatus: unknown;
+}) {
+    const bookingStatus = String(input.bookingStatus || '').trim().toUpperCase();
+    const paymentStatus = String(input.paymentStatus || '').trim().toUpperCase();
+
+    if (bookingStatus === 'CONFIRMED' || paymentStatus === 'APPROVED') return 'APPROVED' as const;
+    if (paymentStatus === 'REJECTED') return 'REJECTED' as const;
+    if (bookingStatus === 'CANCELLED' || ['CANCELLED', 'REFUNDED', 'CHARGED_BACK'].includes(paymentStatus)) {
+        return 'CANCELLED' as const;
+    }
+    return 'PENDING' as const;
+}

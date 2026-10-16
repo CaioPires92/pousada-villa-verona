@@ -47,7 +47,10 @@ import { trackAddPaymentInfo, trackBeginCheckout, trackClickWhatsApp, trackReser
 import { buildBookingWhatsAppUrl } from '@/lib/booking-whatsapp';
 import { SOCIAL_PROOF_RATINGS } from '@/constants/socialProof';
 import { MAX_BOOKING_GUESTS } from '@/lib/booking-capacity';
-import { getPaymentRejectionMessage } from '@/lib/mercadopago/payment-context';
+import {
+    getPaymentRejectionMessage,
+    getPolledBookingPaymentStatus,
+} from '@/lib/mercadopago/payment-context';
 import {
     mountLatestPaymentBrick,
     safelyUnmountPaymentBrick,
@@ -1313,8 +1316,10 @@ function ReservarContent() {
                                 }
 
                                 if (status === 'rejected') {
+                                    const rejectionMessage = getPaymentRejectionMessage(statusDetail);
                                     setPaymentStatus('rejected');
-                                    setPaymentStatusMessage(getPaymentRejectionMessage(statusDetail));
+                                    setPaymentStatusMessage('');
+                                    setPaymentError(rejectionMessage);
                                     trackReservationFunnel({
                                         step: 'payment_result',
                                         status: 'error',
@@ -1474,7 +1479,11 @@ function ReservarContent() {
                 const res = await fetch(`/api/bookings/${paymentBookingId}`);
                 if (!res.ok) return;
                 const data = await res.json();
-                if (data?.status === 'CONFIRMED') {
+                const polledStatus = getPolledBookingPaymentStatus({
+                    bookingStatus: data?.status,
+                    paymentStatus: data?.payment?.status,
+                });
+                if (polledStatus === 'APPROVED') {
                     setPaymentStatus('approved');
                     setPaymentStatusMessage('Pagamento identificado, confirmando sua reserva...');
                     trackReservationFunnel({
@@ -1485,19 +1494,23 @@ function ReservarContent() {
                         message: 'confirmed_polling',
                     });
                     if (pollRef.current) clearInterval(pollRef.current);
+                    pollRef.current = null;
                     await waitForPaymentApprovalFeedback();
                     router.push(`/reservar/confirmacao/${paymentBookingId}`);
-                } else if (data?.status === 'CANCELLED') {
+                } else if (polledStatus === 'REJECTED' || polledStatus === 'CANCELLED') {
+                    const rejectionMessage = getPaymentRejectionMessage(data?.lastErrorMessage);
                     setPaymentStatus('rejected');
-                    setPaymentStatusMessage('Pagamento não aprovado. Revise os dados ou tente outro método.');
+                    setPaymentStatusMessage('');
+                    setPaymentError(rejectionMessage);
                     trackReservationFunnel({
                         step: 'payment_result',
                         status: 'error',
                         bookingId: paymentBookingId,
                         value: paymentAmount,
-                        message: 'cancelled_polling',
+                        message: polledStatus === 'REJECTED' ? 'rejected_polling' : 'cancelled_polling',
                     });
                     if (pollRef.current) clearInterval(pollRef.current);
+                    pollRef.current = null;
                 }
             } catch {
                 // ignora falhas de rede temporárias
@@ -1511,7 +1524,7 @@ function ReservarContent() {
                 pollRef.current = null;
             }
         };
-    }, [paymentAmount, paymentBookingId, router]);
+    }, [paymentAmount, paymentBookingId, paymentRetryNonce, router]);
 
     if (!checkIn || !checkOut) {
         return (
