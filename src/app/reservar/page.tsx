@@ -472,9 +472,15 @@ function ReservarContent() {
 
         setPaymentRetryNonce((prev) => prev + 1);
     };
-    const handleHostedMercadoPagoCheckout = async () => {
-        if (!paymentBookingId || isSubmittingPayment) return;
-        const hostedPaymentAmount = Number(paymentAmount || 0);
+    const handleHostedMercadoPagoCheckout = async (override?: {
+        bookingId: string;
+        paymentMode: PaymentMode;
+        paymentAmount: number;
+    }) => {
+        const hostedBookingId = override?.bookingId || paymentBookingId;
+        const hostedPaymentMode = override?.paymentMode || paymentMode;
+        const hostedPaymentAmount = Number(override?.paymentAmount ?? paymentAmount ?? 0);
+        if (!hostedBookingId || isSubmittingPayment) return;
 
         setIsSubmittingPayment(true);
         setPaymentError('');
@@ -485,9 +491,9 @@ function ReservarContent() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    bookingId: paymentBookingId,
+                    bookingId: hostedBookingId,
                     guestEmail: guest.email,
-                    paymentMode,
+                    paymentMode: hostedPaymentMode,
                 }),
             });
             const data = await response.json().catch(() => ({}));
@@ -496,7 +502,7 @@ function ReservarContent() {
             }
 
             trackAddPaymentInfo({
-                bookingId: paymentBookingId,
+                bookingId: hostedBookingId,
                 value: hostedPaymentAmount,
                 paymentType: 'checkout_pro',
                 items: selectedRoom ? [{
@@ -1115,6 +1121,16 @@ function ReservarContent() {
             setPaymentError('');
             setPaymentStatus('idle');
             setPaymentStatusMessage('');
+
+            if (requiresHostedMercadoPagoCheckout(parsedAmount)) {
+                await handleHostedMercadoPagoCheckout({
+                    bookingId: booking.id,
+                    paymentMode: nextPaymentMode,
+                    paymentAmount: nextPaymentMode === 'PARTIAL' && Number.isFinite(nextPaymentAmount)
+                        ? nextPaymentAmount
+                        : parsedAmount,
+                });
+            }
 
         } catch (err) {
             const message = normalizeReservationUiErrorMessage(
@@ -1961,7 +1977,9 @@ function ReservarContent() {
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                onClick={() => void handleRetryPayment()}
+                                                onClick={() => useHostedMercadoPagoCheckout
+                                                    ? void handleHostedMercadoPagoCheckout()
+                                                    : void handleRetryPayment()}
                                                 className="h-11 rounded-none border-destructive/30 bg-transparent text-destructive hover:bg-destructive/5"
                                             >
                                                 Tentar novamente
@@ -2078,21 +2096,10 @@ function ReservarContent() {
                                                 <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
                                                     Para concluir sua reserva, você será direcionado ao ambiente seguro do Mercado Pago. Se já tiver uma conta, entre para utilizar seus cartões e formas de pagamento disponíveis. Você também poderá escolher Pix.
                                                 </p>
-                                                <Button
-                                                    type="button"
-                                                    onClick={() => void handleHostedMercadoPagoCheckout()}
-                                                    disabled={isSubmittingPayment}
-                                                    className="mt-5 h-12 rounded-none bg-brand-brown-dark px-6 text-white hover:bg-brand-brown-dark/90"
-                                                >
-                                                    {isSubmittingPayment ? (
-                                                        <><LoaderCircle className="mr-2 h-4 w-4 animate-spin" />Abrindo Mercado Pago...</>
-                                                    ) : (
-                                                        'Continuar para o Mercado Pago'
-                                                    )}
-                                                </Button>
-                                                <p className="mt-3 text-xs text-muted-foreground">
-                                                    O pagamento será confirmado automaticamente após a aprovação do Mercado Pago.
-                                                </p>
+                                                <div className="mt-5 flex items-center gap-3 text-sm text-brand-brown-dark">
+                                                    <LoaderCircle className="h-5 w-5 animate-spin" />
+                                                    Redirecionando para o Mercado Pago...
+                                                </div>
                                             </div>
                                         ) : (
                                         <div className="relative border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-4">

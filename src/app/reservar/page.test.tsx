@@ -484,6 +484,70 @@ describe('ReservarPage', () => {
     });
   });
 
+  it('redireciona automaticamente reservas de alto valor para o Checkout Pro', async () => {
+    mockFetch.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.startsWith('/api/availability')) {
+        return {
+          ok: true,
+          json: async () => [{
+            id: 'room-high-value',
+            name: 'Suíte Especial',
+            description: 'Acomodação de alto valor',
+            capacity: 2,
+            amenities: 'Wi-Fi',
+            totalPrice: 3000,
+            photos: [],
+          }],
+          headers: { get: vi.fn(() => null) },
+        };
+      }
+      if (url === '/api/bookings') {
+        return {
+          ok: true,
+          json: async () => ({ id: 'booking-high-value', totalPrice: 3000 }),
+          headers: { get: vi.fn(() => null) },
+        };
+      }
+      if (url.startsWith('/api/partial-payment/evaluate')) {
+        return {
+          ok: true,
+          json: async () => ({ eligible: false, defaultPaymentMode: 'FULL', fullAmount: 3000 }),
+          headers: { get: vi.fn(() => null) },
+        };
+      }
+      if (url === '/api/mercadopago/checkout-pro') {
+        return {
+          ok: true,
+          json: async () => ({ initPoint: 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=pref-1' }),
+          headers: { get: vi.fn(() => null) },
+        };
+      }
+      return {
+        ok: true,
+        json: async () => ({}),
+        headers: { get: vi.fn(() => null) },
+      };
+    });
+
+    render(<ReservarPage />);
+    await screen.findByText('Suíte Especial');
+    fireEvent.click(screen.getByRole('button', { name: /^Escolher$/i }));
+    fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'Maria Silva' } });
+    fireEvent.change(screen.getByLabelText(/^Email/i), { target: { value: 'maria@example.com' } });
+    fireEvent.change(screen.getByLabelText(/Telefone\/WhatsApp/i), { target: { value: '(11) 99999-0000' } });
+    fireEvent.click(screen.getByLabelText(/Declaro que li e aceito/i));
+    fireEvent.submit(screen.getByRole('button', { name: /Continuar para o pagamento/i }).closest('form')!);
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/mercadopago/checkout-pro',
+        expect.objectContaining({ method: 'POST' })
+      );
+    });
+    expect(screen.queryByRole('button', { name: /Continuar para o Mercado Pago/i })).not.toBeInTheDocument();
+  });
+
   it('remove entityType inválido ao normalizar payer do Brick', () => {
     expect(
       normalizePaymentBrickPayer({
