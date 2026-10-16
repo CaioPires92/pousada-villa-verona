@@ -103,3 +103,20 @@ export function getPolledBookingPaymentStatus(input: {
     }
     return 'PENDING' as const;
 }
+
+export function mapMercadoPagoPaymentStatus(status: unknown) {
+    const normalized = String(status || '').trim().toLowerCase();
+    if (normalized === 'approved') {
+        return { bookingStatus: 'CONFIRMED', paymentStatus: 'APPROVED' } as const;
+    }
+    if (isRetryablePaymentRejection(normalized)) {
+        return { bookingStatus: 'PENDING', paymentStatus: 'REJECTED' } as const;
+    }
+    if (normalized === 'cancelled') {
+        return { bookingStatus: 'CANCELLED', paymentStatus: 'REJECTED' } as const;
+    }
+    if (normalized === 'refunded' || normalized === 'charged_back') {
+        return { bookingStatus: 'CANCELLED', paymentStatus: 'REFUNDED' } as const;
+    }
+    return { bookingStatus: 'PENDING', paymentStatus: 'PENDING' } as const;
+}

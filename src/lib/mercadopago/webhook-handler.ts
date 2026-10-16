@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/nextjs';
 import prisma from '@/lib/prisma';
 import { opsLog } from '@/lib/ops-log';
 import { sendGa4PurchaseServerEvent } from '@/lib/ga4-measurement';
-import { isRetryablePaymentRejection } from '@/lib/mercadopago/payment-context';
+import { mapMercadoPagoPaymentStatus } from '@/lib/mercadopago/payment-context';
 
 type MercadoPagoWebhookBody = {
     type?: string;
@@ -75,23 +75,6 @@ function normalizePaymentMethod(params: {
     }
     if (paymentTypeId === 'account_money' || paymentMethodId === 'account_money') return 'ACCOUNT_MONEY';
     return paymentMethodId ? paymentMethodId.toUpperCase() : null;
-}
-
-function mapPaymentStatus(mpStatus: string | null | undefined) {
-    const s = (mpStatus || '').toLowerCase();
-    if (s === 'approved') {
-        return { bookingStatus: 'CONFIRMED', paymentStatus: 'APPROVED' } as const;
-    }
-    if (isRetryablePaymentRejection(s)) {
-        return { bookingStatus: 'PENDING', paymentStatus: 'REJECTED' } as const;
-    }
-    if (s === 'cancelled') {
-        return { bookingStatus: 'CANCELLED', paymentStatus: 'REJECTED' } as const;
-    }
-    if (s === 'refunded' || s === 'charged_back') {
-        return { bookingStatus: 'CANCELLED', paymentStatus: 'REFUNDED' } as const;
-    }
-    return { bookingStatus: 'PENDING', paymentStatus: 'PENDING' } as const;
 }
 
 function normalizeFinancialSnapshot(params: {
@@ -208,7 +191,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
             return NextResponse.json({ error: 'Referência de reserva ausente' }, { status: 400 });
         }
 
-        const mapped = mapPaymentStatus(mpStatus);
+        const mapped = mapMercadoPagoPaymentStatus(mpStatus);
         const normalizedMpStatus = String(mpStatus || '').toLowerCase();
 
         const result = await prisma.$transaction(async (tx) => {

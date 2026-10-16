@@ -51,6 +51,7 @@ import {
     getPaymentRejectionMessage,
     getPolledBookingPaymentStatus,
 } from '@/lib/mercadopago/payment-context';
+import { requiresHostedMercadoPagoCheckout } from '@/lib/mercadopago/high-value-checkout';
 import {
     mountLatestPaymentBrick,
     safelyUnmountPaymentBrick,
@@ -461,6 +462,7 @@ function ReservarContent() {
     const bookingTotal = appliedCoupon
         ? Number(appliedCoupon.total || Math.max(0, bookingSubtotal - bookingDiscount))
         : (selectedRoom ? Number(selectedRoom.totalPrice) : 0);
+    const useHostedMercadoPagoCheckout = requiresHostedMercadoPagoCheckout(bookingTotal);
     const handleRetryPayment = () => {
         setPaymentError('');
         setPaymentStatus('idle');
@@ -469,6 +471,50 @@ function ReservarContent() {
         setPixData(null);
 
         setPaymentRetryNonce((prev) => prev + 1);
+    };
+    const handleHostedMercadoPagoCheckout = async () => {
+        if (!paymentBookingId || isSubmittingPayment) return;
+        const hostedPaymentAmount = Number(paymentAmount || 0);
+
+        setIsSubmittingPayment(true);
+        setPaymentError('');
+        setPaymentStatus('idle');
+        setPaymentStatusMessage('');
+        try {
+            const response = await fetch('/api/mercadopago/checkout-pro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    bookingId: paymentBookingId,
+                    guestEmail: guest.email,
+                    paymentMode,
+                }),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data?.initPoint) {
+                throw new Error(data?.message || 'Não foi possível abrir o pagamento no Mercado Pago.');
+            }
+
+            trackAddPaymentInfo({
+                bookingId: paymentBookingId,
+                value: hostedPaymentAmount,
+                paymentType: 'checkout_pro',
+                items: selectedRoom ? [{
+                    item_id: selectedRoom.id,
+                    item_name: selectedRoom.name,
+                    item_category: 'Hospedagem',
+                    price: hostedPaymentAmount,
+                    quantity: 1,
+                }] : [],
+            });
+            window.location.assign(String(data.initPoint));
+        } catch (error) {
+            setPaymentStatus('error');
+            setPaymentError(error instanceof Error
+                ? error.message
+                : 'Não foi possível abrir o pagamento no Mercado Pago.');
+            setIsSubmittingPayment(false);
+        }
     };
     const handlePaymentModeChange = (nextMode: PaymentMode) => {
         if (!partialPaymentEvaluation || !partialPaymentEvaluation.eligible) return;
@@ -1108,6 +1154,7 @@ function ReservarContent() {
 
     useEffect(() => {
         if (!paymentBookingId || paymentAmount === null || Number.isNaN(paymentAmount)) return;
+        if (useHostedMercadoPagoCheckout) return;
 
         paymentSubmitLockRef.current = false;
         const requestId = ++paymentBrickRequestRef.current;
@@ -1468,7 +1515,7 @@ function ReservarContent() {
                 void safelyUnmountPaymentBrick(mountedBrick);
             }
         };
-    }, [guest.email, guest.name, notifyPaymentDifficulty, paymentAmount, paymentBookingId, paymentMode, paymentRetryNonce, router, selectedRoom]);
+    }, [guest.email, guest.name, notifyPaymentDifficulty, paymentAmount, paymentBookingId, paymentMode, paymentRetryNonce, router, selectedRoom, useHostedMercadoPagoCheckout]);
 
     useEffect(() => {
         if (!paymentBookingId) return;
@@ -1891,7 +1938,7 @@ function ReservarContent() {
                                             <span className="text-sm text-muted-foreground">Valor no cartão</span>
                                             <strong className="text-lg font-bold text-brand-brown-dark">{formatCurrencyBRL(Number(paymentAmount || 0))}</strong>
                                         </div>
-                                        {partialPaymentEvaluation?.pixDiscountEnabled ? (
+                                        {partialPaymentEvaluation?.pixDiscountEnabled && !useHostedMercadoPagoCheckout ? (
                                             <div className="flex items-center justify-between gap-4 border-t border-brand-brown-dark/10 pt-3">
                                                 <span className="text-sm font-semibold text-emerald-700">Valor no Pix com 5% de desconto</span>
                                                 <strong className="text-lg font-bold text-emerald-700">{formatCurrencyBRL(applyPixDiscount(Number(paymentAmount || 0)))}</strong>
@@ -1899,7 +1946,7 @@ function ReservarContent() {
                                         ) : null}
                                     </div>
                                 ) : null}
-                                {Number(paymentAmount || 0) > 0 && partialPaymentEvaluation?.pixDiscountEnabled ? (
+                                {Number(paymentAmount || 0) > 0 && partialPaymentEvaluation?.pixDiscountEnabled && !useHostedMercadoPagoCheckout ? (
                                     <div className="mb-4 border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                                         O desconto é aplicado automaticamente ao escolher Pix. Pagamentos por cartão permanecem no valor integral da reserva.
                                     </div>
@@ -2015,7 +2062,7 @@ function ReservarContent() {
                                     </div>
                                 ) : null}
 
-                                <div className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+                                <div className={useHostedMercadoPagoCheckout ? 'mt-8' : 'mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]'}>
                                     <div>
                                         <h3 className="text-xs font-semibold text-brand-brown-dark uppercase tracking-widest mb-3">
                                             Meios de pagamento
@@ -2023,6 +2070,31 @@ function ReservarContent() {
                                         <p className="text-xs text-muted-foreground mb-3">
                                             Parcelamento e opções disponíveis aparecem automaticamente conforme o método escolhido.
                                         </p>
+                                        {useHostedMercadoPagoCheckout ? (
+                                            <div className="border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-6">
+                                                <p className="text-lg font-semibold text-brand-brown-dark">
+                                                    Finalize com segurança pelo Mercado Pago
+                                                </p>
+                                                <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+                                                    Para concluir sua reserva, você será direcionado ao ambiente seguro do Mercado Pago. Se já tiver uma conta, entre para utilizar seus cartões e formas de pagamento disponíveis. Você também poderá escolher Pix.
+                                                </p>
+                                                <Button
+                                                    type="button"
+                                                    onClick={() => void handleHostedMercadoPagoCheckout()}
+                                                    disabled={isSubmittingPayment}
+                                                    className="mt-5 h-12 rounded-none bg-brand-brown-dark px-6 text-white hover:bg-brand-brown-dark/90"
+                                                >
+                                                    {isSubmittingPayment ? (
+                                                        <><LoaderCircle className="mr-2 h-4 w-4 animate-spin" />Abrindo Mercado Pago...</>
+                                                    ) : (
+                                                        'Continuar para o Mercado Pago'
+                                                    )}
+                                                </Button>
+                                                <p className="mt-3 text-xs text-muted-foreground">
+                                                    O pagamento será confirmado automaticamente após a aprovação do Mercado Pago.
+                                                </p>
+                                            </div>
+                                        ) : (
                                         <div className="relative border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-4">
                                             {isSubmittingPayment || paymentStatus === 'approved' ? (
                                                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-[2px] px-6">
@@ -2065,8 +2137,10 @@ function ReservarContent() {
                                                 <div id={paymentContainerId} />
                                             </div>
                                         </div>
+                                        )}
                                     </div>
 
+                                    {!useHostedMercadoPagoCheckout ? (
                                     <div className="border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-4">
                                         <div className="flex items-center justify-between mb-3">
                                             <h3 className="text-xs font-semibold text-brand-brown-dark uppercase tracking-widest">
@@ -2129,6 +2203,7 @@ function ReservarContent() {
                                             </div>
                                         )}
                                     </div>
+                                    ) : null}
                                 </div>
                             </CardContent>
                         </Card>

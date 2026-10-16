@@ -5,6 +5,7 @@ import {
     getPolledBookingPaymentStatus,
     getPaymentRejectionMessage,
     isRetryablePaymentRejection,
+    mapMercadoPagoPaymentStatus,
     normalizeBrazilianPhone,
 } from './payment-context';
 
@@ -67,5 +68,20 @@ describe('Mercado Pago payment context', () => {
             bookingStatus: 'PENDING',
             paymentStatus: 'PENDING',
         })).toBe('PENDING');
+    });
+
+    it('maps Checkout Pro webhook statuses without cancelling a retryable rejection', () => {
+        expect(mapMercadoPagoPaymentStatus('approved')).toEqual({
+            bookingStatus: 'CONFIRMED',
+            paymentStatus: 'APPROVED',
+        });
+        expect(mapMercadoPagoPaymentStatus('rejected')).toEqual({
+            bookingStatus: 'PENDING',
+            paymentStatus: 'REJECTED',
+        });
+        expect(mapMercadoPagoPaymentStatus('refunded')).toEqual({
+            bookingStatus: 'CANCELLED',
+            paymentStatus: 'REFUNDED',
+        });
     });
 });
