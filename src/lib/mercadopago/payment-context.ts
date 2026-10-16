@@ -52,7 +52,6 @@ export function buildMercadoPagoPaymentContext(input: PaymentContextInput) {
                 description: `${nights} diária(s); ${description}`.slice(0, 256),
                 category_id: 'travel',
                 quantity: 1,
-                currency_id: 'BRL',
                 unit_price: input.amount,
                 event_date: input.checkIn.toISOString(),
             }],

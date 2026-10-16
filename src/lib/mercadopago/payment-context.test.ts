@@ -39,9 +39,9 @@ describe('Mercado Pago payment context', () => {
                 title: 'Hospedagem - Quarto Triplo',
                 quantity: 1,
                 unit_price: 2928.18,
-                currency_id: 'BRL',
             }],
         });
+        expect(context.additionalInfo.items[0]).not.toHaveProperty('currency_id');
         expect(context.additionalInfo.items[0].description).toContain('3 diária(s)');
     });
 
