@@ -50,6 +50,15 @@ describe('Mercado Pago payment context', () => {
     it('returns actionable rejection guidance', () => {
         expect(getPaymentRejectionMessage('cc_rejected_high_risk')).toContain('análise de segurança');
         expect(getPaymentRejectionMessage('cc_rejected_invalid_installments')).toContain('menos parcelas');
+        expect(getPaymentRejectionMessage('cc_rejected_insufficient_amount')).toContain('limite disponível');
+        expect(getPaymentRejectionMessage('cc_rejected_bad_filled_card_number')).toContain('número do cartão');
+        expect(getPaymentRejectionMessage('cc_rejected_bad_filled_date')).toContain('data de validade');
+        expect(getPaymentRejectionMessage('cc_rejected_bad_filled_security_code')).toContain('código de segurança');
+        expect(getPaymentRejectionMessage('cc_rejected_duplicated_payment')).toContain('mesmo valor');
+        expect(getPaymentRejectionMessage('cc_rejected_time_out')).toContain('não respondeu');
+        expect(getPaymentRejectionMessage('rejected_by_bank')).toContain('banco emissor');
+        expect(getPaymentRejectionMessage('rejected_by_regulations')).toContain('regulatórias');
+        expect(getPaymentRejectionMessage('cc_rejected_other_reason')).toContain('motivo exato');
     });
 
     it('keeps only rejected payments eligible for another attempt', () => {

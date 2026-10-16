@@ -26,6 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatDateBR } from '@/lib/date';
 import { getLocalRoomPhotos } from '@/lib/room-photos';
 import { trackPurchase } from '@/lib/analytics';
+import { getPaymentRejectionMessage } from '@/lib/mercadopago/payment-context';
 
 declare global {
     interface Window {
@@ -43,6 +44,7 @@ interface BookingPhoto {
 interface BookingData {
     id: string;
     status?: string | null;
+    lastErrorMessage?: string | null;
     checkIn: string;
     checkOut: string;
     totalPrice: number | string;
@@ -334,6 +336,9 @@ export default function ConfirmacaoPage() {
     const totalAmount = booking?.payment?.totalAmount ?? booking?.totalPrice;
     const paidAmount = booking?.payment?.amount;
     const remainingAmount = booking?.payment?.remainingAmount;
+    const rejectionMessage = String(booking?.payment?.status || '').toUpperCase() === 'REJECTED'
+        ? getPaymentRejectionMessage(booking?.lastErrorMessage)
+        : null;
 
     return (
         <main className="min-h-screen bg-background px-4 pb-14 pt-28 text-brand-brown-dark md:px-6 md:pt-32">
@@ -521,7 +526,7 @@ export default function ConfirmacaoPage() {
                                                     : 'Atualizacao em andamento'}
                                         </h3>
                                         <p className="mt-2 text-sm leading-7 text-brand-brown-dark/78">
-                                            {statusView.banner}
+                                            {rejectionMessage || statusView.banner}
                                         </p>
                                         {polling && effectiveStatus === 'PENDING' ? (
                                             <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-brown-dark/60">
