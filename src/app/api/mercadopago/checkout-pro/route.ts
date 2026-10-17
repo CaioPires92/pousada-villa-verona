@@ -90,11 +90,16 @@ export async function POST(request: Request) {
         const confirmationUrl = new URL(`/reservar/confirmacao/${booking.id}`, publicBaseUrl);
         if (bookingAccessToken) confirmationUrl.hash = new URLSearchParams({ access: bookingAccessToken }).toString();
         const payerPhone = normalizeBrazilianPhone(booking.guest.phone);
+        const stayNights = Math.max(1, Math.round(
+            (booking.checkOut.getTime() - booking.checkIn.getTime()) / 86_400_000
+        ));
+        const checkIn = booking.checkIn.toISOString().slice(0, 10);
+        const checkOut = booking.checkOut.toISOString().slice(0, 10);
         const preference = {
             items: [{
                 id: booking.roomType.id,
                 title: `Pousada Villa Verona - ${booking.roomType.name}`.slice(0, 120),
-                description: `${booking.adults} adulto(s), ${booking.children} criança(s)`,
+                description: `${stayNights} diária(s), ${checkIn} a ${checkOut}; ${booking.adults} adulto(s), ${booking.children} criança(s)`.slice(0, 256),
                 quantity: 1,
                 unit_price: paymentPlan.amountDueNow,
                 currency_id: 'BRL',

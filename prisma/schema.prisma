@@ -125,6 +125,7 @@ model Booking {
   couponRedemption        CouponRedemption?
   issuedCoupons           Coupon[]          @relation("CouponOriginBooking")
   payment                 Payment?
+  paymentAttempts         PaymentAttempt[]
 
   @@index([checkoutConfirmedAt])
   @@index([hospedinRegisteredAt])
@@ -173,6 +174,26 @@ model Payment {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   booking         Booking   @relation(fields: [bookingId], references: [id])
+}
+
+model PaymentAttempt {
+  id                String   @id @default(uuid())
+  bookingId         String
+  provider          String
+  providerPaymentId String   @unique
+  amount            Decimal?
+  currency          String?
+  method            String?
+  cardBrand         String?
+  installments      Int?
+  status            String
+  statusDetail      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  booking           Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId, createdAt])
+  @@index([status, createdAt])
 }
 
 model AdminUser {

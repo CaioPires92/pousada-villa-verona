@@ -7,6 +7,7 @@ import {
     isRetryablePaymentRejection,
     mapMercadoPagoPaymentStatus,
     normalizeBrazilianPhone,
+    validateApprovedPaymentAmount,
 } from './payment-context';
 
 describe('Mercado Pago payment context', () => {
@@ -66,6 +67,21 @@ describe('Mercado Pago payment context', () => {
         expect(isRetryablePaymentRejection('cancelled')).toBe(false);
         expect(isRetryablePaymentRejection('refunded')).toBe(false);
         expect(isRetryablePaymentRejection('charged_back')).toBe(false);
+    });
+
+    it('validates amount and currency before accepting an approved payment', () => {
+        expect(validateApprovedPaymentAmount({
+            status: 'approved', transactionAmount: 699, expectedAmount: 699, currencyId: 'BRL',
+        })).toEqual({ ok: true });
+        expect(validateApprovedPaymentAmount({
+            status: 'approved', transactionAmount: 6.99, expectedAmount: 699, currencyId: 'BRL',
+        })).toEqual({ ok: false, reason: 'amount_mismatch' });
+        expect(validateApprovedPaymentAmount({
+            status: 'approved', transactionAmount: 699, expectedAmount: 699, currencyId: 'USD',
+        })).toEqual({ ok: false, reason: 'currency_mismatch' });
+        expect(validateApprovedPaymentAmount({
+            status: 'rejected', transactionAmount: null, expectedAmount: 699, currencyId: null,
+        })).toEqual({ ok: true });
     });
 
     it('detects a rejected payment while its booking remains pending', () => {

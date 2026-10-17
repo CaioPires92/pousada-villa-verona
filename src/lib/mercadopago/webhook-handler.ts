@@ -4,7 +4,10 @@ import * as Sentry from '@sentry/nextjs';
 import prisma from '@/lib/prisma';
 import { opsLog } from '@/lib/ops-log';
 import { sendGa4PurchaseServerEvent } from '@/lib/ga4-measurement';
-import { mapMercadoPagoPaymentStatus } from '@/lib/mercadopago/payment-context';
+import {
+    mapMercadoPagoPaymentStatus,
+    validateApprovedPaymentAmount,
+} from '@/lib/mercadopago/payment-context';
 
 type MercadoPagoWebhookBody = {
     type?: string;
@@ -77,6 +80,49 @@ function normalizePaymentMethod(params: {
     return paymentMethodId ? paymentMethodId.toUpperCase() : null;
 }
 
+async function recordPaymentAttempt(params: {
+    bookingId: string;
+    paymentId: string;
+    paymentData: any;
+    method: string | null;
+    cardBrand: string | null;
+    installments: number | null;
+}) {
+    const amount = Number(params.paymentData?.transaction_amount);
+    try {
+        await prisma.paymentAttempt.upsert({
+            where: { providerPaymentId: params.paymentId },
+            update: {
+                status: String(params.paymentData?.status || 'unknown').toUpperCase(),
+                statusDetail: String(params.paymentData?.status_detail || '').trim() || null,
+                method: params.method,
+                cardBrand: params.cardBrand,
+                installments: params.installments,
+            },
+            create: {
+                bookingId: params.bookingId,
+                provider: 'MERCADOPAGO',
+                providerPaymentId: params.paymentId,
+                amount: Number.isFinite(amount) ? amount : null,
+                currency: String(params.paymentData?.currency_id || '').trim().toUpperCase() || null,
+                method: params.method,
+                cardBrand: params.cardBrand,
+                installments: params.installments,
+                status: String(params.paymentData?.status || 'unknown').toUpperCase(),
+                statusDetail: String(params.paymentData?.status_detail || '').trim() || null,
+            },
+        });
+    } catch (error) {
+        // Keeps webhook reconciliation compatible until the migration is applied.
+        opsLog('warn', 'MP_PAYMENT_ATTEMPT_HISTORY_FAILED', {
+            bookingId: params.bookingId,
+            bookingIdShort: params.bookingId.slice(0, 8),
+            paymentId: params.paymentId,
+            message: error instanceof Error ? error.message : String(error),
+        });
+    }
+}
+
 function normalizeFinancialSnapshot(params: {
     totalPrice: number;
     subtotalPrice: number | null;
@@ -142,6 +188,10 @@ export async function handleMercadoPagoWebhook(request: Request) {
 
         const signature = request.headers.get('x-signature');
         const requestId = request.headers.get('x-request-id');
+        if (process.env.NODE_ENV === 'production' && !process.env.MP_WEBHOOK_SECRET) {
+            opsLog('error', 'MP_WEBHOOK_CONFIG_ERROR', { reason: 'MISSING_MP_WEBHOOK_SECRET', paymentId });
+            return NextResponse.json({ error: 'Webhook não configurado' }, { status: 500 });
+        }
         const sigResult = validateSignature({
             signature,
             requestId,
@@ -211,6 +261,28 @@ export async function handleMercadoPagoWebhook(request: Request) {
                 },
             });
             if (!booking) return { kind: 'not_found' as const };
+
+            const paymentValidation = validateApprovedPaymentAmount({
+                status: mpStatus,
+                transactionAmount: paymentData?.transaction_amount,
+                currencyId: paymentData?.currency_id,
+                expectedAmount: booking.payment?.amount ?? booking.totalPrice,
+            });
+            if (!paymentValidation.ok) {
+                await tx.booking.updateMany({
+                    where: { id: bookingId, status: 'PENDING' },
+                    data: {
+                        funnelStage: 'PAYMENT_VALIDATION_FAILED',
+                        funnelUpdatedAt: new Date(),
+                        lastErrorMessage: paymentValidation.reason,
+                    },
+                });
+                return {
+                    kind: 'invalid_payment' as const,
+                    reason: paymentValidation.reason,
+                    expectedAmount: Number(booking.payment?.amount ?? booking.totalPrice),
+                };
+            }
 
             const currentBookingStatus = booking.status;
             const currentPaymentStatus = booking.payment?.status;
@@ -530,6 +602,26 @@ export async function handleMercadoPagoWebhook(request: Request) {
             });
             return NextResponse.json({ error: 'Reserva não encontrada' }, { status: 404 });
         }
+        await recordPaymentAttempt({
+            bookingId,
+            paymentId,
+            paymentData,
+            method: paymentMethod,
+            cardBrand: paymentCardBrand,
+            installments: paymentInstallments,
+        });
+        if (result.kind === 'invalid_payment') {
+            opsLog('error', 'MP_WEBHOOK_PAYMENT_VALIDATION_FAILED', {
+                bookingId,
+                bookingIdShort: bookingId.slice(0, 8),
+                paymentId,
+                reason: result.reason,
+                expectedAmount: result.expectedAmount,
+                transactionAmount: paymentData?.transaction_amount,
+                currencyId: paymentData?.currency_id,
+            });
+            return NextResponse.json({ ok: true, status: 'ignored', reason: result.reason });
+        }
         let emailSent = false;
         let emailErrorMessage: string | undefined;
         let adminAlertSent = false;
@@ -649,6 +741,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
             bookingIdShort: bookingId.slice(0, 8),
             paymentId,
             mpStatus,
+            paymentStatusDetail,
             bookingStatus: result.bookingStatus,
             paymentStatus: result.paymentStatus,
             emailQueued: result.emailQueued,

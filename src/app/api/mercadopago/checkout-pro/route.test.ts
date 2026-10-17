@@ -93,6 +93,7 @@ describe('POST Mercado Pago hosted checkout', () => {
                 installments: 12,
             },
         });
+        expect(preference.items[0].description).toContain('4 diária(s), 2026-12-29 a 2027-01-02');
         expect(preference).not.toHaveProperty('purpose');
         expect(prisma.payment.upsert).toHaveBeenCalledWith(expect.objectContaining({
             where: { bookingId: 'booking-1' },

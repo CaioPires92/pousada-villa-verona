@@ -28,6 +28,11 @@ export async function POST(request: Request) {
             }, { status: 400 });
         }
 
+        const normalizedGuestEmail = normalizeGuestEmail(guest.email);
+        if (!normalizedGuestEmail) {
+            return NextResponse.json({ error: 'guest_email_invalid' }, { status: 400 });
+        }
+
         const agesArrayInput = Array.isArray(childrenAges)
             ? childrenAges
                 .map((age) => Number.parseInt(String(age), 10))
@@ -43,6 +48,7 @@ export async function POST(request: Request) {
             typeof body?.coupon?.reservationId === 'string' ? body.coupon.reservationId.trim() : '';
         const couponCode = typeof body?.coupon?.code === 'string' ? body.coupon.code : '';
 
+        let reusedPendingBooking = false;
         const booking = await prisma.$transaction(async (tx) => {
             const roomType = await tx.roomType.findUnique({
                 where: { id: roomTypeId },
@@ -178,7 +184,7 @@ export async function POST(request: Request) {
             });
 
             let guestRecord = await tx.guest.findFirst({
-                where: { email: guest.email }
+                where: { email: normalizedGuestEmail }
             });
 
             if (guestRecord) {
@@ -188,7 +194,7 @@ export async function POST(request: Request) {
                 });
             } else {
                 guestRecord = await tx.guest.create({
-                    data: { name: guest.name, email: guest.email, phone: guest.phone }
+                    data: { name: guest.name, email: normalizedGuestEmail, phone: guest.phone }
                 });
             }
 
@@ -215,11 +221,6 @@ export async function POST(request: Request) {
                     throw new Error('coupon_reservation_expired');
                 }
 
-                const normalizedGuestEmail = normalizeGuestEmail(guest.email);
-                if (!normalizedGuestEmail) {
-                    throw new Error('coupon_guest_email_required');
-                }
-
                 if (reservation.guestEmail && reservation.guestEmail !== normalizedGuestEmail) {
                     throw new Error('coupon_guest_mismatch');
                 }
@@ -236,6 +237,29 @@ export async function POST(request: Request) {
                 discountAmount = Math.max(0, Math.min(Number(reservation.discountAmount || 0), subtotalPrice));
             }
 
+            const totalPrice = Math.max(0, subtotalPrice - discountAmount);
+            const existingPendingBooking = await tx.booking.findFirst({
+                where: {
+                    roomTypeId,
+                    checkIn: parseLocalDate(checkIn),
+                    checkOut: parseLocalDate(checkOut),
+                    adults: adultsCount,
+                    children: childrenCount,
+                    childrenAges: serializedChildrenAges,
+                    totalPrice,
+                    appliedCouponCode,
+                    status: 'PENDING',
+                    createdAt: { gte: new Date(Date.now() - 30 * 60 * 1000) },
+                    guest: { email: normalizedGuestEmail },
+                },
+                orderBy: { createdAt: 'desc' },
+                include: { guest: true, roomType: true },
+            });
+            if (existingPendingBooking) {
+                reusedPendingBooking = true;
+                return existingPendingBooking;
+            }
+
             const bookingRecord = await tx.booking.create({
                 data: {
                     roomTypeId,
@@ -248,7 +272,7 @@ export async function POST(request: Request) {
                     subtotalPrice,
                     discountAmount,
                     appliedCouponCode,
-                    totalPrice: Math.max(0, subtotalPrice - discountAmount),
+                    totalPrice,
                     status: 'PENDING',
                     funnelStage: 'BOOKING_CREATED',
                     funnelUpdatedAt: new Date(),
@@ -285,7 +309,7 @@ export async function POST(request: Request) {
 
         // The booking is already durable. Optional integrations must never delay or
         // change the successful reservation response.
-        after(async () => {
+        if (!reusedPendingBooking) after(async () => {
             await Promise.all([
                 (async () => {
                     try {
@@ -327,7 +351,7 @@ export async function POST(request: Request) {
             ]);
         });
 
-        const response = NextResponse.json(booking, { status: 201 });
+        const response = NextResponse.json(booking, { status: reusedPendingBooking ? 200 : 201 });
         const accessToken = await signBookingAccessToken(booking.id);
         if (accessToken) {
             response.cookies.set(

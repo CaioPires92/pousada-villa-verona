@@ -128,6 +128,33 @@ export function isRetryablePaymentRejection(status: unknown) {
     return String(status || '').trim().toUpperCase() === 'REJECTED';
 }
 
+export function validateApprovedPaymentAmount(input: {
+    status: unknown;
+    transactionAmount: unknown;
+    currencyId: unknown;
+    expectedAmount: unknown;
+}) {
+    if (String(input.status || '').trim().toLowerCase() !== 'approved') {
+        return { ok: true as const };
+    }
+
+    const transactionAmount = Number(input.transactionAmount);
+    const expectedAmount = Number(input.expectedAmount);
+    const currencyId = String(input.currencyId || '').trim().toUpperCase();
+
+    if (currencyId !== 'BRL') {
+        return { ok: false as const, reason: 'currency_mismatch' as const };
+    }
+    if (!Number.isFinite(transactionAmount) || !Number.isFinite(expectedAmount)) {
+        return { ok: false as const, reason: 'invalid_amount' as const };
+    }
+    if (Math.abs(transactionAmount - expectedAmount) > 0.01) {
+        return { ok: false as const, reason: 'amount_mismatch' as const };
+    }
+
+    return { ok: true as const };
+}
+
 export function getPolledBookingPaymentStatus(input: {
     bookingStatus: unknown;
     paymentStatus: unknown;
