@@ -1,4 +1,4 @@
-import { jwtVerify, SignJWT } from 'jose';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { readAdminSessionTokenFromCookies, verifyAdminJwt } from '@/lib/admin-jwt';
 
 const BOOKING_ACCESS_TTL_SECONDS = 7 * 24 * 60 * 60;
@@ -7,8 +7,8 @@ function getSecret() {
     return String(process.env.BOOKING_ACCESS_SECRET || process.env.ADMIN_JWT_SECRET || '').trim();
 }
 
-function getKey(secret: string) {
-    return new TextEncoder().encode(secret);
+function signPayload(payload: string, secret: string) {
+    return createHmac('sha256', secret).update(payload).digest('base64url');
 }
 
 function getCookieValue(request: Request, name: string) {
@@ -41,12 +41,12 @@ export async function signBookingAccessToken(bookingId: string) {
     if (!secret) return null;
 
     const now = Math.floor(Date.now() / 1000);
-    return new SignJWT({ role: 'booking' })
-        .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-        .setSubject(bookingId)
-        .setIssuedAt(now)
-        .setExpirationTime(now + BOOKING_ACCESS_TTL_SECONDS)
-        .sign(getKey(secret));
+    const payload = Buffer.from(JSON.stringify({
+        role: 'booking',
+        sub: bookingId,
+        exp: now + BOOKING_ACCESS_TTL_SECONDS,
+    })).toString('base64url');
+    return `${payload}.${signPayload(payload, secret)}`;
 }
 
 async function verifyBookingAccessToken(token: string, bookingId: string) {
@@ -54,8 +54,23 @@ async function verifyBookingAccessToken(token: string, bookingId: string) {
     if (!secret) return false;
 
     try {
-        const { payload } = await jwtVerify(token, getKey(secret), { algorithms: ['HS256'] });
-        return payload.role === 'booking' && payload.sub === bookingId;
+        const [payload, signature, extra] = token.split('.');
+        if (!payload || !signature || extra) return false;
+
+        const expected = Buffer.from(signPayload(payload, secret));
+        const provided = Buffer.from(signature);
+        if (expected.length !== provided.length || !timingSafeEqual(expected, provided)) return false;
+
+        const claims = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as {
+            role?: unknown;
+            sub?: unknown;
+            exp?: unknown;
+        };
+        const now = Math.floor(Date.now() / 1000);
+        return claims.role === 'booking'
+            && claims.sub === bookingId
+            && typeof claims.exp === 'number'
+            && claims.exp > now;
     } catch {
         return false;
     }
