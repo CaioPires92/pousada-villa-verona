@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAdminAuth } from '@/lib/admin-auth';
+import { signBookingAccessToken } from '@/lib/booking-access';
 
 export async function POST(request: Request) {
     try {
@@ -30,6 +31,9 @@ export async function POST(request: Request) {
             `https://${process.env.VERCEL_URL}`;
 
         const phoneNumber = booking.guest.phone.replace(/\D/g, '');
+        const bookingAccessToken = await signBookingAccessToken(booking.id);
+        const confirmationUrl = new URL(`/reservar/confirmacao/${booking.id}`, dynamicBaseUrl);
+        if (bookingAccessToken) confirmationUrl.hash = new URLSearchParams({ access: bookingAccessToken }).toString();
 
         const preferenceData = {
             items: [
@@ -50,9 +54,9 @@ export async function POST(request: Request) {
                 },
             },
             back_urls: {
-                success: `${dynamicBaseUrl}/reservar/confirmacao/${booking.id}`,
-                failure: `${dynamicBaseUrl}/reservar/confirmacao/${booking.id}`,
-                pending: `${dynamicBaseUrl}/reservar/confirmacao/${booking.id}`,
+                success: confirmationUrl.toString(),
+                failure: confirmationUrl.toString(),
+                pending: confirmationUrl.toString(),
             },
             auto_return: 'approved',
             external_reference: booking.id,

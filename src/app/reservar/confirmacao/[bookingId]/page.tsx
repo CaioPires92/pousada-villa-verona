@@ -251,11 +251,18 @@ export default function ConfirmacaoPage() {
         if (!bookingId) return;
 
         try {
-            const response = await fetch(`/api/bookings/${bookingId}`);
+            const accessToken = new URLSearchParams(window.location.hash.replace(/^#/, '')).get('access')
+                || new URLSearchParams(window.location.search).get('access');
+            const response = await fetch(`/api/bookings/${bookingId}`, {
+                headers: accessToken ? { 'x-booking-access-token': accessToken } : undefined,
+            });
             if (!response.ok) return;
 
             const data = (await response.json()) as BookingData;
             setBooking(data);
+            if (accessToken) {
+                window.history.replaceState({}, '', `/reservar/confirmacao/${bookingId}`);
+            }
 
             const effectiveStatus = getEffectiveStatus(data);
             const previousStatus = lastStatusRef.current;

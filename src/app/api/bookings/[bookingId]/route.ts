@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import {
+    authorizeBookingRequest,
+    getBookingAccessCookieName,
+    getBookingAccessCookieOptions,
+} from '@/lib/booking-access';
 
 export async function GET(
     request: Request,
@@ -7,6 +12,11 @@ export async function GET(
 ) {
     try {
         const { bookingId } = await params;
+
+        const access = await authorizeBookingRequest(request, bookingId);
+        if (!access.authorized) {
+            return NextResponse.json({ error: 'Reserva não encontrada' }, { status: 404 });
+        }
 
         const booking = await prisma.booking.findUnique({
             where: { id: bookingId },
@@ -30,7 +40,15 @@ export async function GET(
             );
         }
 
-        return NextResponse.json(booking);
+        const response = NextResponse.json(booking);
+        if (access.token) {
+            response.cookies.set(
+                getBookingAccessCookieName(bookingId),
+                access.token,
+                getBookingAccessCookieOptions(bookingId)
+            );
+        }
+        return response;
     } catch (error) {
         console.error('Erro ao buscar reserva:', error);
         return NextResponse.json(

@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { requireAdminAuth } from '@/lib/admin-auth';
 import { opsLog } from '@/lib/ops-log';
 import { asNullableString } from '@/lib/requestValue';
+import { signBookingAccessToken } from '@/lib/booking-access';
 
 export const runtime = 'nodejs';
 
@@ -90,7 +91,9 @@ export async function POST(
         }
 
         const phone = String(booking.guest.phone || '').replace(/\D/g, '');
-        const confirmationUrl = `${publicBaseUrl}/reservar/confirmacao/${booking.id}`;
+        const bookingAccessToken = await signBookingAccessToken(booking.id);
+        const confirmationUrl = new URL(`/reservar/confirmacao/${booking.id}`, publicBaseUrl);
+        if (bookingAccessToken) confirmationUrl.hash = new URLSearchParams({ access: bookingAccessToken }).toString();
         const preference = {
             items: [{
                 id: booking.roomType.id,
@@ -110,9 +113,9 @@ export async function POST(
                 } : {}),
             },
             back_urls: {
-                success: confirmationUrl,
-                failure: confirmationUrl,
-                pending: confirmationUrl,
+                success: confirmationUrl.toString(),
+                failure: confirmationUrl.toString(),
+                pending: confirmationUrl.toString(),
             },
             auto_return: 'approved',
             external_reference: booking.id,

@@ -8,6 +8,11 @@ import { compareDayKey } from '@/lib/day-key';
 import { getEffectiveGuestCounts, requiresFourGuestInventory } from '@/lib/guest-capacity';
 import { sendBookingStatusAlertEmail } from '@/lib/booking-status-alert';
 import { sendBookingPendingEmail } from '@/lib/email';
+import {
+    getBookingAccessCookieName,
+    getBookingAccessCookieOptions,
+    signBookingAccessToken,
+} from '@/lib/booking-access';
 
 export async function POST(request: Request) {
     try {
@@ -322,7 +327,16 @@ export async function POST(request: Request) {
             ]);
         });
 
-        return NextResponse.json(booking, { status: 201 });
+        const response = NextResponse.json(booking, { status: 201 });
+        const accessToken = await signBookingAccessToken(booking.id);
+        if (accessToken) {
+            response.cookies.set(
+                getBookingAccessCookieName(booking.id),
+                accessToken,
+                getBookingAccessCookieOptions(booking.id)
+            );
+        }
+        return response;
 
     } catch (error: any) {
         console.error('[Booking API Error]:', error);

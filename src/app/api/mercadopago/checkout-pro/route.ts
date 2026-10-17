@@ -10,6 +10,7 @@ import {
     type PaymentMode,
 } from '@/lib/partial-payment';
 import { opsLog } from '@/lib/ops-log';
+import { signBookingAccessToken } from '@/lib/booking-access';
 
 const PARTIAL_PAYMENT_SETTINGS_ID = 'default';
 
@@ -85,7 +86,9 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'PAYMENT_CONFIGURATION_ERROR' }, { status: 500 });
         }
 
-        const confirmationUrl = `${publicBaseUrl}/reservar/confirmacao/${booking.id}`;
+        const bookingAccessToken = await signBookingAccessToken(booking.id);
+        const confirmationUrl = new URL(`/reservar/confirmacao/${booking.id}`, publicBaseUrl);
+        if (bookingAccessToken) confirmationUrl.hash = new URLSearchParams({ access: bookingAccessToken }).toString();
         const payerPhone = normalizeBrazilianPhone(booking.guest.phone);
         const preference = {
             items: [{
@@ -103,9 +106,9 @@ export async function POST(request: Request) {
                 ...(payerPhone ? { phone: payerPhone } : {}),
             },
             back_urls: {
-                success: confirmationUrl,
-                failure: confirmationUrl,
-                pending: confirmationUrl,
+                success: confirmationUrl.toString(),
+                failure: confirmationUrl.toString(),
+                pending: confirmationUrl.toString(),
             },
             auto_return: 'approved',
             external_reference: booking.id,
