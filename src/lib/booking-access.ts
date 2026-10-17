@@ -3,8 +3,14 @@ import { readAdminSessionTokenFromCookies, verifyAdminJwt } from '@/lib/admin-jw
 
 const BOOKING_ACCESS_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-function getSecret() {
+function getSigningSecret() {
     return String(process.env.BOOKING_ACCESS_SECRET || process.env.ADMIN_JWT_SECRET || '').trim();
+}
+
+function getVerificationSecrets() {
+    return [process.env.BOOKING_ACCESS_SECRET, process.env.ADMIN_JWT_SECRET]
+        .map((secret) => String(secret || '').trim())
+        .filter((secret, index, secrets) => secret && secrets.indexOf(secret) === index);
 }
 
 function signPayload(payload: string, secret: string) {
@@ -37,7 +43,7 @@ export function getBookingAccessCookieOptions(bookingId: string) {
 }
 
 export async function signBookingAccessToken(bookingId: string) {
-    const secret = getSecret();
+    const secret = getSigningSecret();
     if (!secret) return null;
 
     const now = Math.floor(Date.now() / 1000);
@@ -50,16 +56,19 @@ export async function signBookingAccessToken(bookingId: string) {
 }
 
 async function verifyBookingAccessToken(token: string, bookingId: string) {
-    const secret = getSecret();
-    if (!secret) return false;
+    const secrets = getVerificationSecrets();
+    if (secrets.length === 0) return false;
 
     try {
         const [payload, signature, extra] = token.split('.');
         if (!payload || !signature || extra) return false;
 
-        const expected = Buffer.from(signPayload(payload, secret));
         const provided = Buffer.from(signature);
-        if (expected.length !== provided.length || !timingSafeEqual(expected, provided)) return false;
+        const signatureIsValid = secrets.some((secret) => {
+            const expected = Buffer.from(signPayload(payload, secret));
+            return expected.length === provided.length && timingSafeEqual(expected, provided);
+        });
+        if (!signatureIsValid) return false;
 
         const claims = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as {
             role?: unknown;

@@ -52,4 +52,17 @@ describe('booking access', () => {
             token: null,
         });
     });
+
+    it('keeps existing tokens valid while moving from the admin secret', async () => {
+        delete process.env.BOOKING_ACCESS_SECRET;
+        process.env.ADMIN_JWT_SECRET = 'legacy-admin-secret-with-enough-entropy';
+        const token = await signBookingAccessToken('booking-1');
+
+        process.env.BOOKING_ACCESS_SECRET = 'new-booking-secret-with-enough-entropy';
+        const request = new Request('https://example.com/api/bookings/booking-1', {
+            headers: { 'x-booking-access-token': String(token) },
+        });
+
+        await expect(authorizeBookingRequest(request, 'booking-1')).resolves.toMatchObject({ authorized: true });
+    });
 });
