@@ -89,7 +89,13 @@ export async function POST(request: Request) {
         const bookingAccessToken = await signBookingAccessToken(booking.id);
         const confirmationUrl = new URL(`/reservar/confirmacao/${booking.id}`, publicBaseUrl);
         if (bookingAccessToken) confirmationUrl.hash = new URLSearchParams({ access: bookingAccessToken }).toString();
+        const hasPublicHttpsBaseUrl = publicBaseUrl.startsWith('https://');
         const payerPhone = normalizeBrazilianPhone(booking.guest.phone);
+        const testPaymentsEnabled = process.env.ENABLE_TEST_PAYMENTS === 'true';
+        const configuredTestPayerEmail = String(process.env.MP_TEST_PAYER_EMAIL || '').trim().toLowerCase();
+        const testPayerEmail = configuredTestPayerEmail.endsWith('@testuser.com')
+            ? configuredTestPayerEmail
+            : '';
         const stayNights = Math.max(1, Math.round(
             (booking.checkOut.getTime() - booking.checkIn.getTime()) / 86_400_000
         ));
@@ -105,19 +111,31 @@ export async function POST(request: Request) {
                 currency_id: 'BRL',
                 category_id: 'travel',
             }],
-            payer: {
-                name: booking.guest.name,
-                email: booking.guest.email,
-                ...(payerPhone ? { phone: payerPhone } : {}),
-            },
-            back_urls: {
-                success: confirmationUrl.toString(),
-                failure: confirmationUrl.toString(),
-                pending: confirmationUrl.toString(),
-            },
-            auto_return: 'approved',
+            ...(!testPaymentsEnabled
+                ? {
+                      payer: {
+                          name: booking.guest.name,
+                          email: booking.guest.email,
+                          ...(payerPhone ? { phone: payerPhone } : {}),
+                      },
+                  }
+                : testPayerEmail
+                    ? { payer: { email: testPayerEmail } }
+                    : {}),
+            ...(hasPublicHttpsBaseUrl
+                ? {
+                      back_urls: {
+                          success: confirmationUrl.toString(),
+                          failure: confirmationUrl.toString(),
+                          pending: confirmationUrl.toString(),
+                      },
+                      auto_return: 'approved',
+                  }
+                : {}),
             external_reference: booking.id,
-            notification_url: `${publicBaseUrl}/api/webhooks/mercadopago`,
+            ...(hasPublicHttpsBaseUrl
+                ? { notification_url: `${publicBaseUrl}/api/webhooks/mercadopago` }
+                : {}),
             statement_descriptor: 'VILLA VERONA',
             payment_methods: {
                 excluded_payment_types: [{ id: 'ticket' }],
@@ -130,12 +148,25 @@ export async function POST(request: Request) {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${accessToken}`,
-                'X-Idempotency-Key': `hosted-checkout-${booking.id}-${paymentPlan.paymentMode}`,
+                'X-Idempotency-Key': `hosted-checkout-${booking.id}-${paymentPlan.paymentMode}-${testPaymentsEnabled ? 'test-v2' : 'prod-v1'}`,
             },
             body: JSON.stringify(preference),
         });
         const result = await response.json().catch(() => ({}));
-        if (!response.ok || !result?.init_point) {
+        const checkoutInitPoint = result?.init_point;
+        if (!response.ok || !checkoutInitPoint) {
+            const providerDetails = process.env.NODE_ENV === 'production'
+                ? {}
+                : {
+                      providerError: String(result?.error || ''),
+                      providerMessage: String(result?.message || ''),
+                      providerCause: Array.isArray(result?.cause)
+                          ? result.cause.map((cause: any) => ({
+                                code: String(cause?.code || ''),
+                                description: String(cause?.description || ''),
+                            }))
+                          : [],
+                  };
             opsLog('error', 'MP_HOSTED_CHECKOUT_CREATE_FAILED', {
                 bookingId: booking.id,
                 status: response.status,
@@ -145,6 +176,7 @@ export async function POST(request: Request) {
             return NextResponse.json({
                 error: 'PAYMENT_LINK_CREATE_FAILED',
                 message: 'Não foi possível abrir o ambiente de pagamento do Mercado Pago.',
+                ...providerDetails,
             }, { status: response.ok ? 502 : response.status });
         }
 
@@ -188,7 +220,7 @@ export async function POST(request: Request) {
             }),
         ]);
 
-        return NextResponse.json({ initPoint: result.init_point });
+        return NextResponse.json({ initPoint: checkoutInitPoint });
     } catch (error) {
         opsLog('error', 'MP_HOSTED_CHECKOUT_UNEXPECTED_ERROR', {
             message: error instanceof Error ? error.message : String(error),

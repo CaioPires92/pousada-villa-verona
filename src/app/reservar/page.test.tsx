@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ReservarPage from './page';
 import ReservationPageFallback from './components/ReservationPageFallback';
 import { buildPaymentBrickInitializationPayer, normalizePaymentBrickPayer } from './payment-brick';
@@ -63,6 +63,10 @@ describe('ReservarPage', () => {
     await waitFor(() => {
       expect(screen.getByText(/Buscando as melhores opções/i)).toBeInTheDocument();
     });
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('ignores placeholder URLs and falls back to local photos', async () => {
@@ -484,7 +488,8 @@ describe('ReservarPage', () => {
     });
   });
 
-  it('redireciona automaticamente qualquer reserva para o Checkout Pro', async () => {
+  it('mantém os cartões de teste visíveis antes de abrir o Checkout Pro', async () => {
+    vi.stubEnv('NEXT_PUBLIC_ENABLE_TEST_PAYMENTS', 'true');
     mockFetch.mockImplementation(async (input: RequestInfo | URL) => {
       const url = String(input);
       if (url.startsWith('/api/availability')) {
@@ -539,13 +544,21 @@ describe('ReservarPage', () => {
     fireEvent.click(screen.getByLabelText(/Declaro que li e aceito/i));
     fireEvent.submit(screen.getByRole('button', { name: /Continuar para o pagamento/i }).closest('form')!);
 
+    const continueButton = await screen.findByRole('button', { name: /Continuar para o Mercado Pago/i });
+    expect(screen.getByText(/Modo teste Mercado Pago/i)).toBeInTheDocument();
+    expect(mockFetch).not.toHaveBeenCalledWith(
+      '/api/mercadopago/checkout-pro',
+      expect.anything()
+    );
+
+    fireEvent.click(continueButton);
+
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
         '/api/mercadopago/checkout-pro',
         expect.objectContaining({ method: 'POST' })
       );
     });
-    expect(screen.queryByRole('button', { name: /Continuar para o Mercado Pago/i })).not.toBeInTheDocument();
   });
 
   it('remove entityType inválido ao normalizar payer do Brick', () => {

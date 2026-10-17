@@ -543,10 +543,7 @@ function ReservarContent() {
     const totalSteps = 3;
     const progressPercent = Math.round((currentStep / totalSteps) * 100);
     const showPaymentTestHelper = process.env.NODE_ENV !== 'production'
-        && (
-            process.env.NEXT_PUBLIC_ENABLE_TEST_PAYMENTS === 'true'
-            || process.env.NEXT_PUBLIC_MP_PUBLIC_KEY?.startsWith('TEST-')
-        );
+        && process.env.NEXT_PUBLIC_ENABLE_TEST_PAYMENTS === 'true';
 
     const copyTestValue = async (key: string, value: string) => {
         try {
@@ -1122,7 +1119,7 @@ function ReservarContent() {
             setPaymentStatus('idle');
             setPaymentStatusMessage('');
 
-            if (requiresHostedMercadoPagoCheckout(parsedAmount)) {
+            if (requiresHostedMercadoPagoCheckout(parsedAmount) && !showPaymentTestHelper) {
                 await handleHostedMercadoPagoCheckout({
                     bookingId: booking.id,
                     paymentMode: nextPaymentMode,
@@ -2096,10 +2093,20 @@ function ReservarContent() {
                                                 <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
                                                     Para concluir sua reserva, você será direcionado ao ambiente seguro do Mercado Pago. Se já tiver uma conta, entre para utilizar seus cartões e formas de pagamento disponíveis. Você também poderá escolher Pix.
                                                 </p>
-                                                <div className="mt-5 flex items-center gap-3 text-sm text-brand-brown-dark">
-                                                    <LoaderCircle className="h-5 w-5 animate-spin" />
-                                                    Redirecionando para o Mercado Pago...
-                                                </div>
+                                                {showPaymentTestHelper && !isSubmittingPayment ? (
+                                                    <Button
+                                                        type="button"
+                                                        onClick={() => void handleHostedMercadoPagoCheckout()}
+                                                        className="mt-5 h-11 rounded-none"
+                                                    >
+                                                        Continuar para o Mercado Pago
+                                                    </Button>
+                                                ) : (
+                                                    <div className="mt-5 flex items-center gap-3 text-sm text-brand-brown-dark">
+                                                        <LoaderCircle className="h-5 w-5 animate-spin" />
+                                                        Redirecionando para o Mercado Pago...
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : (
                                         <div className="relative border border-brand-brown-dark/10 bg-[color:var(--brand-white)] p-4">

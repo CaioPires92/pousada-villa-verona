@@ -51,6 +51,8 @@ describe('POST Mercado Pago hosted checkout', () => {
         vi.clearAllMocks();
         process.env.MP_ACCESS_TOKEN = 'APP_USR-test';
         process.env.NEXT_PUBLIC_BASE_URL = 'https://www.villaveronapousada.com.br';
+        process.env.ENABLE_TEST_PAYMENTS = 'false';
+        delete process.env.MP_TEST_PAYER_EMAIL;
         (prisma.booking.findUnique as any).mockResolvedValue(booking);
         (prisma.partialPaymentSettings.findUnique as any).mockResolvedValue(null);
         (prisma.payment.upsert as any).mockResolvedValue({});
@@ -164,5 +166,54 @@ describe('POST Mercado Pago hosted checkout', () => {
 
         expect(response.status).toBe(200);
         expect(await response.json()).toMatchObject({ initPoint: 'https://mercadopago.test/standard' });
+    });
+
+    it('does not send public callback options with a localhost URL', async () => {
+        process.env.NEXT_PUBLIC_BASE_URL = 'http://localhost:3005';
+        const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) => ({
+            ok: true,
+            status: 201,
+            json: async () => ({ id: 'pref-local', init_point: 'https://mercadopago.test/local' }),
+        }));
+        vi.stubGlobal('fetch', fetchMock);
+
+        const response = await POST(createRequest({
+            bookingId: booking.id,
+            guestEmail: booking.guest.email,
+        }));
+
+        expect(response.status).toBe(200);
+        const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+        const preference = JSON.parse(String(request.body));
+        expect(preference).not.toHaveProperty('notification_url');
+        expect(preference).not.toHaveProperty('back_urls');
+        expect(preference).not.toHaveProperty('auto_return');
+    });
+
+    it('does not bind a real guest to a test Checkout Pro preference', async () => {
+        process.env.ENABLE_TEST_PAYMENTS = 'true';
+        const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) => ({
+            ok: true,
+            status: 201,
+            json: async () => ({
+                id: 'pref-test',
+                init_point: 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=pref-test',
+                sandbox_init_point: 'https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id=pref-test',
+            }),
+        }));
+        vi.stubGlobal('fetch', fetchMock);
+
+        const response = await POST(createRequest({
+            bookingId: booking.id,
+            guestEmail: booking.guest.email,
+        }));
+
+        expect(response.status).toBe(200);
+        expect(await response.clone().json()).toMatchObject({
+            initPoint: expect.stringContaining('www.mercadopago.com.br'),
+        });
+        const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+        const preference = JSON.parse(String(request.body));
+        expect(preference).not.toHaveProperty('payer');
     });
 });
