@@ -80,6 +80,25 @@ async function main() {
       console.log('[database] Estrutura inicial criada.');
     }
 
+    const paymentAttemptTable = await client.execute(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'PaymentAttempt'"
+    );
+    if (paymentAttemptTable.rows.length === 0) {
+      const migrationPath = path.join(
+        process.cwd(),
+        'prisma/migrations/20261017220000_add_payment_attempt_history/migration.sql'
+      );
+      await client.executeMultiple(fs.readFileSync(migrationPath, 'utf8'));
+
+      const verification = await client.execute(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'PaymentAttempt'"
+      );
+      if (verification.rows.length !== 1) {
+        throw new Error('A tabela PaymentAttempt não foi criada');
+      }
+      console.log('[database] Histórico seguro de tentativas de pagamento criado.');
+    }
+
     const now = new Date().toISOString();
     const roomCount = await client.execute('SELECT COUNT(*) AS total FROM "RoomType"');
     if (Number(roomCount.rows[0]?.total || 0) > 0) {
