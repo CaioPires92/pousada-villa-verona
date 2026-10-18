@@ -2,17 +2,28 @@ import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
 import { opsLog } from '@/lib/ops-log';
 import { sendContactEmail } from '@/lib/email';
+import { consumeRequestLimit, isHoneypotFilled, readJsonBody, RequestGuardError } from '@/lib/request-guard';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
+        const body = await readJsonBody<any>(request, 16 * 1024);
+        if (isHoneypotFilled(body)) return NextResponse.json({ success: true });
         const name = typeof body?.name === 'string' ? body.name.trim() : '';
         const email = typeof body?.email === 'string' ? body.email.trim() : '';
         const phone = typeof body?.phone === 'string' ? body.phone.trim() : '';
         const subject = typeof body?.subject === 'string' ? body.subject.trim() : '';
         const message = typeof body?.message === 'string' ? body.message.trim() : '';
+
+        const rateLimit = consumeRequestLimit({
+            request, scope: 'contact', discriminator: email.toLowerCase(), limit: 5, windowMs: 15 * 60_000,
+        });
+        if (!rateLimit.allowed) {
+            return NextResponse.json({ error: 'Muitas tentativas. Aguarde alguns minutos.' }, {
+                status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) },
+            });
+        }
 
         if (!name || !email || !phone || !message) {
             opsLog('warn', 'CONTACT_SEND_INVALID', { name, email, phone, subject });
@@ -28,6 +39,9 @@ export async function POST(request: Request) {
         opsLog('info', 'CONTACT_SEND_SUCCESS', { subject, email });
         return NextResponse.json({ success: true });
     } catch (error) {
+        if (error instanceof RequestGuardError) {
+            return NextResponse.json({ error: error.code }, { status: error.status });
+        }
         Sentry.captureException(error);
         opsLog('error', 'CONTACT_SEND_EXCEPTION');
         return NextResponse.json({ error: 'Erro ao processar' }, { status: 500 });

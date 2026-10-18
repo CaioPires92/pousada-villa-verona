@@ -11,6 +11,7 @@ import {
 } from '@/lib/partial-payment';
 import { opsLog } from '@/lib/ops-log';
 import { signBookingAccessToken } from '@/lib/booking-access';
+import { consumeRequestLimit, readJsonBody, RequestGuardError } from '@/lib/request-guard';
 
 const PARTIAL_PAYMENT_SETTINGS_ID = 'default';
 
@@ -29,13 +30,22 @@ function getPublicBaseUrl(request: Request) {
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json().catch(() => ({}));
+        const body = await readJsonBody<any>(request, 8 * 1024);
         const bookingId = String(body?.bookingId || '').trim();
         const guestEmail = String(body?.guestEmail || '').trim().toLowerCase();
         const paymentMode: PaymentMode = body?.paymentMode === 'PARTIAL' ? 'PARTIAL' : 'FULL';
 
         if (!bookingId || !guestEmail) {
             return NextResponse.json({ error: 'BOOKING_IDENTIFICATION_REQUIRED' }, { status: 400 });
+        }
+
+        const rateLimit = consumeRequestLimit({
+            request, scope: 'checkout-pro', discriminator: `${bookingId}:${guestEmail}`, limit: 8, windowMs: 10 * 60_000,
+        });
+        if (!rateLimit.allowed) {
+            return NextResponse.json({ error: 'TOO_MANY_PAYMENT_ATTEMPTS' }, {
+                status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) },
+            });
         }
 
         const booking = await prisma.booking.findUnique({
@@ -222,6 +232,9 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ initPoint: checkoutInitPoint });
     } catch (error) {
+        if (error instanceof RequestGuardError) {
+            return NextResponse.json({ error: error.code }, { status: error.status });
+        }
         opsLog('error', 'MP_HOSTED_CHECKOUT_UNEXPECTED_ERROR', {
             message: error instanceof Error ? error.message : String(error),
         });

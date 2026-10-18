@@ -29,6 +29,7 @@ describe('ContactAndLocation', () => {
           email: 'joao@example.com',
           phone: '(19) 99999-9999',
           message: 'Gostaria de informações.',
+          website: '',
           subject: 'Contato',
         }),
       });

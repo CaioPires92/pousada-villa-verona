@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 
 export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any }) {
   const [activeTab, setActiveTab] = useState<'contato' | 'reserva'>('contato');
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '', website: '' });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -23,7 +23,7 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
 
       if (!response.ok) throw new Error('Falha ao enviar mensagem');
 
-      setFormData({ name: '', email: '', phone: '', message: '' });
+      setFormData({ name: '', email: '', phone: '', message: '', website: '' });
       setSubmitStatus('success');
     } catch {
       setSubmitStatus('error');
@@ -119,6 +119,12 @@ export default function ContactAndLocation({ hotelConfig }: { hotelConfig?: any 
             </div>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="contact-website">Não preencha este campo</label>
+                <input id="contact-website" name="website" type="text" tabIndex={-1} autoComplete="off"
+                  value={formData.website}
+                  onChange={(event) => setFormData((current) => ({ ...current, website: event.target.value }))} />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label htmlFor="contact-name" className="text-[10px] font-bold uppercase tracking-widest text-brand-brown-dark/70">Nome Completo</label>

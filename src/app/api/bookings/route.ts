@@ -13,10 +13,14 @@ import {
     getBookingAccessCookieOptions,
     signBookingAccessToken,
 } from '@/lib/booking-access';
+import { consumeRequestLimit, isHoneypotFilled, readJsonBody, RequestGuardError } from '@/lib/request-guard';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
+        const body = await readJsonBody<any>(request, 32 * 1024);
+        if (isHoneypotFilled(body)) {
+            return NextResponse.json({ error: 'request_rejected' }, { status: 400 });
+        }
         const { roomTypeId, checkIn, checkOut, guest, adults, childrenAges } = body;
         const adultsCount = Math.max(1, Number.parseInt(String(adults ?? 1), 10) || 1);
         const childrenCount = Math.max(0, Number.parseInt(String(body?.children ?? 0), 10) || 0);
@@ -31,6 +35,16 @@ export async function POST(request: Request) {
         const normalizedGuestEmail = normalizeGuestEmail(guest.email);
         if (!normalizedGuestEmail) {
             return NextResponse.json({ error: 'guest_email_invalid' }, { status: 400 });
+        }
+
+        const rateLimit = consumeRequestLimit({
+            request, scope: 'booking', discriminator: normalizedGuestEmail, limit: 8, windowMs: 15 * 60_000,
+        });
+        if (!rateLimit.allowed) {
+            return NextResponse.json({
+                error: 'too_many_attempts',
+                message: 'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.',
+            }, { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } });
         }
 
         const agesArrayInput = Array.isArray(childrenAges)
@@ -363,6 +377,9 @@ export async function POST(request: Request) {
         return response;
 
     } catch (error: any) {
+        if (error instanceof RequestGuardError) {
+            return NextResponse.json({ error: error.code }, { status: error.status });
+        }
         console.error('[Booking API Error]:', error);
         if (typeof error?.message === 'string' && error.message.startsWith('min_stay_required:')) {
             const minLos = error.message.split(':')[1] || '1';

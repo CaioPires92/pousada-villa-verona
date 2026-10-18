@@ -289,6 +289,7 @@ function ReservarContent() {
     const [availableRooms, setAvailableRooms] = useState<Room[] | null>(null);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
     const [guest, setGuest] = useState<Guest>({ name: '', email: '', phone: '' });
+    const [website, setWebsite] = useState('');
     const [couponEnabled, setCouponEnabled] = useState(Boolean(promoFromQuery));
     const [couponCode, setCouponCode] = useState('');
     const [couponMessage, setCouponMessage] = useState('');
@@ -1050,6 +1051,7 @@ function ReservarContent() {
                     childrenAges,
                     totalPrice: bookingTotal,
                     guest,
+                    website,
                     coupon: couponPayload,
                 }),
             });
@@ -2289,6 +2291,12 @@ function ReservarContent() {
                                 </CardHeader>
                                 <CardContent className="px-4 pt-5 md:px-6 md:pt-6">
                                     <form onSubmit={handleSubmit} className="space-y-6">
+                                        <div className="hidden" aria-hidden="true">
+                                            <label htmlFor="booking-website">Não preencha este campo</label>
+                                            <input id="booking-website" name="website" type="text" tabIndex={-1}
+                                                autoComplete="off" value={website}
+                                                onChange={(event) => setWebsite(event.target.value)} />
+                                        </div>
                                         <div className="space-y-4">
                                             <div className="space-y-2">
                                                 <label htmlFor="name" className="text-sm font-medium flex items-center gap-2">

@@ -200,6 +200,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
         });
         if (!sigResult.ok) {
             opsLog('warn', 'MP_WEBHOOK_INVALID', { reason: 'INVALID_SIGNATURE', paymentId });
+            Sentry.captureMessage('Mercado Pago webhook signature validation failed', { level: 'warning' });
             return NextResponse.json({ error: 'Assinatura inválida' }, { status: 401 });
         }
 
@@ -214,6 +215,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
         });
         if (!paymentResponse.ok) {
             opsLog('error', 'MP_WEBHOOK_MP_FETCH_FAILED', { paymentId, status: paymentResponse.status });
+            Sentry.captureMessage('Mercado Pago payment lookup failed', { level: 'error' });
             return NextResponse.json(
                 { error: 'Falha ao buscar pagamento', status: paymentResponse.status },
                 { status: 502 }
@@ -279,6 +281,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
                 });
                 return {
                     kind: 'invalid_payment' as const,
+                    booking,
                     reason: paymentValidation.reason,
                     expectedAmount: Number(booking.payment?.amount ?? booking.totalPrice),
                 };
@@ -600,6 +603,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
                 bookingIdShort: bookingId.slice(0, 8),
                 paymentId,
             });
+            Sentry.captureMessage('Mercado Pago payment references an unknown booking', { level: 'error' });
             return NextResponse.json({ error: 'Reserva não encontrada' }, { status: 404 });
         }
         await recordPaymentAttempt({
@@ -620,7 +624,64 @@ export async function handleMercadoPagoWebhook(request: Request) {
                 transactionAmount: paymentData?.transaction_amount,
                 currencyId: paymentData?.currency_id,
             });
+            Sentry.captureMessage('Mercado Pago approved payment failed amount validation', { level: 'error' });
+            const { sendDifficultyAlertEmail } = await import('@/lib/email');
+            await sendDifficultyAlertEmail({
+                guestName: result.booking.guest.name,
+                guestEmail: result.booking.guest.email,
+                guestPhone: result.booking.guest.phone,
+                bookingId: result.booking.id,
+                roomName: result.booking.roomType.name,
+                totalPrice: Number(result.booking.totalPrice),
+                step: 'Validação do pagamento aprovado',
+                reason: `Divergência entre o pagamento recebido e o valor esperado (${result.reason}).`,
+                paymentProviderId: paymentId,
+            });
             return NextResponse.json({ ok: true, status: 'ignored', reason: result.reason });
+        }
+
+        if (normalizedMpStatus === 'approved' && !['CONFIRMED', 'PAID'].includes(result.bookingStatus)) {
+            Sentry.captureMessage('Mercado Pago payment approved without booking confirmation', { level: 'error' });
+            const { sendDifficultyAlertEmail } = await import('@/lib/email');
+            await sendDifficultyAlertEmail({
+                guestName: result.booking.guest.name,
+                guestEmail: result.booking.guest.email,
+                guestPhone: result.booking.guest.phone,
+                bookingId: result.booking.id,
+                roomName: result.booking.roomType.name,
+                totalPrice: Number(result.booking.totalPrice),
+                step: 'Pagamento aprovado sem confirmação da reserva',
+                reason: `O Mercado Pago aprovou o pagamento, mas a reserva permaneceu com status ${result.bookingStatus}.`,
+                paymentProviderId: paymentId,
+            });
+        }
+
+        if (normalizedMpStatus === 'rejected') {
+            try {
+                const recentRejections = await prisma.paymentAttempt.count({
+                    where: { bookingId, status: 'REJECTED', createdAt: { gte: new Date(Date.now() - 60 * 60_000) } },
+                });
+                if (recentRejections === 3) {
+                    Sentry.captureMessage('Repeated Mercado Pago payment rejections', { level: 'warning' });
+                    const { sendDifficultyAlertEmail } = await import('@/lib/email');
+                    await sendDifficultyAlertEmail({
+                        guestName: result.booking.guest.name,
+                        guestEmail: result.booking.guest.email,
+                        guestPhone: result.booking.guest.phone,
+                        bookingId: result.booking.id,
+                        roomName: result.booking.roomType.name,
+                        totalPrice: Number(result.booking.totalPrice),
+                        step: 'Sequência de recusas no pagamento',
+                        reason: 'Três pagamentos foram recusados para esta reserva na última hora.',
+                        paymentStatusDetail,
+                        paymentProviderId: paymentId,
+                    });
+                }
+            } catch (alertError) {
+                opsLog('warn', 'MP_REJECTION_SEQUENCE_ALERT_FAILED', {
+                    bookingId, message: alertError instanceof Error ? alertError.message : String(alertError),
+                });
+            }
         }
         let emailSent = false;
         let emailErrorMessage: string | undefined;
