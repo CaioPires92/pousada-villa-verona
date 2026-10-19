@@ -10,6 +10,10 @@ import {
     isRetryablePaymentRejection,
 } from '@/lib/mercadopago/payment-context';
 import {
+    buildMercadoPagoDeviceRequestOptions,
+    buildSafePaymentSecurityTelemetry,
+} from '@/lib/mercadopago/device-id';
+import {
     DEFAULT_PARTIAL_PAYMENT_SETTINGS,
     calculatePaymentPlan,
     normalizePartialPaymentSettings,
@@ -354,6 +358,17 @@ export async function POST(request: Request) {
             payerEmail: typeof payerEmail === 'string' ? payerEmail : '',
         });
         ctxPayerEmail = resolvedPayerEmail || (typeof payerEmail === 'string' ? payerEmail : undefined);
+        opsLog('info', 'MP_PAYMENT_SECURITY_CONTEXT', {
+            bookingId,
+            ...buildSafePaymentSecurityTelemetry({
+                deviceId,
+                token: formData?.token,
+                identification: formData?.payer?.identification,
+                paymentMethodId,
+                paymentTypeId,
+                installments: normalizedInstallments,
+            }),
+        });
         if (!paymentMethodId || typeof paymentMethodId !== 'string') {
             return NextResponse.json({ error: 'payment_method_id ausente' }, { status: 400 });
         }
@@ -578,9 +593,7 @@ export async function POST(request: Request) {
                       ...(cardPayment ? { three_d_secure_mode: 'optional', binary_mode: false } : {}),
                   },
                   requestOptions: {
-                      ...(typeof deviceId === 'string' && deviceId.trim()
-                          ? { meliSessionId: deviceId.trim().slice(0, 256) }
-                          : {}),
+                      ...buildMercadoPagoDeviceRequestOptions(deviceId),
                   },
               });
 

@@ -51,6 +51,7 @@ import {
     getPaymentRejectionMessage,
     getPolledBookingPaymentStatus,
 } from '@/lib/mercadopago/payment-context';
+import { waitForMercadoPagoDeviceId } from '@/lib/mercadopago/device-id';
 import { requiresHostedMercadoPagoCheckout } from '@/lib/mercadopago/high-value-checkout';
 import {
     mountLatestPaymentBrick,
@@ -1294,6 +1295,7 @@ function ReservarContent() {
                             let keepOverlayUntilRedirect = false;
 
                             try {
+                                const deviceId = await waitForMercadoPagoDeviceId();
                                 const res = await fetch('/api/mercadopago/payment', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -1304,7 +1306,7 @@ function ReservarContent() {
                                         description: `Reserva ${paymentBookingId}`,
                                         transaction_amount: finalPaymentAmount,
                                         paymentMode,
-                                        deviceId: String((window as any).MP_DEVICE_SESSION_ID || '').trim() || undefined,
+                                        deviceId,
                                     }),
                                 });
                                 const data = await res.json().catch(() => ({}));
