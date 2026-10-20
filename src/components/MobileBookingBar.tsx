@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Calendar, Users, ArrowRight, Plus, Minus, PawPrint } from "lucide-react";
-import { format } from "date-fns";
+import { addDays, format, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarUI } from "@/components/ui/calendar";
@@ -16,17 +16,30 @@ export default function MobileBookingBar() {
 
     const [checkIn, setCheckIn] = useState<Date | undefined>();
     const [checkOut, setCheckOut] = useState<Date | undefined>();
+    const [isCheckInOpen, setIsCheckInOpen] = useState(false);
+    const [isCheckOutOpen, setIsCheckOutOpen] = useState(false);
     const [adults, setAdults] = useState(2);
     const [children, setChildren] = useState(0);
     const [childrenAges, setChildrenAges] = useState<number[]>([]);
     const [pets, setPets] = useState(0);
+    const today = startOfDay(new Date());
 
     useEffect(() => {
         const today = new Date();
-        const tomorrow = new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000);
+        const tomorrow = addDays(today, 1);
         setCheckIn(today);
         setCheckOut(tomorrow);
     }, []);
+
+    const handleCheckInSelect = (date: Date | undefined) => {
+        setCheckIn(date);
+
+        if (!date) return;
+
+        setCheckOut(addDays(date, 1));
+        setIsCheckInOpen(false);
+        setIsCheckOutOpen(true);
+    };
 
     const isExcludedPage = pathname.startsWith("/admin") || pathname.startsWith("/reservar");
 
@@ -70,6 +83,7 @@ export default function MobileBookingBar() {
         day: "h-9 w-9 p-0 font-normal text-white hover:bg-white/10 rounded-lg mx-auto",
         day_selected: "bg-brand-gold text-brand-brown-dark font-bold hover:bg-brand-gold/90 hover:text-brand-brown-dark focus:bg-brand-gold focus:text-brand-brown-dark",
         day_today: "bg-white/5 text-white font-bold",
+        disabled: "!text-[#8f675b] !opacity-100 cursor-not-allowed",
         nav_button: "h-7 w-7 bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center rounded-md"
     };
 
@@ -98,7 +112,7 @@ export default function MobileBookingBar() {
                     <div className="flex flex-1 items-center justify-end gap-2 md:gap-4 lg:gap-8 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                         
                         {/* Check-in */}
-                        <Popover>
+                        <Popover open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
                             <PopoverTrigger asChild>
                                 <div className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5 relative group cursor-pointer focus-within:ring-1 focus-within:ring-brand-gold">
                                     <Calendar className="w-4 h-4 text-brand-gold" />
@@ -114,7 +128,8 @@ export default function MobileBookingBar() {
                                 <CalendarUI
                                     mode="single"
                                     selected={checkIn}
-                                    onSelect={setCheckIn}
+                                    onSelect={handleCheckInSelect}
+                                    disabled={{ before: today }}
                                     initialFocus
                                     locale={ptBR}
                                     className="bg-brand-brown-dark text-white border-none"
@@ -124,7 +139,7 @@ export default function MobileBookingBar() {
                         </Popover>
 
                         {/* Check-out */}
-                        <Popover>
+                        <Popover open={isCheckOutOpen} onOpenChange={setIsCheckOutOpen}>
                             <PopoverTrigger asChild>
                                 <div className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5 relative group cursor-pointer focus-within:ring-1 focus-within:ring-brand-gold">
                                     <Calendar className="w-4 h-4 text-brand-gold" />
@@ -140,7 +155,11 @@ export default function MobileBookingBar() {
                                 <CalendarUI
                                     mode="single"
                                     selected={checkOut}
-                                    onSelect={setCheckOut}
+                                    onSelect={(date) => {
+                                        setCheckOut(date);
+                                        if (date) setIsCheckOutOpen(false);
+                                    }}
+                                    disabled={{ before: addDays(checkIn || today, 1) }}
                                     initialFocus
                                     locale={ptBR}
                                     className="bg-brand-brown-dark text-white border-none"

@@ -25,9 +25,14 @@ describe('MobileBookingBar', () => {
         expect(link).toHaveAttribute('href', '/reservar');
 
         fireEvent.click(link);
-        expect(mocks.push).toHaveBeenCalledWith(
-            expect.stringMatching(/^\/reservar\?checkIn=\d{4}-\d{2}-\d{2}&checkOut=\d{4}-\d{2}-\d{2}&adults=2&children=0$/),
-        );
+        const destination = String(mocks.push.mock.calls[0]?.[0]);
+        const params = new URL(destination, 'https://example.com').searchParams;
+        const checkIn = new Date(`${params.get('checkIn')}T12:00:00`);
+        const checkOut = new Date(`${params.get('checkOut')}T12:00:00`);
+
+        expect(params.get('adults')).toBe('2');
+        expect(params.get('children')).toBe('0');
+        expect(checkOut.getTime() - checkIn.getTime()).toBe(24 * 60 * 60 * 1000);
     });
 
     it('inclui a quantidade de pets na busca', async () => {
@@ -39,6 +44,15 @@ describe('MobileBookingBar', () => {
         fireEvent.click(screen.getByRole('link', { name: /simular reserva/i }));
 
         expect(mocks.push).toHaveBeenCalledWith(expect.stringContaining('pets=2'));
+    });
+
+    it('exibe as datas bloqueadas com aparência mais escura', () => {
+        render(<MobileBookingBar />);
+
+        fireEvent.click(screen.getByText('Check-in').parentElement!.parentElement!);
+
+        const disabledDay = document.querySelector('[data-disabled="true"]');
+        expect(disabledDay).toHaveClass('!text-[#8f675b]', '!opacity-100');
     });
 
     it.each(['/reservar', '/reservar/confirmacao', '/admin', '/admin/reservas'])(
