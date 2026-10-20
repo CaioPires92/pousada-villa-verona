@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Calendar as CalendarIcon, Users, Search, ChevronDown, Loader2, Plus, Minus } from 'lucide-react';
+import { Calendar as CalendarIcon, Users, Search, ChevronDown, Loader2, Plus, Minus, PawPrint } from 'lucide-react';
 import { format, addDays, isBefore, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -78,6 +78,7 @@ export default function SearchWidget({
     const [adults, setAdults] = useState('2');
     const [children, setChildren] = useState('0');
     const [childrenAges, setChildrenAges] = useState<(number | null)[]>([]);
+    const [pets, setPets] = useState('0');
     const [loading, setLoading] = useState(false);
     const [searchMessage, setSearchMessage] = useState('');
     const [searchCanEscalate, setSearchCanEscalate] = useState(false);
@@ -91,6 +92,7 @@ export default function SearchWidget({
     const maxGuests = MAX_BOOKING_GUESTS;
     const numAdults = Number.parseInt(adults, 10) || 0;
     const numChildren = Number.parseInt(children, 10) || 0;
+    const numPets = Number.parseInt(pets, 10) || 0;
     const totalGuests = numAdults + numChildren;
     const maxChildren = Math.max(0, maxGuests - numAdults);
     const isOverCapacity = totalGuests > maxGuests;
@@ -159,6 +161,7 @@ export default function SearchWidget({
         const checkOutStr = checkOut ? format(checkOut, 'dd/MM/yyyy') : 'DATA INDEFINIDA';
 
         const message = `Olá! Gostaria de cotar hospedagem para *${adults} adultos* e *${children} crianças*.\n` +
+            `${numPets > 0 ? `Pets: ${numPets}.\n` : ''}` +
             `Datas: ${checkInStr} a ${checkOutStr}.\n` +
             `(Nossas acomodações comportam até ${MAX_BOOKING_GUESTS} pessoas por quarto, conforme disponibilidade. Para grupos maiores, fale com a gente no WhatsApp.)`;
 
@@ -268,6 +271,7 @@ export default function SearchWidget({
             adults,
             children
         });
+        if (numPets > 0) params.set('pets', String(numPets));
         if (preferredRoomTypeId) {
             params.set('roomTypeId', preferredRoomTypeId);
         }
@@ -389,7 +393,7 @@ export default function SearchWidget({
         ? 'flex h-auto min-h-7 w-full items-center rounded-none border-0 bg-transparent p-0 font-sans text-[1rem] font-semibold text-brand-brown-dark shadow-none ring-0 ring-offset-0 placeholder:text-brand-brown-dark/55 transition-colors duration-200 hover:text-brand-brown-dark focus:ring-0 focus:ring-offset-0'
         : 'flex h-12 w-full items-center rounded-none border border-white/46 bg-white/90 px-4 font-sans text-[0.95rem] font-semibold text-brand-brown-dark shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] ring-0 ring-offset-0 placeholder:text-brand-brown-dark/55 transition-colors duration-200 hover:border-[color:var(--brand-gold)] hover:bg-white focus:ring-0 focus:ring-offset-0';
     const heroButtonColumnClass = isHeroHorizontal ? 'flex h-full items-stretch bg-white p-3 pt-1 sm:pt-3' : 'flex h-full items-end';
-    const heroGuestsPanelClass = 'w-[340px] rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] p-5 text-brand-brown-dark shadow-[0_16px_34px_rgba(36,28,22,0.12)]';
+    const heroGuestsPanelClass = 'max-h-[80vh] w-[340px] overflow-y-auto rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-cream)] p-5 text-brand-brown-dark shadow-[0_16px_34px_rgba(36,28,22,0.12)]';
 
     const labelClass = isInlinePreset
         ? 'mb-2 flex items-center gap-2 text-sm font-medium text-foreground'
@@ -423,7 +427,7 @@ export default function SearchWidget({
     const loadingLabel = 'Buscando...';
     const mobileLabel = submitLabelMobile || submitLabel;
     const hasResponsiveLabel = Boolean(submitLabelMobile && submitLabelMobile !== submitLabel);
-    const guestSummary = `${totalGuests} hóspede${totalGuests === 1 ? '' : 's'}`;
+    const guestSummary = `${totalGuests} hóspede${totalGuests === 1 ? '' : 's'}${numPets > 0 ? ` · ${numPets} pet${numPets === 1 ? '' : 's'}` : ''}`;
     const heroSummary = [
         checkIn ? format(checkIn, "dd MMM yyyy", { locale: ptBR }) : "Check-in",
         checkOut ? format(checkOut, "dd MMM yyyy", { locale: ptBR }) : "Check-out",
@@ -451,6 +455,7 @@ export default function SearchWidget({
         const adultsParam = searchParams.get('adults');
         const childrenParam = searchParams.get('children');
         const childrenAgesParam = searchParams.get('childrenAges');
+        const petsParam = searchParams.get('pets');
 
         const parseYmd = (value: string | null) => {
             if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
@@ -488,6 +493,8 @@ export default function SearchWidget({
                 while (nextAges.length < normalizedChildren) nextAges.push(null);
                 setChildrenAges(nextAges);
             }
+            const parsedPets = Number.parseInt(String(petsParam || ''), 10);
+            setPets(String(Number.isFinite(parsedPets) ? Math.min(Math.max(parsedPets, 0), 10) : 0));
         });
     }, [prefillFromQuery, searchParams, maxGuests]);
 
@@ -642,7 +649,7 @@ export default function SearchWidget({
                     <div className={cn(isHeroPreset && heroGuestsInnerClass, !isHeroPreset && heroFieldInnerClass)}>
                     <label htmlFor="adults" className={labelClass}>
                         <Users className="w-4 h-4" />
-                        Hóspedes
+                        {isHeroPreset ? 'Hóspedes e pets' : 'Hóspedes'}
                     </label>
                     {isHeroPreset ? (
                         <Popover open={isGuestsOpen} onOpenChange={setIsGuestsOpen}>
@@ -768,6 +775,37 @@ export default function SearchWidget({
                                             </div>
                                         </div>
                                     ) : null}
+
+                                    <div className="space-y-3 rounded-none border border-[color:var(--line-dark)] bg-[color:var(--brand-white)]/70 p-4">
+                                        <label className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-brand-brown-dark">
+                                            <input
+                                                type="checkbox"
+                                                aria-label="Possui pets?"
+                                                checked={numPets > 0}
+                                                onChange={(event) => setPets(event.target.checked ? '1' : '0')}
+                                                className="h-4 w-4 accent-[color:var(--brand-forest)]"
+                                            />
+                                            <PawPrint className="h-4 w-4" />
+                                            Possui pets?
+                                        </label>
+                                        {numPets > 0 ? (
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-sm font-medium text-brand-brown-dark">Quantidade de pets</p>
+                                                    <p className="text-xs text-brand-brown-dark/70">Taxa de R$ 40 por pet/diária</p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Button type="button" variant="outline" size="sm" className="h-9 w-9 rounded-none p-0" onClick={() => setPets(String(Math.max(1, numPets - 1)))} disabled={numPets <= 1}>
+                                                        <Minus className="h-4 w-4" />
+                                                    </Button>
+                                                    <span className="inline-flex min-w-8 justify-center font-semibold">{numPets}</span>
+                                                    <Button type="button" variant="outline" size="sm" className="h-9 w-9 rounded-none p-0" onClick={() => setPets(String(Math.min(10, numPets + 1)))} disabled={numPets >= 10}>
+                                                        <Plus className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ) : null}
+                                    </div>
                                 </div>
                             </PopoverContent>
                         </Popover>
@@ -800,6 +838,24 @@ export default function SearchWidget({
                                     ))}
                                 </select>
                                 <ChevronDown className={cn("pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50")} />
+                            </div>
+                            <div className="mt-4 space-y-3">
+                                <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+                                    <input
+                                        type="checkbox"
+                                        aria-label="Possui pets?"
+                                        checked={numPets > 0}
+                                        onChange={(event) => setPets(event.target.checked ? '1' : '0')}
+                                    />
+                                    <PawPrint className="h-4 w-4" /> Possui pets?
+                                </label>
+                                {numPets > 0 ? (
+                                    <select aria-label="Quantidade de pets" value={pets} onChange={(event) => setPets(event.target.value)} className={selectClass}>
+                                        {Array.from({ length: 10 }, (_, index) => index + 1).map((count) => (
+                                            <option key={count} value={count}>{count}</option>
+                                        ))}
+                                    </select>
+                                ) : null}
                             </div>
                         </>
                     )}

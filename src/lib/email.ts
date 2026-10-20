@@ -221,6 +221,7 @@ interface BookingEmailData {
     adults?: number | null;
     children?: number | null;
     childrenAges?: string | number[] | null;
+    pets?: number | null;
     bookingStatus?: string | null;
     paymentStatus?: string | null;
     funnelStage?: string | null;
@@ -277,6 +278,7 @@ export function buildBookingConfirmationEmailHtml(data: BookingEmailData) {
         adults,
         children,
         childrenAges,
+        pets,
     } = data;
 
     const checkInFormatted = formatDatePtBrLong(checkIn);
@@ -462,6 +464,11 @@ export function buildBookingConfirmationEmailHtml(data: BookingEmailData) {
                 <span class="detail-label">Idade(s) das crianças:</span>
                 <span class="detail-value">${childrenAgesLabel}</span>
             </div>` : ''}
+            ${Number(pets || 0) > 0 ? `
+            <div class="detail-row">
+                <span class="detail-label">Pets:</span>
+                <span class="detail-value">${pets}</span>
+            </div>` : ''}
         </div>
 
         <div class="booking-details">
@@ -539,6 +546,7 @@ export function buildBookingPendingEmailHtml(data: BookingEmailData) {
         adults,
         children,
         childrenAges,
+        pets,
     } = data;
     const checkInFormatted = formatDatePtBrLong(checkIn);
     const checkOutFormatted = formatDatePtBrLong(checkOut);
@@ -660,6 +668,11 @@ export function buildBookingPendingEmailHtml(data: BookingEmailData) {
             <div class="detail-row">
                 <span class="detail-label">Idade(s) das crianças:</span>
                 <span class="detail-value">${childrenAgesLabel}</span>
+            </div>` : ''}
+            ${Number(pets || 0) > 0 ? `
+            <div class="detail-row">
+                <span class="detail-label">Pets:</span>
+                <span class="detail-value">${pets}</span>
             </div>` : ''}
         </div>
 

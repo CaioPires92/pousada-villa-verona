@@ -124,7 +124,7 @@ export async function POST(request: Request) {
             items: [{
                 id: booking.roomType.id,
                 title: `Pousada Villa Verona - ${booking.roomType.name}`.slice(0, 120),
-                description: `${stayNights} diária(s), ${checkIn} a ${checkOut}; ${booking.adults} adulto(s), ${booking.children} criança(s)`.slice(0, 256),
+                description: `${stayNights} diária(s), ${checkIn} a ${checkOut}; ${booking.adults} adulto(s), ${booking.children} criança(s)${booking.pets > 0 ? `, ${booking.pets} pet(s)` : ''}`.slice(0, 256),
                 quantity: 1,
                 unit_price: paymentPlan.amountDueNow,
                 currency_id: 'BRL',

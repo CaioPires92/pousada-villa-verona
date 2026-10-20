@@ -87,6 +87,9 @@ interface Room {
         extrasPerNight: number;
         extraAdultTotal: number;
         childTotal: number;
+        pets: number;
+        petFeePerNight: number;
+        petTotal: number;
         total: number;
     };
     photos: { url: string }[];
@@ -275,6 +278,7 @@ function ReservarContent() {
     const adults = searchParams.get('adults') || '2';
     const children = searchParams.get('children') || '0';
     const childrenAgesParam = searchParams.get('childrenAges') || '';
+    const pets = Math.max(0, Number.parseInt(searchParams.get('pets') || '0', 10) || 0);
     const promoFromQuery = String(searchParams.get('promo') || searchParams.get('coupon') || '').trim().toUpperCase();
     const preferredRoomTypeId = String(searchParams.get('roomTypeId') || '').trim();
 
@@ -673,7 +677,7 @@ function ReservarContent() {
 
         // Create stable request key for deduplication
         const normalizedPromo = promoFromQuery;
-        const requestKey = `${checkIn}|${checkOut}|${adults}|${children}|${childrenAgesKey}|${normalizedPromo}`;
+        const requestKey = `${checkIn}|${checkOut}|${adults}|${children}|${childrenAgesKey}|${pets}|${normalizedPromo}`;
 
         // Deduplicate: if same request already in flight or just completed, skip
         if (requestKey === lastKeyRef.current) {
@@ -694,9 +698,10 @@ function ReservarContent() {
             }
 
             const childrenAgesQuery = childrenAges.length > 0 ? `&childrenAges=${encodeURIComponent(childrenAges.join(','))}` : '';
+            const petsQuery = pets > 0 ? `&pets=${pets}` : '';
             const promoQuery = normalizedPromo ? `&promo=${encodeURIComponent(normalizedPromo)}` : '';
             const response = await fetch(
-                `/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}&children=${children}${childrenAgesQuery}${promoQuery}`,
+                `/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}&children=${children}${childrenAgesQuery}${petsQuery}${promoQuery}`,
                 { cache: 'no-store', signal }
             );
             if (!response.ok) {
@@ -785,7 +790,7 @@ function ReservarContent() {
             mountedRef.current = false;
             controller.abort();
         };
-    }, [adults, availabilityRetryNonce, checkIn, checkOut, children, childrenAgesKey, preferredRoomTypeId, promoFromQuery, isInvalidAdults, isOverCapacity]);
+    }, [adults, availabilityRetryNonce, checkIn, checkOut, children, childrenAgesKey, pets, preferredRoomTypeId, promoFromQuery, isInvalidAdults, isOverCapacity]);
 
     useEffect(() => {
         if (!Array.isArray(availableRooms)) return;
@@ -980,12 +985,12 @@ function ReservarContent() {
         const roomFromUrl = availableRooms.find((room) => room.id === preferredRoomTypeId);
         if (!roomFromUrl) return;
 
-        const autoSelectKey = `${checkIn}|${checkOut}|${adults}|${children}|${childrenAgesKey}|${promoFromQuery}|${preferredRoomTypeId}`;
+        const autoSelectKey = `${checkIn}|${checkOut}|${adults}|${children}|${childrenAgesKey}|${pets}|${promoFromQuery}|${preferredRoomTypeId}`;
         if (autoSelectedRoomKeyRef.current === autoSelectKey) return;
 
         autoSelectedRoomKeyRef.current = autoSelectKey;
         void autoSelectPreferredRoom(roomFromUrl);
-    }, [adults, availableRooms, checkIn, checkOut, children, childrenAgesKey, preferredRoomTypeId, promoFromQuery, selectedRoom]);
+    }, [adults, availableRooms, checkIn, checkOut, children, childrenAgesKey, pets, preferredRoomTypeId, promoFromQuery, selectedRoom]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -1059,6 +1064,7 @@ function ReservarContent() {
                     adults: Number.parseInt(adults, 10) || 0,
                     children: Number.parseInt(children, 10) || 0,
                     childrenAges,
+                    pets,
                     totalPrice: bookingTotal,
                     guest,
                     website,
@@ -2270,6 +2276,12 @@ function ReservarContent() {
                                             <span>Hóspedes</span>
                                             <span className="font-medium text-foreground">{adults} Adultos, {children} Crianças</span>
                                         </div>
+                                        {pets > 0 ? (
+                                            <div className="flex items-center justify-between">
+                                                <span>Pets</span>
+                                                <span className="font-medium text-foreground">{pets}</span>
+                                            </div>
+                                        ) : null}
                                         <div className="flex items-center justify-between">
                                             <span>Diárias</span>
                                             <span className="font-medium text-foreground">{stayNights} {stayNights === 1 ? 'noite' : 'noites'}</span>
@@ -2607,6 +2619,12 @@ function ReservarContent() {
                                             <span className="text-muted-foreground">Hóspedes</span>
                                             <span className="font-medium">{adults} Adultos, {children} Crianças</span>
                                         </div>
+                                        {pets > 0 ? (
+                                            <div className="flex justify-between items-center py-2 border-b border-border/50">
+                                                <span className="text-muted-foreground">Pets</span>
+                                                <span className="font-medium">{pets}</span>
+                                            </div>
+                                        ) : null}
                                         <div className="flex justify-between items-center py-2 border-b border-border/50">
                                             <span className="text-muted-foreground">Diárias</span>
                                             <span className="font-medium">
@@ -2622,9 +2640,11 @@ function ReservarContent() {
                                         </div>
                                         <div className="mt-2 flex items-center justify-between text-sm text-brand-brown-dark/82">
                                             <span>{stayNights} {stayNights === 1 ? 'noite' : 'noites'}</span>
-                                            <span>{adults} Adultos, {children} Crianças</span>
+                                            <span>{adults} Adultos, {children} Crianças{pets > 0 ? `, ${pets} Pet${pets === 1 ? '' : 's'}` : ''}</span>
                                         </div>
-                                        <p className="mt-2 text-xs font-medium text-emerald-700">Sem taxas extras</p>
+                                        <p className="mt-2 text-xs font-medium text-emerald-700">
+                                            {pets > 0 ? 'Taxa de pets incluída no total' : 'Sem taxas extras'}
+                                        </p>
                                         {selectedRoom.priceBreakdown ? (
                                             <div className="mt-3 space-y-2 text-xs text-muted-foreground">
                                                 <div className="flex justify-between">
@@ -2653,6 +2673,12 @@ function ReservarContent() {
                                                     <div className="flex justify-between">
                                                         <span>Crianças 6–11</span>
                                                         <span>{formatCurrencyBRL(Number(selectedRoom.priceBreakdown.childTotal))}</span>
+                                                    </div>
+                                                ) : null}
+                                                {selectedRoom.priceBreakdown.petTotal > 0 ? (
+                                                    <div className="flex justify-between">
+                                                        <span>Pets (R$ 40 por pet/diária)</span>
+                                                        <span>{formatCurrencyBRL(Number(selectedRoom.priceBreakdown.petTotal))}</span>
                                                     </div>
                                                 ) : null}
                                             </div>

@@ -18,6 +18,7 @@ import {
     Link2,
     MailCheck,
     UploadCloud,
+    PawPrint,
 } from 'lucide-react';
 import type { Booking } from './types';
 import {
@@ -265,6 +266,11 @@ export default function BookingRowCard(props: BookingRowCardProps) {
                     </div>
                     {childrenAges.length > 0 ? (
                         <span className={styles.metaSub}>Idades: {childrenAges.join(', ')}</span>
+                    ) : null}
+                    {Number(booking.pets || 0) > 0 ? (
+                        <span className={`${styles.metaSub} inline-flex items-center gap-1`}>
+                            <PawPrint className="h-3 w-3" /> {booking.pets} pet{Number(booking.pets) === 1 ? '' : 's'}
+                        </span>
                     ) : null}
                 </div>
 

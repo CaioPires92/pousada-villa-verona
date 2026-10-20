@@ -24,6 +24,11 @@ export async function POST(request: Request) {
         const { roomTypeId, checkIn, checkOut, guest, adults, childrenAges } = body;
         const adultsCount = Math.max(1, Number.parseInt(String(adults ?? 1), 10) || 1);
         const childrenCount = Math.max(0, Number.parseInt(String(body?.children ?? 0), 10) || 0);
+        const petsCount = Number.parseInt(String(body?.pets ?? 0), 10);
+
+        if (!Number.isInteger(petsCount) || petsCount < 0 || petsCount > 10) {
+            return NextResponse.json({ error: 'invalid_pet_count' }, { status: 400 });
+        }
 
         if (!roomTypeId || !checkIn || !checkOut || !guest || !guest.email) {
             return NextResponse.json({
@@ -195,6 +200,7 @@ export async function POST(request: Request) {
                 maxGuests: Number(roomType.maxGuests),
                 extraAdultFee: Number(roomType.extraAdultFee),
                 child6To11Fee: Number(roomType.child6To11Fee),
+                pets: petsCount,
             });
 
             let guestRecord = await tx.guest.findFirst({
@@ -260,6 +266,7 @@ export async function POST(request: Request) {
                     adults: adultsCount,
                     children: childrenCount,
                     childrenAges: serializedChildrenAges,
+                    pets: petsCount,
                     totalPrice,
                     appliedCouponCode,
                     status: 'PENDING',
@@ -283,6 +290,7 @@ export async function POST(request: Request) {
                     adults: adultsCount,
                     children: childrenCount,
                     childrenAges: serializedChildrenAges,
+                    pets: petsCount,
                     subtotalPrice,
                     discountAmount,
                     appliedCouponCode,
@@ -341,6 +349,7 @@ export async function POST(request: Request) {
                             adults: booking.adults,
                             children: booking.children,
                             childrenAges: booking.childrenAges,
+                            pets: booking.pets,
                             funnelStage: booking.funnelStage,
                             lastErrorMessage: booking.lastErrorMessage,
                         });

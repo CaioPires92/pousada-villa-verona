@@ -3,6 +3,7 @@ export interface Booking {
     adults: number;
     children: number;
     childrenAges?: string | null;
+    pets?: number;
     checkIn?: string | null;
     checkOut?: string | null;
     totalPrice: number;

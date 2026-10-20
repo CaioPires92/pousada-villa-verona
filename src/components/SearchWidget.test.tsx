@@ -86,6 +86,23 @@ describe('SearchWidget', () => {
     await waitFor(() => expect(mockFetch).toHaveBeenCalled());
   });
 
+  it('inclui a quantidade de pets na busca quando selecionada', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: 'room-pet' }],
+      headers: { get: vi.fn(() => null) },
+    });
+    render(<SearchWidget />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /Possui pets/i }));
+    fireEvent.change(screen.getByLabelText(/Quantidade de pets/i), { target: { value: '2' } });
+    fireEvent.click(screen.getByRole('button', { name: /Buscar/i }));
+
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith(expect.stringContaining('pets=2'));
+    });
+  });
+
   it('preserva a acomodação de origem ao seguir para os resultados', async () => {
     preferredRoomTypeId = 'room-origin';
     global.fetch = vi.fn().mockResolvedValue({

@@ -7,6 +7,7 @@ export type BookingPriceInput = {
     maxGuests?: number;
     extraAdultFee: number;
     child6To11Fee: number;
+    pets?: number;
 };
 
 export type BookingPriceBreakdown = {
@@ -19,8 +20,13 @@ export type BookingPriceBreakdown = {
     extrasPerNight: number;
     extraAdultTotal: number;
     childTotal: number;
+    pets: number;
+    petFeePerNight: number;
+    petTotal: number;
     total: number;
 };
+
+export const PET_FEE_PER_NIGHT = 40;
 
 export class BookingPriceError extends Error {
     code: 'invalid_input' | 'invalid_guests' | 'missing_children_ages' | 'capacity_exceeded';
@@ -51,6 +57,7 @@ export function calculateBookingPrice(input: BookingPriceInput): BookingPriceBre
     const extraAdultFee = toFiniteNumber(input.extraAdultFee) ?? 0;
     const child6To11Fee = toFiniteNumber(input.child6To11Fee) ?? 0;
     const childrenAges = Array.isArray(input.childrenAges) ? input.childrenAges : [];
+    const pets = Math.trunc(toFiniteNumber(input.pets ?? 0) ?? 0);
 
 
 
@@ -62,6 +69,7 @@ export function calculateBookingPrice(input: BookingPriceInput): BookingPriceBre
     if (includedAdults < 1) throw new BookingPriceError('invalid_input', 'Invalid includedAdults');
     if (maxGuests < 1) throw new BookingPriceError('invalid_input', 'Invalid maxGuests');
     if (adults < 0) throw new BookingPriceError('invalid_guests', 'Invalid adults');
+    if (pets < 0 || pets > 10) throw new BookingPriceError('invalid_input', 'Invalid pets');
 
     const normalizedAges = childrenAges.map((a) => Math.trunc(toFiniteNumber(a) ?? -1));
     if (normalizedAges.some((a) => a < 0 || a > 17)) {
@@ -95,7 +103,8 @@ export function calculateBookingPrice(input: BookingPriceInput): BookingPriceBre
     const extrasPerNight = (extraAdults * extraAdultFee) + (children6To11 * child6To11Fee);
     const extraAdultTotal = extraAdults * extraAdultFee * nights;
     const childTotal = children6To11 * child6To11Fee * nights;
-    const total = baseTotal + (extrasPerNight * nights);
+    const petTotal = pets * PET_FEE_PER_NIGHT * nights;
+    const total = baseTotal + (extrasPerNight * nights) + petTotal;
 
 
     return {
@@ -108,6 +117,9 @@ export function calculateBookingPrice(input: BookingPriceInput): BookingPriceBre
         extrasPerNight: roundMoney(extrasPerNight),
         extraAdultTotal: roundMoney(extraAdultTotal),
         childTotal: roundMoney(childTotal),
+        pets,
+        petFeePerNight: PET_FEE_PER_NIGHT,
+        petTotal: roundMoney(petTotal),
         total: roundMoney(total),
     };
 }

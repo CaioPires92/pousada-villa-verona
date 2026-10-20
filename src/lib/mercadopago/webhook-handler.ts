@@ -733,6 +733,7 @@ export async function handleMercadoPagoWebhook(request: Request) {
                 adults: result.booking.adults,
                 children: result.booking.children,
                 childrenAges: result.booking.childrenAges,
+                pets: result.booking.pets,
                 bookingStatus: result.bookingStatus,
                 paymentStatus: result.paymentStatus,
                 bookingCreatedAt: result.booking.createdAt,

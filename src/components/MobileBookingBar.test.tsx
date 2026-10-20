@@ -30,6 +30,17 @@ describe('MobileBookingBar', () => {
         );
     });
 
+    it('inclui a quantidade de pets na busca', async () => {
+        render(<MobileBookingBar />);
+
+        fireEvent.click(screen.getByRole('button', { name: /Hóspedes/i }));
+        fireEvent.click(await screen.findByRole('checkbox', { name: /Possui pets/i }));
+        fireEvent.click(screen.getByRole('button', { name: /Aumentar quantidade de pets/i }));
+        fireEvent.click(screen.getByRole('link', { name: /simular reserva/i }));
+
+        expect(mocks.push).toHaveBeenCalledWith(expect.stringContaining('pets=2'));
+    });
+
     it.each(['/reservar', '/reservar/confirmacao', '/admin', '/admin/reservas'])(
         'does not render on %s',
         (pathname) => {

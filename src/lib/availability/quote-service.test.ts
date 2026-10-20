@@ -60,6 +60,24 @@ describe("queryAvailabilityQuote", () => {
     expect(result.options[0].priceBreakdown.baseTotal).toBe(400);
   });
 
+  it("adds R$ 40 per pet for every night", async () => {
+    const client = fakeClient();
+    client.roomType.findMany.mockResolvedValue([room({ basePrice: 200 })]);
+
+    const result = await queryAvailabilityQuote({
+      checkin: "2026-06-15",
+      checkout: "2026-06-17",
+      adults: 2,
+      childrenAges: [],
+      pets: 2,
+    }, client);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.options[0].priceBreakdown.petTotal).toBe(160);
+    expect(result.options[0].totalPrice).toBe(560);
+  });
+
   it("excludes rooms with no remaining inventory during the requested range", async () => {
     const client = fakeClient();
     client.roomType.findMany.mockResolvedValue([room()]);

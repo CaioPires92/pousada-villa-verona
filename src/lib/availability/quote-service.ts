@@ -22,6 +22,7 @@ export type AvailabilityQuoteInput = {
   checkout: string;
   adults: number;
   childrenAges?: number[];
+  pets?: number;
   includeRoomDetails?: boolean;
 };
 
@@ -267,6 +268,7 @@ export async function queryAvailabilityQuote(
         maxGuests: Number(room.maxGuests),
         extraAdultFee: Number(room.extraAdultFee || 0),
         child6To11Fee: Number(room.child6To11Fee || 0),
+        pets: input.pets ?? 0,
       });
 
       options.push({
@@ -301,6 +303,7 @@ export async function queryAvailabilityQuote(
       nights,
       adults: input.adults,
       childrenAges: input.childrenAges ?? [],
+      pets: input.pets ?? 0,
       options: sortedOptions.map(option => ({
         roomTypeId: option.roomTypeId,
         maxGuests: option.maxGuests,

@@ -10,6 +10,7 @@ const searchParamState = {
   adults: '2',
   children: null as string | null,
   childrenAges: null as string | null,
+  pets: null as string | null,
   promo: null as string | null,
   coupon: null as string | null,
   roomTypeId: null as string | null,
@@ -50,6 +51,7 @@ describe('ReservarPage', () => {
     searchParamState.adults = '2';
     searchParamState.children = null;
     searchParamState.childrenAges = null;
+    searchParamState.pets = null;
     searchParamState.promo = null;
     searchParamState.coupon = null;
     searchParamState.roomTypeId = null;

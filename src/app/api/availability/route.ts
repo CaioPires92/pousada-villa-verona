@@ -35,6 +35,7 @@ export async function GET(request: Request) {
     }
 
     const adults = Number.parseInt(searchParams.get("adults") || "2", 10);
+    const pets = Math.max(0, Number.parseInt(searchParams.get("pets") || "0", 10) || 0);
     const childrenAges = searchParams.get("childrenAges")?.split(",").map(Number) || [];
     const promoCode = normalizeCouponCode(searchParams.get("promo") || searchParams.get("coupon") || "");
     try {
@@ -47,6 +48,7 @@ export async function GET(request: Request) {
       checkout: checkOut,
       adults,
       childrenAges,
+      pets,
       includeRoomDetails: true,
     });
 

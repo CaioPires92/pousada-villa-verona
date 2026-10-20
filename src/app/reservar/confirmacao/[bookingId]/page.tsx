@@ -48,6 +48,7 @@ interface BookingData {
     checkIn: string;
     checkOut: string;
     totalPrice: number | string;
+    pets?: number | null;
     roomType?: {
         id?: string;
         name?: string | null;
@@ -412,6 +413,18 @@ export default function ConfirmacaoPage() {
                                                 {booking?.roomType?.name || 'Acomodacao selecionada'}
                                             </span>
                                         </div>
+
+                                        {Number(booking?.pets || 0) > 0 ? (
+                                            <div className="flex items-center justify-between gap-4 border-b border-brand-brown-dark/10 pb-4">
+                                                <div className="flex items-center gap-3 text-brand-brown-dark/78">
+                                                    <Receipt className="h-4.5 w-4.5 shrink-0" />
+                                                    <span className="text-sm font-medium">Pets</span>
+                                                </div>
+                                                <span className="text-right text-sm font-semibold text-brand-brown-dark">
+                                                    {booking?.pets} pet{Number(booking?.pets) === 1 ? '' : 's'}
+                                                </span>
+                                            </div>
+                                        ) : null}
 
                                         <div className="flex items-center justify-between gap-4 border-b border-brand-brown-dark/10 pb-4">
                                             <div className="flex items-center gap-3 text-brand-brown-dark/78">

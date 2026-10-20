@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Calendar, Users, ArrowRight, Plus, Minus } from "lucide-react";
+import { Calendar, Users, ArrowRight, Plus, Minus, PawPrint } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -19,6 +19,7 @@ export default function MobileBookingBar() {
     const [adults, setAdults] = useState(2);
     const [children, setChildren] = useState(0);
     const [childrenAges, setChildrenAges] = useState<number[]>([]);
+    const [pets, setPets] = useState(0);
 
     useEffect(() => {
         const today = new Date();
@@ -38,7 +39,8 @@ export default function MobileBookingBar() {
         const ci = checkIn ? format(checkIn, 'yyyy-MM-dd') : '';
         const co = checkOut ? format(checkOut, 'yyyy-MM-dd') : '';
         const agesParam = childrenAges.length > 0 ? `&childrenAges=${childrenAges.join(',')}` : '';
-        router.push(`/reservar?checkIn=${ci}&checkOut=${co}&adults=${adults}&children=${children}${agesParam}`);
+        const petsParam = pets > 0 ? `&pets=${pets}` : '';
+        router.push(`/reservar?checkIn=${ci}&checkOut=${co}&adults=${adults}&children=${children}${agesParam}${petsParam}`);
     };
 
     const updateChildrenCount = (newCount: number) => {
@@ -71,7 +73,7 @@ export default function MobileBookingBar() {
         nav_button: "h-7 w-7 bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center rounded-md"
     };
 
-    const guestsLabel = `${adults} Ad${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} Cr` : ''}`;
+    const guestsLabel = `${adults} Ad${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} Cr` : ''}${pets > 0 ? `, ${pets} Pet${pets > 1 ? 's' : ''}` : ''}`;
 
     return (
         <div className="fixed inset-x-0 bottom-0 z-40">
@@ -152,7 +154,7 @@ export default function MobileBookingBar() {
                         {/* Hóspedes (Adultos & Crianças) */}
                         <Popover>
                             <PopoverTrigger asChild>
-                                <div className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5 relative group cursor-pointer focus-within:ring-1 focus-within:ring-brand-gold">
+                                <div aria-label={`Hóspedes: ${guestsLabel}`} role="button" className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5 relative group cursor-pointer focus-within:ring-1 focus-within:ring-brand-gold">
                                     <Users className="w-4 h-4 text-brand-gold" />
                                     <div className="flex flex-col relative min-w-[70px] sm:min-w-[100px]">
                                         <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider mb-0.5">Hóspedes</span>
@@ -162,7 +164,7 @@ export default function MobileBookingBar() {
                                     </div>
                                 </div>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[300px] sm:w-[340px] p-6 z-[60] bg-brand-brown-dark border-brand-brown-red shadow-2xl" align="end">
+                            <PopoverContent className="max-h-[80vh] w-[300px] overflow-y-auto p-6 z-[60] bg-brand-brown-dark border-brand-brown-red shadow-2xl sm:w-[340px]" align="end">
                                 <div className="space-y-6">
                                     <div>
                                         <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-widest">Configurar Ocupação</h4>
@@ -249,6 +251,49 @@ export default function MobileBookingBar() {
                                                 </div>
                                             </div>
                                         )}
+
+                                        <div className="space-y-3 rounded-sm border border-white/5 bg-brand-brown-red p-4">
+                                            <label className="flex cursor-pointer items-center gap-3 text-sm font-bold text-white">
+                                                <input
+                                                    type="checkbox"
+                                                    aria-label="Possui pets?"
+                                                    checked={pets > 0}
+                                                    onChange={(event) => setPets(event.target.checked ? 1 : 0)}
+                                                    className="h-4 w-4 accent-brand-gold"
+                                                />
+                                                <PawPrint className="h-4 w-4 text-brand-gold" />
+                                                Possui pets?
+                                            </label>
+                                            {pets > 0 ? (
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-sm font-medium text-white">Quantidade de pets</p>
+                                                        <p className="text-xs text-white/60">Taxa de R$ 40 por pet/diária</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <button
+                                                            type="button"
+                                                            aria-label="Diminuir quantidade de pets"
+                                                            onClick={() => setPets(Math.max(1, pets - 1))}
+                                                            disabled={pets <= 1}
+                                                            className="flex h-8 w-8 items-center justify-center rounded border border-white/20 bg-brand-brown-dark text-white transition-colors hover:border-brand-gold hover:text-brand-gold disabled:opacity-50"
+                                                        >
+                                                            <Minus className="h-4 w-4" />
+                                                        </button>
+                                                        <span className="w-4 text-center font-bold text-white">{pets}</span>
+                                                        <button
+                                                            type="button"
+                                                            aria-label="Aumentar quantidade de pets"
+                                                            onClick={() => setPets(Math.min(10, pets + 1))}
+                                                            disabled={pets >= 10}
+                                                            className="flex h-8 w-8 items-center justify-center rounded border border-white/20 bg-brand-brown-dark text-white transition-colors hover:border-brand-gold hover:text-brand-gold disabled:opacity-50"
+                                                        >
+                                                            <Plus className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : null}
+                                        </div>
 
                                     </div>
                                 </div>
