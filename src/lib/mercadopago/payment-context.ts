@@ -12,7 +12,7 @@ type PaymentContextInput = {
     ipAddress?: string | null;
 };
 
-function splitGuestName(rawName: string) {
+export function splitGuestName(rawName: string) {
     const parts = String(rawName || '').trim().replace(/\s+/g, ' ').split(' ').filter(Boolean);
     return {
         firstName: parts[0] || undefined,

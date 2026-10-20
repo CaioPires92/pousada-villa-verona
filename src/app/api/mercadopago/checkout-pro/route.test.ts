@@ -74,6 +74,7 @@ describe('POST Mercado Pago hosted checkout', () => {
         const response = await POST(createRequest({
             bookingId: booking.id,
             guestEmail: ' MARIA@example.com ',
+            payerCpf: '529.982.247-25',
             paymentMode: 'FULL',
         }));
         const data = await response.json();
@@ -86,10 +87,17 @@ describe('POST Mercado Pago hosted checkout', () => {
             external_reference: 'booking-1',
             notification_url: 'https://www.villaveronapousada.com.br/api/webhooks/mercadopago',
             payer: {
+                name: 'Maria',
+                surname: 'da Silva',
                 email: 'maria@example.com',
                 phone: { area_code: '19', number: '999002288' },
+                identification: { type: 'CPF', number: '52998224725' },
             },
-            items: [{ unit_price: 3796, currency_id: 'BRL' }],
+            items: [{
+                unit_price: 3796,
+                currency_id: 'BRL',
+                event_date: '2026-12-29T00:00:00.000Z',
+            }],
             payment_methods: {
                 excluded_payment_types: [{ id: 'ticket' }],
                 installments: 12,
@@ -107,10 +115,23 @@ describe('POST Mercado Pago hosted checkout', () => {
         }));
     });
 
+    it('rejects an invalid CPF before creating a preference', async () => {
+        const response = await POST(createRequest({
+            bookingId: booking.id,
+            guestEmail: booking.guest.email,
+            payerCpf: '111.111.111-11',
+        }));
+
+        expect(response.status).toBe(400);
+        expect(await response.json()).toMatchObject({ error: 'INVALID_PAYER_IDENTIFICATION' });
+        expect(fetch).not.toHaveBeenCalled();
+    });
+
     it('does not expose booking existence when guest email does not match', async () => {
         const response = await POST(createRequest({
             bookingId: booking.id,
             guestEmail: 'other@example.com',
+            payerCpf: '52998224725',
         }));
 
         expect(response.status).toBe(404);
@@ -136,6 +157,7 @@ describe('POST Mercado Pago hosted checkout', () => {
         const response = await POST(createRequest({
             bookingId: booking.id,
             guestEmail: booking.guest.email,
+            payerCpf: '52998224725',
             paymentMode: 'PARTIAL',
         }));
 
@@ -162,6 +184,7 @@ describe('POST Mercado Pago hosted checkout', () => {
         const response = await POST(createRequest({
             bookingId: booking.id,
             guestEmail: booking.guest.email,
+            payerCpf: '52998224725',
         }));
 
         expect(response.status).toBe(200);
@@ -180,6 +203,7 @@ describe('POST Mercado Pago hosted checkout', () => {
         const response = await POST(createRequest({
             bookingId: booking.id,
             guestEmail: booking.guest.email,
+            payerCpf: '52998224725',
         }));
 
         expect(response.status).toBe(200);

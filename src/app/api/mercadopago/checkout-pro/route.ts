@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 
 import prisma from '@/lib/prisma';
-import { normalizeBrazilianPhone } from '@/lib/mercadopago/payment-context';
+import { isValidCpf, normalizeCpf } from '@/lib/cpf';
+import { normalizeBrazilianPhone, splitGuestName } from '@/lib/mercadopago/payment-context';
 import { requiresHostedMercadoPagoCheckout } from '@/lib/mercadopago/high-value-checkout';
 import {
     DEFAULT_PARTIAL_PAYMENT_SETTINGS,
@@ -33,10 +34,17 @@ export async function POST(request: Request) {
         const body = await readJsonBody<any>(request, 8 * 1024);
         const bookingId = String(body?.bookingId || '').trim();
         const guestEmail = String(body?.guestEmail || '').trim().toLowerCase();
+        const payerCpf = normalizeCpf(body?.payerCpf);
         const paymentMode: PaymentMode = body?.paymentMode === 'PARTIAL' ? 'PARTIAL' : 'FULL';
 
         if (!bookingId || !guestEmail) {
             return NextResponse.json({ error: 'BOOKING_IDENTIFICATION_REQUIRED' }, { status: 400 });
+        }
+        if (process.env.ENABLE_TEST_PAYMENTS !== 'true' && !isValidCpf(payerCpf)) {
+            return NextResponse.json({
+                error: 'INVALID_PAYER_IDENTIFICATION',
+                message: 'Informe um CPF válido para continuar com o pagamento.',
+            }, { status: 400 });
         }
 
         const rateLimit = consumeRequestLimit({
@@ -101,6 +109,7 @@ export async function POST(request: Request) {
         if (bookingAccessToken) confirmationUrl.hash = new URLSearchParams({ access: bookingAccessToken }).toString();
         const hasPublicHttpsBaseUrl = publicBaseUrl.startsWith('https://');
         const payerPhone = normalizeBrazilianPhone(booking.guest.phone);
+        const payerName = splitGuestName(booking.guest.name);
         const testPaymentsEnabled = process.env.ENABLE_TEST_PAYMENTS === 'true';
         const configuredTestPayerEmail = String(process.env.MP_TEST_PAYER_EMAIL || '').trim().toLowerCase();
         const testPayerEmail = configuredTestPayerEmail.endsWith('@testuser.com')
@@ -120,13 +129,16 @@ export async function POST(request: Request) {
                 unit_price: paymentPlan.amountDueNow,
                 currency_id: 'BRL',
                 category_id: 'travel',
+                event_date: booking.checkIn.toISOString(),
             }],
             ...(!testPaymentsEnabled
                 ? {
                       payer: {
-                          name: booking.guest.name,
+                          ...(payerName.firstName ? { name: payerName.firstName } : {}),
+                          ...(payerName.lastName ? { surname: payerName.lastName } : {}),
                           email: booking.guest.email,
                           ...(payerPhone ? { phone: payerPhone } : {}),
+                          identification: { type: 'CPF', number: payerCpf },
                       },
                   }
                 : testPayerEmail

@@ -108,5 +108,17 @@ describe('Mercado Pago payment context', () => {
             bookingStatus: 'CANCELLED',
             paymentStatus: 'REFUNDED',
         });
+        expect(mapMercadoPagoPaymentStatus('charged_back')).toEqual({
+            bookingStatus: 'CANCELLED',
+            paymentStatus: 'REFUNDED',
+        });
+        expect(mapMercadoPagoPaymentStatus('cancelled')).toEqual({
+            bookingStatus: 'CANCELLED',
+            paymentStatus: 'REJECTED',
+        });
+        expect(mapMercadoPagoPaymentStatus('pending')).toEqual({
+            bookingStatus: 'PENDING',
+            paymentStatus: 'PENDING',
+        });
     });
 });

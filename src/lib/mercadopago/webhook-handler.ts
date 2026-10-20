@@ -14,7 +14,7 @@ type MercadoPagoWebhookBody = {
     data?: { id?: string | number };
 };
 
-function validateSignature(params: {
+export function validateMercadoPagoWebhookSignature(params: {
     signature: string | null;
     requestId: string | null;
     webhookSecret: string | undefined;
@@ -38,8 +38,20 @@ function validateSignature(params: {
 
     const manifest = `id:${paymentId};request-id:${requestId};ts:${ts};`;
     const hmac = crypto.createHmac('sha256', webhookSecret).update(manifest).digest('hex');
-    if (hmac !== hash) return { ok: false as const, reason: 'Invalid signature' };
+    const expected = Buffer.from(hmac, 'hex');
+    const received = Buffer.from(hash, 'hex');
+    if (expected.length !== received.length || !crypto.timingSafeEqual(expected, received)) {
+        return { ok: false as const, reason: 'Invalid signature' };
+    }
     return { ok: true as const };
+}
+
+export function getMercadoPagoWebhookSignatureDataId(requestUrl: string) {
+    try {
+        return String(new URL(requestUrl).searchParams.get('data.id') || '').trim().toLowerCase();
+    } catch {
+        return '';
+    }
 }
 
 function normalizeInstallments(value: unknown) {
@@ -186,17 +198,26 @@ export async function handleMercadoPagoWebhook(request: Request) {
         const paymentId = String(paymentIdRaw);
         ctxPaymentId = paymentId;
 
+        const signaturePaymentId = getMercadoPagoWebhookSignatureDataId(request.url);
+        if (!signaturePaymentId || signaturePaymentId !== paymentId.toLowerCase()) {
+            opsLog('warn', 'MP_WEBHOOK_INVALID', {
+                reason: signaturePaymentId ? 'PAYMENT_ID_MISMATCH' : 'MISSING_SIGNED_PAYMENT_ID',
+                paymentId,
+            });
+            return NextResponse.json({ error: 'Identificador assinado inválido' }, { status: 400 });
+        }
+
         const signature = request.headers.get('x-signature');
         const requestId = request.headers.get('x-request-id');
         if (process.env.NODE_ENV === 'production' && !process.env.MP_WEBHOOK_SECRET) {
             opsLog('error', 'MP_WEBHOOK_CONFIG_ERROR', { reason: 'MISSING_MP_WEBHOOK_SECRET', paymentId });
             return NextResponse.json({ error: 'Webhook não configurado' }, { status: 500 });
         }
-        const sigResult = validateSignature({
+        const sigResult = validateMercadoPagoWebhookSignature({
             signature,
             requestId,
             webhookSecret: process.env.MP_WEBHOOK_SECRET,
-            paymentId,
+            paymentId: signaturePaymentId,
         });
         if (!sigResult.ok) {
             opsLog('warn', 'MP_WEBHOOK_INVALID', { reason: 'INVALID_SIGNATURE', paymentId });

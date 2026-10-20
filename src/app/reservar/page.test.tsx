@@ -453,6 +453,7 @@ describe('ReservarPage', () => {
     fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'Maria Silva' } });
     fireEvent.change(screen.getByLabelText(/^Email/i), { target: { value: 'maria@example.com' } });
     fireEvent.change(screen.getByLabelText(/Telefone\/WhatsApp/i), { target: { value: '(11) 99999-0000' } });
+    fireEvent.change(screen.getByLabelText(/CPF do pagador/i), { target: { value: '529.982.247-25' } });
     expect(screen.getByLabelText(/Nome Completo/i)).toHaveAttribute('autocomplete', 'name');
     expect(screen.getByLabelText(/^Email/i)).toHaveAttribute('autocomplete', 'email');
     expect(screen.getByLabelText(/Telefone\/WhatsApp/i)).toHaveAttribute('autocomplete', 'tel');
@@ -541,6 +542,7 @@ describe('ReservarPage', () => {
     fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'Maria Silva' } });
     fireEvent.change(screen.getByLabelText(/^Email/i), { target: { value: 'maria@example.com' } });
     fireEvent.change(screen.getByLabelText(/Telefone\/WhatsApp/i), { target: { value: '(11) 99999-0000' } });
+    fireEvent.change(screen.getByLabelText(/CPF do pagador/i), { target: { value: '529.982.247-25' } });
     fireEvent.click(screen.getByLabelText(/Declaro que li e aceito/i));
     fireEvent.submit(screen.getByRole('button', { name: /Continuar para o pagamento/i }).closest('form')!);
 

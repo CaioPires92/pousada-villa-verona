@@ -53,6 +53,7 @@ import {
 } from '@/lib/mercadopago/payment-context';
 import { waitForMercadoPagoDeviceId } from '@/lib/mercadopago/device-id';
 import { requiresHostedMercadoPagoCheckout } from '@/lib/mercadopago/high-value-checkout';
+import { formatCpf, isValidCpf, normalizeCpf } from '@/lib/cpf';
 import {
     mountLatestPaymentBrick,
     safelyUnmountPaymentBrick,
@@ -290,6 +291,7 @@ function ReservarContent() {
     const [availableRooms, setAvailableRooms] = useState<Room[] | null>(null);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
     const [guest, setGuest] = useState<Guest>({ name: '', email: '', phone: '' });
+    const [payerCpf, setPayerCpf] = useState('');
     const [website, setWebsite] = useState('');
     const [couponEnabled, setCouponEnabled] = useState(Boolean(promoFromQuery));
     const [couponCode, setCouponCode] = useState('');
@@ -495,6 +497,7 @@ function ReservarContent() {
                 body: JSON.stringify({
                     bookingId: hostedBookingId,
                     guestEmail: guest.email,
+                    payerCpf: normalizeCpf(payerCpf),
                     paymentMode: hostedPaymentMode,
                 }),
             });
@@ -578,6 +581,7 @@ function ReservarContent() {
             }, 0);
             return () => window.clearTimeout(timeoutId);
         }
+
     }, [promoFromQuery, selectedRoom]);
 
     useEffect(() => {
@@ -990,6 +994,11 @@ function ReservarContent() {
 
         if (!selectedRoom) {
             setFormMessage('Por favor, selecione um quarto.');
+            return;
+        }
+
+        if (!isValidCpf(payerCpf)) {
+            setFormMessage('Informe um CPF válido para continuar com o pagamento.');
             return;
         }
 
@@ -2354,6 +2363,26 @@ function ReservarContent() {
                                                         disabled={processing}
                                                     />
                                                 </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label htmlFor="cpf" className="text-sm font-medium flex items-center gap-2">
+                                                    <User className="w-4 h-4 text-muted-foreground" /> CPF do pagador *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="cpf"
+                                                    name="cpf"
+                                                    autoComplete="off"
+                                                    inputMode="numeric"
+                                                    required
+                                                    maxLength={14}
+                                                    className="flex h-10 w-full rounded-none border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    placeholder="000.000.000-00"
+                                                    value={payerCpf}
+                                                    onChange={(event) => setPayerCpf(formatCpf(event.target.value))}
+                                                    disabled={processing}
+                                                />
+                                                <p className="text-xs text-muted-foreground">Usado somente para identificar o pagador no Mercado Pago.</p>
                                             </div>
                                         </div>
 
