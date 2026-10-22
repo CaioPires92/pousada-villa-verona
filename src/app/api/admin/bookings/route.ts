@@ -39,7 +39,9 @@ function toNumber(value: unknown, fallback = 0) {
 }
 
 function toInt(value: unknown, fallback = 0) {
-    const parsed = Number.parseInt(asNullableString(value) ?? '', 10);
+    const parsed = typeof value === 'number'
+        ? value
+        : Number.parseInt(asNullableString(value) ?? '', 10);
     return Number.isFinite(parsed) ? parsed : fallback;
 }
 
