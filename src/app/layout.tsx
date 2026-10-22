@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   },
 };
 
-const GA_MEASUREMENT_ID = "G-60W291TDPC";
+const GA_MEASUREMENT_ID = "G-D0HMDHD2P8";
 const GOOGLE_ADS_ID = "AW-871445112";
 
 export default function RootLayout({
