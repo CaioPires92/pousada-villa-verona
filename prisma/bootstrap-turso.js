@@ -99,6 +99,25 @@ async function main() {
       console.log('[database] Histórico seguro de tentativas de pagamento criado.');
     }
 
+    const inventoryColumnsResult = await client.execute('PRAGMA table_info("InventoryAdjustment")');
+    const inventoryColumns = new Set(
+      inventoryColumnsResult.rows.map((row) => String(row.name ?? row[1] ?? ''))
+    );
+    const requiredInventoryColumns = [
+      ['hospedinUnits', 'INTEGER'],
+      ['manualOverrideUnits', 'INTEGER'],
+      ['hospedinSyncedAt', 'DATETIME'],
+    ];
+
+    for (const [columnName, columnType] of requiredInventoryColumns) {
+      if (!inventoryColumns.has(columnName)) {
+        await client.execute(
+          `ALTER TABLE "InventoryAdjustment" ADD COLUMN "${columnName}" ${columnType}`
+        );
+        console.log(`[database] Coluna InventoryAdjustment.${columnName} criada.`);
+      }
+    }
+
     const now = new Date().toISOString();
     const roomCount = await client.execute('SELECT COUNT(*) AS total FROM "RoomType"');
     if (Number(roomCount.rows[0]?.total || 0) > 0) {
