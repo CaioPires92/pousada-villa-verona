@@ -137,8 +137,8 @@ export const RoomRow: React.FC<RoomRowProps> = ({
             const occupancy = data.available !== undefined 
               ? (Math.max(data.bookingsCount, data.occupiedUnits || 0) / data.capacityTotal) * 100 
               : 0;
-            const status = data.stopSell ? 'FECHADO' : 'ABERTO';
             const inventorySTD = data.totalInventory || 0;
+            const status = data.stopSell ? 'FECHADO' : inventorySTD === 0 ? 'ESGOTADO' : 'ABERTO';
             const inventory4P = data.fourGuestInventory || 0;
             const price = data.price || 0;
             const minLos = data.minLos || 1;

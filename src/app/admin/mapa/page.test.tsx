@@ -172,6 +172,31 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
         });
     }, 30000);
 
+    it('mostra esgotado em laranja quando o inventário STD é zero', async () => {
+        setupMapFetch({
+            date: fixedTodayKey,
+            price: 320,
+            stopSell: false,
+            cta: false,
+            ctd: false,
+            minLos: 1,
+            rateId: 'rate-sold-out',
+            totalInventory: 0,
+            capacityTotal: 4,
+            bookingsCount: 4,
+            available: 0,
+            fourGuestInventory: 0,
+            fourGuestCapacityTotal: 0,
+            isAdjusted: true
+        });
+
+        render(<MapaPage />);
+
+        await waitFor(() => {
+            expect(screen.getAllByRole('button', { name: 'ESGOTADO' })[0]).toHaveClass('bg-amber-100');
+        });
+    }, 30000);
+
     it('oculta a linha 4P e mantém apenas o inventário STD no mapa', async () => {
         setupMapFetch({
             date: fixedTodayKey,
