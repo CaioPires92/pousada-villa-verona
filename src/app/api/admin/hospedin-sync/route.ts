@@ -8,6 +8,10 @@ export async function POST(request: Request) {
         const auth = await requireAdminAuth();
         if (auth instanceof Response) return auth;
 
+        if (process.env.HOSPEDIN_SYNC_ENABLED !== 'true') {
+            return NextResponse.json({ error: 'Sincronização com Hospedin desativada.' }, { status: 503 });
+        }
+
         // Extract body early
         const body = await request.json().catch(() => ({}));
         const { startDate: reqStart, endDate: reqEnd, roomTypeId } = body;

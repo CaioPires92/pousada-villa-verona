@@ -2,6 +2,7 @@ import { addDays, format } from 'date-fns';
 
 import prisma from '@/lib/prisma';
 import { hospedinClient } from '@/lib/hospedin';
+import { clampInventory, getEffectiveInventory } from '@/lib/inventory-policy';
 
 type SyncHospedinOptions = {
   beginDate: string;
@@ -36,20 +37,35 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
         options.endDate
       );
 
+      const existingAdjustments = await prisma.inventoryAdjustment.findMany({
+        where: {
+          roomTypeId: room.id,
+          dateKey: { in: days.map((day) => day.date) },
+        },
+      });
+      const existingByDate = new Map(existingAdjustments.map((row) => [row.dateKey, row]));
+
       for (const day of days) {
         const dateKey = day.date;
         const date = new Date(`${dateKey}T00:00:00Z`);
         const nextDate = addDays(date, 1);
-        const availableUnits = Math.max(
-          0,
-          Math.min(room.totalUnits, Number(day.availability) || 0)
-        );
+        const hospedinUnits = clampInventory(day.availability, room.totalUnits);
+        const manualOverrideUnits = existingByDate.get(dateKey)?.manualOverrideUnits ?? null;
+        const availableUnits = getEffectiveInventory({
+          hospedinUnits,
+          manualOverrideUnits,
+          capacity: room.totalUnits,
+        });
+        const hospedinSyncedAt = new Date();
 
         await prisma.inventoryAdjustment.upsert({
           where: { roomTypeId_dateKey: { roomTypeId: room.id, dateKey } },
           update: {
             totalUnits: availableUnits,
-            occupiedUnits: Math.max(0, room.totalUnits - availableUnits),
+            occupiedUnits: Math.max(0, room.totalUnits - hospedinUnits),
+            hospedinUnits,
+            manualOverrideUnits,
+            hospedinSyncedAt,
             date,
           },
           create: {
@@ -57,7 +73,10 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
             dateKey,
             date,
             totalUnits: availableUnits,
-            occupiedUnits: Math.max(0, room.totalUnits - availableUnits),
+            occupiedUnits: Math.max(0, room.totalUnits - hospedinUnits),
+            hospedinUnits,
+            manualOverrideUnits,
+            hospedinSyncedAt,
           },
         });
 

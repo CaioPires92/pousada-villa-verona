@@ -72,6 +72,11 @@ interface RoomType {
         bookingsFor4GuestsCount?: number;
         isFourGuestAdjusted?: boolean;
         isAdjusted: boolean;
+        inventorySource?: 'manual' | 'hospedin' | 'capacity';
+        hospedinUnits?: number | null;
+        automaticInventory?: number;
+        safetyBuffer?: number;
+        hospedinSyncedAt?: string | null;
     }
 
     // ... (keep RoomType interface)
@@ -533,9 +538,14 @@ export default function MapaReservas() {
     const [updatingInventory, setUpdatingInventory] = useState<string | null>(null);
     const [updatingFourGuestInventory, setUpdatingFourGuestInventory] = useState<string | null>(null);
 
-    const persistInventory = async (dateStr: string, newTotal: number, roomTypeId?: string) => {
+    const persistInventory = async (
+        dateStr: string,
+        newTotal: number,
+        roomTypeId?: string,
+        confirmAboveAutomatic = false,
+    ): Promise<boolean> => {
         const effectiveRoomId = roomTypeId || selectedRoomId;
-        if (!effectiveRoomId || effectiveRoomId === ALL_ROOMS_VALUE) return;
+        if (!effectiveRoomId || effectiveRoomId === ALL_ROOMS_VALUE) return false;
         setUpdatingInventory(`${effectiveRoomId}:${dateStr}`);
         try {
             const res = await fetch('/api/admin/inventory', {
@@ -544,14 +554,47 @@ export default function MapaReservas() {
                 body: JSON.stringify({
                     roomTypeId: effectiveRoomId,
                     date: dateStr,
-                    totalUnits: newTotal
+                    totalUnits: newTotal,
+                    confirmAboveAutomatic,
                 })
             });
+            if (res.status === 409) {
+                const warning = await res.json();
+                const confirmed = window.confirm(
+                    `O Hospedin possui ${warning.hospedinUnits ?? '—'} unidade(s).\n` +
+                    `Com a margem de segurança de ${warning.safetyBuffer}, o motor libera automaticamente ${warning.automaticAvailable}.\n\n` +
+                    `Deseja realmente abrir ${warning.requestedUnits} unidade(s) no motor?`
+                );
+                if (!confirmed) {
+                    await fetchRates();
+                    return false;
+                }
+                return persistInventory(dateStr, newTotal, effectiveRoomId, true);
+            }
             if (!res.ok) throw new Error('Falha ao atualizar inventário');
             const data = await res.json().catch(() => null);
             if (data && typeof data === 'object' && (data as any).appliedLimit) {
                 showToast('info', `Ajuste limitado por reservas em ${dateStr}.`);
             }
+            return true;
+        } finally {
+            setUpdatingInventory(null);
+        }
+    };
+
+    const resetInventoryToAutomatic = async (dateStr: string, roomTypeId?: string) => {
+        const effectiveRoomId = roomTypeId || selectedRoomId;
+        if (!effectiveRoomId || effectiveRoomId === ALL_ROOMS_VALUE) return;
+        setUpdatingInventory(`${effectiveRoomId}:${dateStr}`);
+        try {
+            const res = await fetch('/api/admin/inventory', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roomTypeId: effectiveRoomId, date: dateStr, totalUnits: 0, resetManualOverride: true }),
+            });
+            if (!res.ok) throw new Error('Falha ao voltar ao inventário automático');
+            await fetchRates();
+            showToast('success', 'Ajuste manual removido. Inventário automático restaurado.');
         } finally {
             setUpdatingInventory(null);
         }
@@ -1537,6 +1580,25 @@ export default function MapaReservas() {
                                     <span>Capacidade: <strong>{selectedDayData?.capacityTotal ?? '-'}</strong></span>
                                     <span>Ocupação: <strong>{selectedDayOccupancy.occupancyPct === null ? '—' : `${Math.round(selectedDayOccupancy.occupancyPct)}%`}</strong></span>
                                 </div>
+                                {selectedDayData?.hospedinUnits !== null && selectedDayData?.hospedinUnits !== undefined && (
+                                    <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600">
+                                        <div className="flex flex-wrap gap-x-4 gap-y-1">
+                                            <span>Hospedin: <strong>{selectedDayData.hospedinUnits}</strong></span>
+                                            <span>Margem: <strong>-{selectedDayData.safetyBuffer ?? 1}</strong></span>
+                                            <span>Automático: <strong>{selectedDayData.automaticInventory ?? 0}</strong></span>
+                                            <span>Origem: <strong>{selectedDayData.inventorySource === 'manual' ? 'Manual' : 'Hospedin'}</strong></span>
+                                        </div>
+                                        {selectedDayData.inventorySource === 'manual' && selectedDateKey && (
+                                            <button
+                                                type="button"
+                                                className="mt-2 font-bold text-blue-700 hover:underline"
+                                                onClick={() => resetInventoryToAutomatic(selectedDateKey)}
+                                            >
+                                                Voltar ao automático
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Restrictions Cards */}

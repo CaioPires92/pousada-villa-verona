@@ -57,15 +57,18 @@ model Rate {
 }
 
 model InventoryAdjustment {
-  id            String   @id @default(uuid())
-  roomTypeId    String
-  date          DateTime
-  dateKey       String
-  totalUnits    Int
-  occupiedUnits Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  roomType      RoomType @relation(fields: [roomTypeId], references: [id])
+  id                  String    @id @default(uuid())
+  roomTypeId          String
+  date                DateTime
+  dateKey             String
+  totalUnits          Int
+  occupiedUnits       Int       @default(0)
+  hospedinUnits       Int?
+  manualOverrideUnits Int?
+  hospedinSyncedAt    DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  roomType            RoomType  @relation(fields: [roomTypeId], references: [id])
 
   @@unique([roomTypeId, dateKey])
   @@index([dateKey])
