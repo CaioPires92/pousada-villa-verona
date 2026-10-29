@@ -2,7 +2,7 @@ import { addDays, format } from 'date-fns';
 
 import prisma from '@/lib/prisma';
 import { hospedinClient } from '@/lib/hospedin';
-import { clampInventory, getEffectiveInventory } from '@/lib/inventory-policy';
+import { clampInventory, getAutomaticInventory, getEffectiveInventory } from '@/lib/inventory-policy';
 
 type SyncHospedinOptions = {
   beginDate: string;
@@ -42,6 +42,12 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
         },
       });
       const existingByDate = new Map(existingAdjustments.map((row) => [row.dateKey, row]));
+      const manualOverrides: Array<{
+        date: string;
+        hospedinUnits: number;
+        automaticUnits: number;
+        manualUnits: number;
+      }> = [];
 
       for (const day of days) {
         const dateKey = day.date;
@@ -49,12 +55,22 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
         const nextDate = addDays(date, 1);
         const hospedinUnits = clampInventory(day.availability, room.totalUnits);
         const manualOverrideUnits = existingByDate.get(dateKey)?.manualOverrideUnits ?? null;
+        const automaticUnits = getAutomaticInventory(hospedinUnits, room.totalUnits);
         const availableUnits = getEffectiveInventory({
           hospedinUnits,
           manualOverrideUnits,
           capacity: room.totalUnits,
         });
         const hospedinSyncedAt = new Date();
+
+        if (manualOverrideUnits !== null && clampInventory(manualOverrideUnits, room.totalUnits) !== automaticUnits) {
+          manualOverrides.push({
+            date: dateKey,
+            hospedinUnits,
+            automaticUnits,
+            manualUnits: clampInventory(manualOverrideUnits, room.totalUnits),
+          });
+        }
 
         await prisma.inventoryAdjustment.upsert({
           where: { roomTypeId_dateKey: { roomTypeId: room.id, dateKey } },
@@ -98,7 +114,7 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
         }
       }
 
-      return { roomName: room.name, daysSynced: days.length };
+      return { roomName: room.name, daysSynced: days.length, manualOverrides };
     } catch (error) {
       return {
         roomName: room.name,

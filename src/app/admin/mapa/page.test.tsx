@@ -194,7 +194,7 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
 
         await waitFor(() => {
             expect(screen.getAllByRole('button', { name: 'ESGOTADO' })[0]).toHaveClass('bg-amber-100');
-        });
+        }, { timeout: 5000 });
     }, 30000);
 
     it('sincroniza somente o período visível no mapa mensal', async () => {
@@ -216,7 +216,18 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
             const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
             if (url.includes('/api/admin/hospedin-sync')) {
                 syncPayload = JSON.parse(String(init?.body));
-                return createJsonResponse({ duration: '0.2s', results: [] });
+                return createJsonResponse({
+                    duration: '0.2s',
+                    results: [{
+                        roomName: 'Apartamento Teste',
+                        manualOverrides: [{
+                            date: fixedTodayKey,
+                            hospedinUnits: 0,
+                            automaticUnits: 0,
+                            manualUnits: 1,
+                        }],
+                    }],
+                });
             }
             return previousImplementation!(input, init);
         });
@@ -232,6 +243,46 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
                 endDate: '2026-03-31',
             }));
         });
+        expect(await screen.findByRole('dialog', { name: 'Sincronização concluída com ajustes manuais' })).toBeInTheDocument();
+    }, 30000);
+
+    it('usa modal visual ao abrir inventário acima do automático', async () => {
+        setupMapFetch({
+            date: fixedTodayKey,
+            price: 320,
+            stopSell: false,
+            cta: false,
+            ctd: false,
+            minLos: 1,
+            totalInventory: 0,
+            capacityTotal: 4,
+            bookingsCount: 0,
+            available: 0,
+            hospedinUnits: 0,
+            automaticInventory: 0,
+            inventorySource: 'hospedin',
+        });
+        const previousImplementation = mockFetch.getMockImplementation();
+        mockFetch.mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+            const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+            if (url.includes('/api/admin/inventory')) {
+                return createJsonResponse({
+                    error: 'CONFIRM_ABOVE_AUTOMATIC',
+                    hospedinUnits: 0,
+                    automaticAvailable: 0,
+                    requestedUnits: 1,
+                    safetyBuffer: 1,
+                }, false, 409);
+            }
+            return previousImplementation!(input, init);
+        });
+
+        render(<MapaPage />);
+        const increaseButtons = await screen.findAllByRole('button', { name: 'Aumentar STD' });
+        fireEvent.click(increaseButtons[0]);
+
+        expect(await screen.findByRole('dialog', { name: 'Confirmar abertura manual' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Manter aberto manualmente' })).toBeInTheDocument();
     }, 30000);
 
     it('oculta a linha 4P e mantém apenas o inventário STD no mapa', async () => {

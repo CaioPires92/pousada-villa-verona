@@ -47,7 +47,7 @@ describe('syncHospedinAvailability', () => {
       { dateKey: '2026-11-01', manualOverrideUnits: 2 },
     ]);
 
-    await syncHospedinAvailability({ beginDate: '2026-11-01', endDate: '2026-11-01' });
+    const result = await syncHospedinAvailability({ beginDate: '2026-11-01', endDate: '2026-11-01' });
 
     expect(prisma.inventoryAdjustment.upsert).toHaveBeenCalledWith(expect.objectContaining({
       update: expect.objectContaining({
@@ -56,5 +56,13 @@ describe('syncHospedinAvailability', () => {
         totalUnits: 2,
       }),
     }));
+    expect(result.results[0]).toMatchObject({
+      manualOverrides: [{
+        date: '2026-11-01',
+        hospedinUnits: 6,
+        automaticUnits: 5,
+        manualUnits: 2,
+      }],
+    });
   });
 });

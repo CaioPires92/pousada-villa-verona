@@ -35,7 +35,9 @@ import {
     ChevronLeft, 
     ChevronRight,
     Settings2,
-    RefreshCcw
+    RefreshCcw,
+    AlertTriangle,
+    ShieldCheck,
 } from 'lucide-react';
 import InventoryStepper from './inventory-stepper';
 import { BulkEditPanel } from './components/BulkEditPanel';
@@ -105,6 +107,23 @@ type InventorySelectionState = {
     field: DragSelectionField;
     dates: string[];
     anchorRect: { left: number; top: number; bottom: number };
+};
+
+type InventoryOverrideWarning = {
+    date: string;
+    roomTypeId: string;
+    requestedUnits: number;
+    hospedinUnits: number | null;
+    automaticAvailable: number;
+    safetyBuffer: number;
+};
+
+type HospedinSyncWarning = {
+    roomName: string;
+    date: string;
+    hospedinUnits: number;
+    automaticUnits: number;
+    manualUnits: number;
 };
 
 const ALL_ROOMS_VALUE = 'all';
@@ -438,6 +457,8 @@ export default function MapaReservas() {
 
     const [savingRate, setSavingRate] = useState<string | null>(null);
     const [isSyncing, setIsSyncing] = useState(false);
+    const [inventoryOverrideWarning, setInventoryOverrideWarning] = useState<InventoryOverrideWarning | null>(null);
+    const [hospedinSyncWarnings, setHospedinSyncWarnings] = useState<HospedinSyncWarning[]>([]);
 
     const handleHospedinSync = async () => {
         setIsSyncing(true);
@@ -456,6 +477,13 @@ export default function MapaReservas() {
             });
             const data = await res.json();
             if (res.ok) {
+                const syncWarnings = Array.isArray(data.results)
+                    ? data.results.flatMap((result: any) =>
+                        Array.isArray(result.manualOverrides)
+                            ? result.manualOverrides.map((warning: any) => ({ ...warning, roomName: result.roomName }))
+                            : []
+                    )
+                    : [];
                 const syncData = {
                     timestamp: format(new Date(), 'dd/MM HH:mm'),
                     duration: data.duration,
@@ -471,6 +499,7 @@ export default function MapaReservas() {
                 showToast('success', `Sincronização concluída: ${roomName} (${syncStart} até ${syncEnd})`);
                 // Refresh data
                 await fetchRates();
+                setHospedinSyncWarnings(syncWarnings);
             } else {
                 showToast('error', data.error || 'Erro na sincronização');
             }
@@ -551,16 +580,15 @@ export default function MapaReservas() {
             });
             if (res.status === 409) {
                 const warning = await res.json();
-                const confirmed = window.confirm(
-                    `O Hospedin possui ${warning.hospedinUnits ?? '—'} unidade(s).\n` +
-                    `Com a margem de segurança de ${warning.safetyBuffer}, o motor libera automaticamente ${warning.automaticAvailable}.\n\n` +
-                    `Deseja realmente abrir ${warning.requestedUnits} unidade(s) no motor?`
-                );
-                if (!confirmed) {
-                    await fetchRates();
-                    return false;
-                }
-                return persistInventory(dateStr, newTotal, effectiveRoomId, true);
+                setInventoryOverrideWarning({
+                    date: dateStr,
+                    roomTypeId: effectiveRoomId,
+                    requestedUnits: warning.requestedUnits,
+                    hospedinUnits: warning.hospedinUnits,
+                    automaticAvailable: warning.automaticAvailable,
+                    safetyBuffer: warning.safetyBuffer,
+                });
+                return false;
             }
             if (!res.ok) throw new Error('Falha ao atualizar inventário');
             const data = await res.json().catch(() => null);
@@ -570,6 +598,27 @@ export default function MapaReservas() {
             return true;
         } finally {
             setUpdatingInventory(null);
+        }
+    };
+
+    const cancelInventoryOverride = async () => {
+        setInventoryOverrideWarning(null);
+        await fetchRates();
+    };
+
+    const confirmInventoryOverride = async () => {
+        if (!inventoryOverrideWarning) return;
+        const warning = inventoryOverrideWarning;
+        setInventoryOverrideWarning(null);
+        const saved = await persistInventory(
+            warning.date,
+            warning.requestedUnits,
+            warning.roomTypeId,
+            true,
+        );
+        if (saved) {
+            await fetchRates();
+            showToast('success', 'Abertura manual mantida até você voltar ao inventário automático.');
         }
     };
 
@@ -1486,6 +1535,103 @@ export default function MapaReservas() {
                 )}
             </div>
       </div>
+
+            {inventoryOverrideWarning && (
+                <div className={styles.modalOverlay} data-testid="inventory-override-modal">
+                    <div
+                        className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="inventory-override-title"
+                    >
+                        <div className="flex items-start gap-4 border-b border-amber-100 bg-amber-50 p-6">
+                            <div className="rounded-full bg-amber-100 p-3 text-amber-700">
+                                <AlertTriangle className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h2 id="inventory-override-title" className="text-lg font-black text-slate-800">
+                                    Confirmar abertura manual
+                                </h2>
+                                <p className="mt-1 text-sm text-slate-600">
+                                    Esta quantidade supera o inventário automático protegido.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="space-y-4 p-6">
+                            <div className="grid grid-cols-3 gap-3 text-center">
+                                <div className="rounded-xl bg-slate-50 p-3">
+                                    <span className="block text-[10px] font-black uppercase text-slate-400">Hospedin</span>
+                                    <strong className="text-xl text-slate-800">{inventoryOverrideWarning.hospedinUnits ?? '—'}</strong>
+                                </div>
+                                <div className="rounded-xl bg-slate-50 p-3">
+                                    <span className="block text-[10px] font-black uppercase text-slate-400">Automático</span>
+                                    <strong className="text-xl text-slate-800">{inventoryOverrideWarning.automaticAvailable}</strong>
+                                </div>
+                                <div className="rounded-xl bg-blue-50 p-3">
+                                    <span className="block text-[10px] font-black uppercase text-blue-500">Solicitado</span>
+                                    <strong className="text-xl text-blue-700">{inventoryOverrideWarning.requestedUnits}</strong>
+                                </div>
+                            </div>
+                            <p className="text-sm leading-6 text-slate-600">
+                                A margem de segurança é {inventoryOverrideWarning.safetyBuffer}. Se confirmar, essa abertura
+                                permanecerá manual mesmo após novas sincronizações com o Hospedin.
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-3 border-t border-slate-100 bg-slate-50 p-5">
+                            <Button type="button" variant="outline" onClick={cancelInventoryOverride}>Cancelar</Button>
+                            <Button type="button" onClick={confirmInventoryOverride} className="bg-blue-700 hover:bg-blue-800">
+                                Manter aberto manualmente
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {hospedinSyncWarnings.length > 0 && (
+                <div className={styles.modalOverlay} data-testid="hospedin-sync-warning-modal">
+                    <div
+                        className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="hospedin-sync-warning-title"
+                    >
+                        <div className="flex items-start gap-4 border-b border-blue-100 bg-blue-50 p-6">
+                            <div className="rounded-full bg-blue-100 p-3 text-blue-700">
+                                <ShieldCheck className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h2 id="hospedin-sync-warning-title" className="text-lg font-black text-slate-800">
+                                    Sincronização concluída com ajustes manuais
+                                </h2>
+                                <p className="mt-1 text-sm text-slate-600">
+                                    O Hospedin foi atualizado, mas estas vagas permaneceram como você definiu manualmente.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="max-h-80 space-y-3 overflow-y-auto p-6">
+                            {hospedinSyncWarnings.map((warning) => (
+                                <div key={`${warning.roomName}-${warning.date}`} className="rounded-xl border border-slate-200 p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div>
+                                            <strong className="block text-sm text-slate-800">{warning.roomName}</strong>
+                                            <span className="text-xs text-slate-500">{format(parseISO(warning.date), 'dd/MM/yyyy')}</span>
+                                        </div>
+                                        <div className="text-right text-xs text-slate-500">
+                                            Hospedin: <strong>{warning.hospedinUnits}</strong> · Automático: <strong>{warning.automaticUnits}</strong>
+                                            <span className="ml-2 rounded-full bg-blue-100 px-2 py-1 font-black text-blue-700">
+                                                Manual: {warning.manualUnits}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-end border-t border-slate-100 bg-slate-50 p-5">
+                            <Button type="button" onClick={() => setHospedinSyncWarnings([])}>Entendi</Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {modalOpen && (
                 <div className={styles.modalOverlay} onClick={() => setModalOpen(false)}>
