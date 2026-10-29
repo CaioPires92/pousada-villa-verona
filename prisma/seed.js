@@ -37,7 +37,7 @@ async function main() {
             maxGuests: 4,
             basePrice: 550,
             amenities: 'Maior espaço interno; Disposição diferenciada; Wi-Fi; TV de tela plana; Frigobar; Armário; Banheiro privativo',
-            totalUnits: 3,
+            totalUnits: 2,
             photo: '/fotos/quartos/quadruplo-comfort/883982350.jpg',
         },
         {

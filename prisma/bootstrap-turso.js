@@ -33,7 +33,7 @@ const rooms = [
     description: 'Para hóspedes que priorizam mais espaço e conveniência durante a estadia.',
     capacity: 4,
     maxGuests: 4,
-    totalUnits: 3,
+    totalUnits: 2,
     basePrice: 550,
     amenities: 'Maior espaço interno; Disposição diferenciada; Wi-Fi; TV de tela plana; Frigobar; Armário; Banheiro privativo',
     photo: '/fotos/quartos/quadruplo-comfort/883982350.jpg',
