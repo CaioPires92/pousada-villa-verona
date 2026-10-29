@@ -197,6 +197,43 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
         });
     }, 30000);
 
+    it('sincroniza somente o período visível no mapa mensal', async () => {
+        let syncPayload: Record<string, unknown> | null = null;
+        setupMapFetch({
+            date: fixedTodayKey,
+            price: 320,
+            stopSell: false,
+            cta: false,
+            ctd: false,
+            minLos: 1,
+            totalInventory: 4,
+            capacityTotal: 5,
+            bookingsCount: 0,
+            available: 4,
+        });
+        const previousImplementation = mockFetch.getMockImplementation();
+        mockFetch.mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+            const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+            if (url.includes('/api/admin/hospedin-sync')) {
+                syncPayload = JSON.parse(String(init?.body));
+                return createJsonResponse({ duration: '0.2s', results: [] });
+            }
+            return previousImplementation!(input, init);
+        });
+
+        render(<MapaPage />);
+
+        const syncButton = await screen.findByRole('button', { name: 'Sincronizar 11/03 a 31/03' });
+        fireEvent.click(syncButton);
+
+        await waitFor(() => {
+            expect(syncPayload).toEqual(expect.objectContaining({
+                startDate: '2026-03-11',
+                endDate: '2026-03-31',
+            }));
+        });
+    }, 30000);
+
     it('oculta a linha 4P e mantém apenas o inventário STD no mapa', async () => {
         setupMapFetch({
             date: fixedTodayKey,

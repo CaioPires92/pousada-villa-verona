@@ -442,17 +442,8 @@ export default function MapaReservas() {
     const handleHospedinSync = async () => {
         setIsSyncing(true);
         try {
-            // Determine range to sync
-            let syncStart = format(new Date(), 'yyyy-MM-dd');
-            let syncEnd = format(addDays(new Date(), 60), 'yyyy-MM-dd');
-
-            if (periodMode === 'month') {
-                syncStart = format(startOfMonth(currentDate), 'yyyy-MM-dd');
-                syncEnd = format(endOfMonth(currentDate), 'yyyy-MM-dd');
-            } else if (periodMode === 'custom') {
-                syncStart = customStart;
-                syncEnd = customEnd;
-            }
+            const syncStart = format(listVisibleStart, 'yyyy-MM-dd');
+            const syncEnd = format(listQueryInterval.end, 'yyyy-MM-dd');
 
             const res = await fetch('/api/admin/hospedin-sync', {
                 method: 'POST',
@@ -1421,7 +1412,9 @@ export default function MapaReservas() {
                             )}
                         >
                             <RefreshCcw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
-                            {isSyncing ? 'Sincronizando...' : 'Sincronizar Hospedin'}
+                            {isSyncing
+                                ? 'Sincronizando...'
+                                : `Sincronizar ${format(listVisibleStart, 'dd/MM')} a ${format(listQueryInterval.end, 'dd/MM')}`}
                         </Button>
                         {lastSync && !isSyncing && (
                             <div className="flex flex-col px-1">

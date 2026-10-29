@@ -27,9 +27,7 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
     );
   }
 
-  const results = [];
-
-  for (const room of roomTypes) {
+  const results = await Promise.all(roomTypes.map(async (room) => {
     try {
       const days = await hospedinClient.getAvailability(
         room.externalId!,
@@ -100,14 +98,14 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
         }
       }
 
-      results.push({ roomName: room.name, daysSynced: days.length });
+      return { roomName: room.name, daysSynced: days.length };
     } catch (error) {
-      results.push({
+      return {
         roomName: room.name,
         error: error instanceof Error ? error.message : 'Erro desconhecido',
-      });
+      };
     }
-  }
+  }));
 
   return {
     beginDate: options.beginDate,

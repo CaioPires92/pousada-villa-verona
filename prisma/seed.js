@@ -17,7 +17,7 @@ async function main() {
             maxGuests: 3,
             basePrice: 350,
             amenities: 'Wi-Fi gratuito; TV de tela plana; Frigobar; Banheiro privativo com chuveiro quente; Armário/guarda-roupa; Roupas de cama e toalhas inclusas',
-            totalUnits: 5,
+            totalUnits: 13,
             photo: '/fotos/quartos/triplo/849059556.jpg',
         },
         {

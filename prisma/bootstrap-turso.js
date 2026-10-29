@@ -11,7 +11,7 @@ const rooms = [
     description: 'Ideal para casais com 1 filho ou pequenos grupos de amigos que buscam conforto e ótimo custo-benefício.',
     capacity: 3,
     maxGuests: 3,
-    totalUnits: 5,
+    totalUnits: 13,
     basePrice: 350,
     amenities: 'Wi-Fi gratuito; TV de tela plana; Frigobar; Banheiro privativo com chuveiro quente; Armário/guarda-roupa; Roupas de cama e toalhas inclusas',
     photo: '/fotos/quartos/triplo/849059556.jpg',
@@ -106,7 +106,7 @@ async function main() {
         await client.execute({
           sql: `UPDATE "RoomType"
                 SET "name" = ?, "description" = ?, "capacity" = ?, "maxGuests" = ?,
-                    "inventoryFor4Guests" = ?, "externalId" = ?, "updatedAt" = ?
+                    "inventoryFor4Guests" = ?, "totalUnits" = ?, "externalId" = ?, "updatedAt" = ?
                 WHERE "name" = ? OR "name" = ?`,
           args: [
             room.name,
@@ -114,6 +114,7 @@ async function main() {
             room.capacity,
             room.maxGuests,
             room.capacity >= 4 ? room.totalUnits : 0,
+            room.totalUnits,
             room.externalId,
             now,
             room.name,
