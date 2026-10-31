@@ -23,13 +23,22 @@ export async function POST(request: Request) {
             roomTypeId,
         });
 
+        const failedResults = sync.results.filter((result) => 'error' in result && result.error);
+        if (failedResults.length === sync.results.length) {
+            return NextResponse.json({
+                error: 'O Hospedin não sincronizou nenhuma acomodação.',
+                results: sync.results,
+            }, { status: 502 });
+        }
+
         const duration = ((Date.now() - startTime) / 1000).toFixed(1);
 
         return NextResponse.json({ 
             message: 'Sincronização processada!', 
             results: sync.results,
-            duration: `${duration}s`
-        });
+            duration: `${duration}s`,
+            partialFailure: failedResults.length > 0,
+        }, { status: failedResults.length > 0 ? 207 : 200 });
     } catch (error) {
         console.error('Erro na sincronização Hospedin:', error);
         return NextResponse.json({ 

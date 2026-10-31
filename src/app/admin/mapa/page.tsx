@@ -477,6 +477,9 @@ export default function MapaReservas() {
             });
             const data = await res.json();
             if (res.ok) {
+                const failedRooms = Array.isArray(data.results)
+                    ? data.results.filter((result: any) => result?.error)
+                    : [];
                 const syncWarnings = Array.isArray(data.results)
                     ? data.results.flatMap((result: any) =>
                         Array.isArray(result.manualOverrides)
@@ -496,12 +499,19 @@ export default function MapaReservas() {
                     ? roomTypes.find(r => r.id === selectedRoomId)?.name 
                     : 'Todas as acomodações';
 
-                showToast('success', `Sincronização concluída: ${roomName} (${syncStart} até ${syncEnd})`);
+                if (failedRooms.length > 0) {
+                    showToast('error', `Sincronização parcial: ${failedRooms.map((result: any) => result.roomName).join(', ')} não foram atualizados.`);
+                } else {
+                    showToast('success', `Sincronização concluída: ${roomName} (${syncStart} até ${syncEnd})`);
+                }
                 // Refresh data
                 await fetchRates();
                 setHospedinSyncWarnings(syncWarnings);
             } else {
-                showToast('error', data.error || 'Erro na sincronização');
+                const details = Array.isArray(data.results)
+                    ? data.results.map((result: any) => result?.error).filter(Boolean).join(' · ')
+                    : '';
+                showToast('error', details || data.error || 'Erro na sincronização');
             }
         } catch (error) {
             console.error('Sync Error:', error);

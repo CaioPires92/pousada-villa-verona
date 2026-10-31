@@ -51,4 +51,25 @@ describe('POST /api/admin/hospedin-sync', () => {
       roomTypeId: 'room-1',
     });
   });
+
+  it('returns an error when every accommodation fails to synchronize', async () => {
+    (syncHospedinAvailability as any).mockResolvedValue({
+      beginDate: '2026-11-01',
+      endDate: '2026-11-30',
+      results: [
+        { roomName: 'Quarto Triplo', error: 'Hospedin Auth Failed: Unauthorized' },
+        { roomName: 'Quarto Quádruplo', error: 'Hospedin Auth Failed: Unauthorized' },
+      ],
+    });
+
+    const response = await POST(new Request('http://localhost/api/admin/hospedin-sync', {
+      method: 'POST',
+      body: '{}',
+    }));
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual(expect.objectContaining({
+      error: 'O Hospedin não sincronizou nenhuma acomodação.',
+    }));
+  });
 });
