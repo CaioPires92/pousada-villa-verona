@@ -8,6 +8,7 @@ type SyncHospedinOptions = {
   beginDate: string;
   endDate: string;
   roomTypeId?: string;
+  clearManualOverrides?: boolean;
 };
 
 export async function syncHospedinAvailability(options: SyncHospedinOptions) {
@@ -54,7 +55,8 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
         const date = new Date(`${dateKey}T00:00:00Z`);
         const nextDate = addDays(date, 1);
         const hospedinUnits = clampInventory(day.availability, room.totalUnits);
-        const manualOverrideUnits = existingByDate.get(dateKey)?.manualOverrideUnits ?? null;
+        const previousManualOverride = existingByDate.get(dateKey)?.manualOverrideUnits ?? null;
+        const manualOverrideUnits = options.clearManualOverrides ? null : previousManualOverride;
         const automaticUnits = getAutomaticInventory(hospedinUnits, room.totalUnits);
         const availableUnits = getEffectiveInventory({
           hospedinUnits,
@@ -63,12 +65,12 @@ export async function syncHospedinAvailability(options: SyncHospedinOptions) {
         });
         const hospedinSyncedAt = new Date();
 
-        if (manualOverrideUnits !== null && clampInventory(manualOverrideUnits, room.totalUnits) !== automaticUnits) {
+        if (previousManualOverride !== null && clampInventory(previousManualOverride, room.totalUnits) !== automaticUnits) {
           manualOverrides.push({
             date: dateKey,
             hospedinUnits,
             automaticUnits,
-            manualUnits: clampInventory(manualOverrideUnits, room.totalUnits),
+            manualUnits: clampInventory(previousManualOverride, room.totalUnits),
           });
         }
 

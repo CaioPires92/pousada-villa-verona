@@ -12,6 +12,12 @@ vi.mock('@/lib/hospedin-sync', () => ({
   syncHospedinAvailability: vi.fn(),
 }));
 
+vi.mock('@/lib/prisma', () => ({
+  default: {
+    inventoryAdjustment: { findMany: vi.fn(async () => []) },
+  },
+}));
+
 describe('POST /api/admin/hospedin-sync', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -49,6 +55,7 @@ describe('POST /api/admin/hospedin-sync', () => {
       beginDate: '2026-11-05',
       endDate: '2026-11-10',
       roomTypeId: 'room-1',
+      clearManualOverrides: true,
     });
   });
 

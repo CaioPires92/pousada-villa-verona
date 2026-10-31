@@ -460,7 +460,7 @@ export default function MapaReservas() {
     const [inventoryOverrideWarning, setInventoryOverrideWarning] = useState<InventoryOverrideWarning | null>(null);
     const [hospedinSyncWarnings, setHospedinSyncWarnings] = useState<HospedinSyncWarning[]>([]);
 
-    const handleHospedinSync = async () => {
+    const handleHospedinSync = async (confirmOverwriteManual = false) => {
         setIsSyncing(true);
         try {
             const syncStart = format(listVisibleStart, 'yyyy-MM-dd');
@@ -472,7 +472,8 @@ export default function MapaReservas() {
                 body: JSON.stringify({
                     startDate: syncStart,
                     endDate: syncEnd,
-                    roomTypeId: selectedRoomId !== ALL_ROOMS_VALUE ? selectedRoomId : undefined
+                    roomTypeId: selectedRoomId !== ALL_ROOMS_VALUE ? selectedRoomId : undefined,
+                    confirmOverwriteManual,
                 })
             });
             const data = await res.json();
@@ -506,8 +507,12 @@ export default function MapaReservas() {
                 }
                 // Refresh data
                 await fetchRates();
-                setHospedinSyncWarnings(syncWarnings);
+                setHospedinSyncWarnings([]);
             } else {
+                if (res.status === 409 && data.error === 'MANUAL_OVERRIDES_WILL_BE_REPLACED') {
+                    setHospedinSyncWarnings(Array.isArray(data.overrides) ? data.overrides : []);
+                    return;
+                }
                 const details = Array.isArray(data.results)
                     ? data.results.map((result: any) => result?.error).filter(Boolean).join(' · ')
                     : '';
@@ -1462,7 +1467,7 @@ export default function MapaReservas() {
                     <div className="flex flex-col gap-2">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Integração</span>
                         <Button
-                            onClick={handleHospedinSync}
+                            onClick={() => void handleHospedinSync()}
                             disabled={isSyncing}
                             variant="outline"
                             className={cn(
@@ -1611,10 +1616,10 @@ export default function MapaReservas() {
                             </div>
                             <div>
                                 <h2 id="hospedin-sync-warning-title" className="text-lg font-black text-slate-800">
-                                    Sincronização concluída com ajustes manuais
+                                    Substituir ajustes manuais?
                                 </h2>
                                 <p className="mt-1 text-sm text-slate-600">
-                                    O Hospedin foi atualizado, mas estas vagas permaneceram como você definiu manualmente.
+                                    A sincronização restaurará o inventário automático do Hospedin nestas datas.
                                 </p>
                             </div>
                         </div>
@@ -1636,8 +1641,11 @@ export default function MapaReservas() {
                                 </div>
                             ))}
                         </div>
-                        <div className="flex justify-end border-t border-slate-100 bg-slate-50 p-5">
-                            <Button type="button" onClick={() => setHospedinSyncWarnings([])}>Entendi</Button>
+                        <div className="flex justify-end gap-3 border-t border-slate-100 bg-slate-50 p-5">
+                            <Button type="button" variant="outline" onClick={() => setHospedinSyncWarnings([])}>Cancelar</Button>
+                            <Button type="button" onClick={() => { setHospedinSyncWarnings([]); void handleHospedinSync(true); }}>
+                                Sincronizar e restaurar automático
+                            </Button>
                         </div>
                     </div>
                 </div>

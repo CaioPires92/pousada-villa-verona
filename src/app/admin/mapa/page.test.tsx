@@ -217,17 +217,15 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
             if (url.includes('/api/admin/hospedin-sync')) {
                 syncPayload = JSON.parse(String(init?.body));
                 return createJsonResponse({
-                    duration: '0.2s',
-                    results: [{
+                    error: 'MANUAL_OVERRIDES_WILL_BE_REPLACED',
+                    overrides: [{
                         roomName: 'Apartamento Teste',
-                        manualOverrides: [{
                             date: fixedTodayKey,
                             hospedinUnits: 0,
                             automaticUnits: 0,
                             manualUnits: 1,
-                        }],
                     }],
-                });
+                }, false, 409);
             }
             return previousImplementation!(input, init);
         });
@@ -243,7 +241,7 @@ describe('Admin Mapa de Tarifas - UI refinements', () => {
                 endDate: '2026-03-31',
             }));
         });
-        expect(await screen.findByRole('dialog', { name: 'Sincronização concluída com ajustes manuais' })).toBeInTheDocument();
+        expect(await screen.findByRole('dialog', { name: 'Substituir ajustes manuais?' })).toBeInTheDocument();
     }, 30000);
 
     it('usa modal visual ao abrir inventário acima do automático', async () => {

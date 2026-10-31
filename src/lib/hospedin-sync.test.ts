@@ -42,18 +42,22 @@ describe('syncHospedinAvailability', () => {
     }));
   });
 
-  it('does not overwrite an existing manual override', async () => {
+  it('clears an existing manual override when synchronization is confirmed', async () => {
     (prisma.inventoryAdjustment.findMany as any).mockResolvedValue([
       { dateKey: '2026-11-01', manualOverrideUnits: 2 },
     ]);
 
-    const result = await syncHospedinAvailability({ beginDate: '2026-11-01', endDate: '2026-11-01' });
+    const result = await syncHospedinAvailability({
+      beginDate: '2026-11-01',
+      endDate: '2026-11-01',
+      clearManualOverrides: true,
+    });
 
     expect(prisma.inventoryAdjustment.upsert).toHaveBeenCalledWith(expect.objectContaining({
       update: expect.objectContaining({
         hospedinUnits: 6,
-        manualOverrideUnits: 2,
-        totalUnits: 2,
+        manualOverrideUnits: null,
+        totalUnits: 5,
       }),
     }));
     expect(result.results[0]).toMatchObject({
