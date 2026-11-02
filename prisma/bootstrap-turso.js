@@ -125,7 +125,9 @@ async function main() {
         await client.execute({
           sql: `UPDATE "RoomType"
                 SET "name" = ?, "description" = ?, "capacity" = ?, "maxGuests" = ?,
-                    "inventoryFor4Guests" = ?, "totalUnits" = ?, "externalId" = ?, "updatedAt" = ?
+                    "inventoryFor4Guests" = ?, "includedAdults" = 2,
+                    "totalUnits" = ?, "extraAdultFee" = 100, "child6To11Fee" = 80,
+                    "externalId" = ?, "updatedAt" = ?
                 WHERE "name" = ? OR "name" = ?`,
           args: [
             room.name,
@@ -166,7 +168,7 @@ async function main() {
           room.totalUnits,
           room.basePrice,
           100,
-          50,
+          80,
           room.amenities,
           now,
           now,

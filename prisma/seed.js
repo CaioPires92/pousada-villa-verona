@@ -59,11 +59,12 @@ async function main() {
                 description: acc.description,
                 capacity: acc.capacity,
                 maxGuests: acc.maxGuests,
-                includedAdults: acc.capacity,
+                inventoryFor4Guests: acc.capacity >= 4 ? acc.totalUnits : 0,
+                includedAdults: 2,
                 totalUnits: acc.totalUnits,
                 basePrice: acc.basePrice,
                 extraAdultFee: 100,
-                child6To11Fee: 50,
+                child6To11Fee: 80,
                 amenities: acc.amenities,
             }
         });

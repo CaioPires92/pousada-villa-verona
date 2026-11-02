@@ -86,6 +86,29 @@ describe('SearchWidget', () => {
     });
   });
 
+  it('atualiza os resultados automaticamente ao alterar crianças e pets', async () => {
+    currentPathname = '/reservar';
+    render(<SearchWidget prefillFromQuery />);
+
+    fireEvent.change(screen.getByLabelText('Crianças'), { target: { value: '1' } });
+
+    await waitFor(() => {
+      expect(mockRouterReplace).toHaveBeenCalledWith(
+        expect.stringContaining('adults=2&children=1&childrenAges=0'),
+        { scroll: false },
+      );
+    });
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /Possui pets/i }));
+
+    await waitFor(() => {
+      expect(mockRouterReplace).toHaveBeenCalledWith(
+        expect.stringContaining('pets=1'),
+        { scroll: false },
+      );
+    });
+  });
+
   it('faz fetch com parâmetros corretos ao buscar', async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,

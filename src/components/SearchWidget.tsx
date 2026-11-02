@@ -138,6 +138,7 @@ export default function SearchWidget({
             const nextCheckOut = addDays(date, 1);
             setCheckOut(nextCheckOut);
             setCheckOutViewMonth(nextCheckOut);
+            refreshResults({ checkIn: date, checkOut: nextCheckOut });
         }
     };
 
@@ -154,6 +155,7 @@ export default function SearchWidget({
             setFieldErrors((prev) => ({ ...prev, dates: undefined }));
         }
         setIsCheckOutOpen(false);
+        if (date) refreshResults({ checkOut: date });
     };
 
     const handleWhatsAppClick = () => {
@@ -171,16 +173,29 @@ export default function SearchWidget({
         window.open(url, '_blank');
     };
 
-    const refreshResultsForGuests = (nextAdults: number, nextChildren: number, nextChildrenAges: Array<number | null>) => {
-        if (!prefillFromQuery || pathname !== '/reservar' || !checkIn || !checkOut) return;
+    const refreshResults = (overrides: {
+        checkIn?: Date;
+        checkOut?: Date;
+        adults?: number;
+        children?: number;
+        childrenAges?: Array<number | null>;
+        pets?: number;
+    }) => {
+        const nextCheckIn = overrides.checkIn ?? checkIn;
+        const nextCheckOut = overrides.checkOut ?? checkOut;
+        const nextAdults = overrides.adults ?? numAdults;
+        const nextChildren = overrides.children ?? numChildren;
+        const nextChildrenAges = overrides.childrenAges ?? childrenAges;
+        const nextPets = overrides.pets ?? numPets;
+        if (!prefillFromQuery || pathname !== '/reservar' || !nextCheckIn || !nextCheckOut) return;
 
         const params = new URLSearchParams({
-            checkIn: format(checkIn, 'yyyy-MM-dd'),
-            checkOut: format(checkOut, 'yyyy-MM-dd'),
+            checkIn: format(nextCheckIn, 'yyyy-MM-dd'),
+            checkOut: format(nextCheckOut, 'yyyy-MM-dd'),
             adults: String(nextAdults),
             children: String(nextChildren),
         });
-        if (numPets > 0) params.set('pets', String(numPets));
+        if (nextPets > 0) params.set('pets', String(nextPets));
         if (preferredRoomTypeId) params.set('roomTypeId', preferredRoomTypeId);
 
         const normalizedAges = nextChildrenAges
@@ -217,7 +232,11 @@ export default function SearchWidget({
         if (showCapacityFallback && normalizedAdults + nextChildren <= maxGuests) {
             setShowCapacityFallback(false);
         }
-        refreshResultsForGuests(normalizedAdults, nextChildren, childrenAges.slice(0, nextChildren));
+        refreshResults({
+            adults: normalizedAdults,
+            children: nextChildren,
+            childrenAges: childrenAges.slice(0, nextChildren),
+        });
     };
 
     const handleChildrenChange = (value: string) => {
@@ -226,14 +245,26 @@ export default function SearchWidget({
         const nextChildren = Number.isFinite(parsed) ? parsed : 0;
         const normalizedChildren = Math.min(Math.max(nextChildren, 0), maxChildren);
         setChildren(String(normalizedChildren));
-        setChildrenAges((prev) => {
-            const next = prev.slice(0, normalizedChildren);
-            while (next.length < normalizedChildren) next.push(0);
-            return next;
-        });
+        const nextAges = childrenAges.slice(0, normalizedChildren);
+        while (nextAges.length < normalizedChildren) nextAges.push(0);
+        setChildrenAges(nextAges);
         if (showCapacityFallback && numAdults + normalizedChildren <= maxGuests) {
             setShowCapacityFallback(false);
         }
+        refreshResults({ children: normalizedChildren, childrenAges: nextAges });
+    };
+
+    const handleChildAgeChange = (index: number, nextAge: number | null) => {
+        setFieldErrors((prev) => ({ ...prev, childrenAges: undefined }));
+        const nextAges = childrenAges.map((age, ageIndex) => (ageIndex === index ? nextAge : age));
+        setChildrenAges(nextAges);
+        refreshResults({ childrenAges: nextAges });
+    };
+
+    const handlePetsChange = (nextPets: number) => {
+        const normalizedPets = Math.min(Math.max(nextPets, 0), 10);
+        setPets(String(normalizedPets));
+        refreshResults({ pets: normalizedPets });
     };
 
     const handleSearch = async (e: React.FormEvent) => {
@@ -782,8 +813,7 @@ export default function SearchWidget({
                                                         value={age === null ? "" : String(age)}
                                                         onValueChange={(value) => {
                                                             const nextAge = value === "" ? null : Number.parseInt(value, 10);
-                                                            setFieldErrors((prev) => ({ ...prev, childrenAges: undefined }));
-                                                            setChildrenAges((prev) => prev.map((v, i) => (i === idx ? nextAge : v)));
+                                                            handleChildAgeChange(idx, nextAge);
                                                         }}
                                                     >
                                                         <SelectTrigger className="h-11 rounded-none border-[color:var(--brand-gold)]/55 bg-[color:var(--brand-white)] px-4 text-left text-sm font-medium text-brand-brown-dark">
@@ -810,7 +840,7 @@ export default function SearchWidget({
                                                 type="checkbox"
                                                 aria-label="Possui pets?"
                                                 checked={numPets > 0}
-                                                onChange={(event) => setPets(event.target.checked ? '1' : '0')}
+                                                onChange={(event) => handlePetsChange(event.target.checked ? 1 : 0)}
                                                 className="h-4 w-4 accent-[color:var(--brand-forest)]"
                                             />
                                             <PawPrint className="h-4 w-4" />
@@ -823,11 +853,11 @@ export default function SearchWidget({
                                                     <p className="text-xs text-brand-brown-dark/70">Taxa de R$ 40 por pet/diária</p>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Button type="button" variant="outline" size="sm" className="h-9 w-9 rounded-none p-0" onClick={() => setPets(String(Math.max(1, numPets - 1)))} disabled={numPets <= 1}>
+                                                    <Button type="button" variant="outline" size="sm" className="h-9 w-9 rounded-none p-0" onClick={() => handlePetsChange(Math.max(1, numPets - 1))} disabled={numPets <= 1}>
                                                         <Minus className="h-4 w-4" />
                                                     </Button>
                                                     <span className="inline-flex min-w-8 justify-center font-semibold">{numPets}</span>
-                                                    <Button type="button" variant="outline" size="sm" className="h-9 w-9 rounded-none p-0" onClick={() => setPets(String(Math.min(10, numPets + 1)))} disabled={numPets >= 10}>
+                                                    <Button type="button" variant="outline" size="sm" className="h-9 w-9 rounded-none p-0" onClick={() => handlePetsChange(Math.min(10, numPets + 1))} disabled={numPets >= 10}>
                                                         <Plus className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -873,12 +903,12 @@ export default function SearchWidget({
                                         type="checkbox"
                                         aria-label="Possui pets?"
                                         checked={numPets > 0}
-                                        onChange={(event) => setPets(event.target.checked ? '1' : '0')}
+                                        onChange={(event) => handlePetsChange(event.target.checked ? 1 : 0)}
                                     />
                                     <PawPrint className="h-4 w-4" /> Possui pets?
                                 </label>
                                 {numPets > 0 ? (
-                                    <select aria-label="Quantidade de pets" value={pets} onChange={(event) => setPets(event.target.value)} className={selectClass}>
+                                    <select aria-label="Quantidade de pets" value={pets} onChange={(event) => handlePetsChange(Number.parseInt(event.target.value, 10) || 0)} className={selectClass}>
                                         {Array.from({ length: 10 }, (_, index) => index + 1).map((count) => (
                                             <option key={count} value={count}>{count}</option>
                                         ))}
@@ -1012,8 +1042,7 @@ export default function SearchWidget({
                                             onChange={(e) => {
                                                 const val = e.target.value;
                                                 const nextAge = val === "" ? null : Number.parseInt(val, 10);
-                                                setFieldErrors((prev) => ({ ...prev, childrenAges: undefined }));
-                                                setChildrenAges((prev) => prev.map((v, i) => (i === idx ? nextAge : v)));
+                                                handleChildAgeChange(idx, nextAge);
                                             }}
                                         >
                                             <option value="" disabled>Idade</option>
