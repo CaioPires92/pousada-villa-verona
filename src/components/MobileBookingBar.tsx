@@ -114,7 +114,12 @@ export default function MobileBookingBar() {
                         {/* Check-in */}
                         <Popover open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
                             <PopoverTrigger asChild>
-                                <div className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5 relative group cursor-pointer focus-within:ring-1 focus-within:ring-brand-gold">
+                                <div
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label="Selecionar check-in"
+                                    className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5 relative group cursor-pointer focus-within:ring-1 focus-within:ring-brand-gold"
+                                >
                                     <Calendar className="w-4 h-4 text-brand-gold" />
                                     <div className="flex flex-col relative w-24 sm:w-28">
                                         <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider mb-0.5">Check-in</span>
@@ -141,7 +146,12 @@ export default function MobileBookingBar() {
                         {/* Check-out */}
                         <Popover open={isCheckOutOpen} onOpenChange={setIsCheckOutOpen}>
                             <PopoverTrigger asChild>
-                                <div className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5 relative group cursor-pointer focus-within:ring-1 focus-within:ring-brand-gold">
+                                <div
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label="Selecionar check-out"
+                                    className="bg-brand-brown-red rounded-sm px-4 py-2 flex items-center gap-3 min-w-max border border-white/5 relative group cursor-pointer focus-within:ring-1 focus-within:ring-brand-gold"
+                                >
                                     <Calendar className="w-4 h-4 text-brand-gold" />
                                     <div className="flex flex-col relative w-24 sm:w-28">
                                         <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider mb-0.5">Check-out</span>

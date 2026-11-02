@@ -3,14 +3,16 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SearchWidget from './SearchWidget';
 
 const mockRouterPush = vi.fn();
+const mockRouterReplace = vi.fn();
+let currentPathname = '/home';
 let preferredRoomTypeId: string | null = null;
 let campaignSource: string | null = null;
 let promoCode: string | null = null;
 let promoLocked = false;
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mockRouterPush }),
-  usePathname: () => '/home',
+  useRouter: () => ({ push: mockRouterPush, replace: mockRouterReplace }),
+  usePathname: () => currentPathname,
   useSearchParams: () => ({
     get: vi.fn((key: string) => {
       if (key === 'roomTypeId') return preferredRoomTypeId;
@@ -29,6 +31,7 @@ describe('SearchWidget', () => {
     campaignSource = null;
     promoCode = null;
     promoLocked = false;
+    currentPathname = '/home';
     window.sessionStorage.clear();
   });
 
@@ -66,6 +69,20 @@ describe('SearchWidget', () => {
 
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(expect.stringContaining('adults=5&children=0'));
+    });
+  });
+
+  it('atualiza os resultados automaticamente ao alterar adultos depois da busca inicial', async () => {
+    currentPathname = '/reservar';
+    render(<SearchWidget prefillFromQuery />);
+
+    fireEvent.change(screen.getByLabelText('Hóspedes'), { target: { value: '3' } });
+
+    await waitFor(() => {
+      expect(mockRouterReplace).toHaveBeenCalledWith(
+        expect.stringContaining('adults=3&children=0'),
+        { scroll: false },
+      );
     });
   });
 

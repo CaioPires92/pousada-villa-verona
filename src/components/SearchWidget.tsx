@@ -171,6 +171,33 @@ export default function SearchWidget({
         window.open(url, '_blank');
     };
 
+    const refreshResultsForGuests = (nextAdults: number, nextChildren: number, nextChildrenAges: Array<number | null>) => {
+        if (!prefillFromQuery || pathname !== '/reservar' || !checkIn || !checkOut) return;
+
+        const params = new URLSearchParams({
+            checkIn: format(checkIn, 'yyyy-MM-dd'),
+            checkOut: format(checkOut, 'yyyy-MM-dd'),
+            adults: String(nextAdults),
+            children: String(nextChildren),
+        });
+        if (numPets > 0) params.set('pets', String(numPets));
+        if (preferredRoomTypeId) params.set('roomTypeId', preferredRoomTypeId);
+
+        const normalizedAges = nextChildrenAges
+            .slice(0, nextChildren)
+            .filter((age): age is number => typeof age === 'number' && Number.isFinite(age));
+        if (normalizedAges.length === nextChildren && nextChildren > 0) {
+            params.set('childrenAges', normalizedAges.map(String).join(','));
+        }
+
+        const normalizedCoupon = couponCode.trim().toUpperCase();
+        if (normalizedCoupon) params.set('promo', normalizedCoupon);
+        if (promoLocked) params.set('promoLock', '1');
+        appendCampaignAttribution(params, searchParams);
+
+        router.replace(`/reservar?${params.toString()}`, { scroll: false });
+    };
+
     const handleAdultsChange = (value: string) => {
         setFieldErrors((prev) => ({ ...prev, guests: undefined, childrenAges: undefined }));
         const parsed = Number.parseInt(value, 10);
@@ -190,6 +217,7 @@ export default function SearchWidget({
         if (showCapacityFallback && normalizedAdults + nextChildren <= maxGuests) {
             setShowCapacityFallback(false);
         }
+        refreshResultsForGuests(normalizedAdults, nextChildren, childrenAges.slice(0, nextChildren));
     };
 
     const handleChildrenChange = (value: string) => {

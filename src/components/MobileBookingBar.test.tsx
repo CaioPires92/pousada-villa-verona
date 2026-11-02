@@ -49,9 +49,9 @@ describe('MobileBookingBar', () => {
     it('exibe as datas bloqueadas com aparência mais escura', () => {
         render(<MobileBookingBar />);
 
-        fireEvent.click(screen.getByText('Check-in').parentElement!.parentElement!);
+        fireEvent.click(screen.getByRole('button', { name: /selecionar check-out/i }));
 
-        const disabledDay = document.querySelector('[data-disabled="true"]');
+        const disabledDay = document.querySelector('button[disabled]')?.closest('td');
         expect(disabledDay).toHaveClass('!text-[#8f675b]', '!opacity-100');
     });
 
