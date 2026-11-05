@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { addDays, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import SearchWidget from './SearchWidget';
 
 const mockRouterPush = vi.fn();
@@ -54,6 +56,38 @@ describe('SearchWidget', () => {
     fireEvent.change(children, { target: { value: '0' } });
     const button = screen.getByRole('button', { name: /Buscar/i });
     await waitFor(() => expect(button).not.toBeDisabled());
+  });
+
+  it('permite escolher livremente o check-out depois de alterar o check-in no mobile', async () => {
+    render(<SearchWidget uiPreset="hero" />);
+    const newCheckIn = addDays(new Date(), 10);
+    const chosenCheckOut = addDays(newCheckIn, 4);
+    const checkInTrigger = screen.getByTestId('checkin-trigger');
+    const checkOutTrigger = screen.getByTestId('checkout-trigger');
+
+    expect(checkInTrigger).toBeInstanceOf(HTMLButtonElement);
+    expect(checkOutTrigger).toBeInstanceOf(HTMLButtonElement);
+
+    fireEvent.click(checkInTrigger);
+    const checkInDay = document.querySelector<HTMLButtonElement>(
+      `[data-day="${format(newCheckIn, 'yyyy-MM-dd')}"] button`,
+    );
+    expect(checkInDay).not.toBeNull();
+    fireEvent.click(checkInDay!);
+
+    await waitFor(() => expect(screen.getByTestId('checkout-popover')).toBeInTheDocument());
+    expect(checkOutTrigger).toHaveTextContent('Selecione uma data');
+
+    const checkOutDay = document.querySelector<HTMLButtonElement>(
+      `[data-day="${format(chosenCheckOut, 'yyyy-MM-dd')}"] button`,
+    );
+    expect(checkOutDay).not.toBeNull();
+    fireEvent.click(checkOutDay!);
+
+    expect(checkOutTrigger).toHaveTextContent(
+      format(chosenCheckOut, 'dd MMM yyyy', { locale: ptBR }),
+    );
+    expect(screen.queryByTestId('checkout-popover')).not.toBeInTheDocument();
   });
 
   it('permite pesquisar para cinco hóspedes', async () => {

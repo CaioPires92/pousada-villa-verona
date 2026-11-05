@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Calendar as CalendarIcon, Users, Search, ChevronDown, Loader2, Plus, Minus, PawPrint } from 'lucide-react';
 import { format, addDays, isBefore, isSameDay } from 'date-fns';
@@ -103,6 +103,13 @@ export default function SearchWidget({
     const [isCheckOutOpen, setIsCheckOutOpen] = useState(false);
     const [isGuestsOpen, setIsGuestsOpen] = useState(false);
     const [checkOutViewMonth, setCheckOutViewMonth] = useState<Date>(checkOut || tomorrow);
+    const checkOutOpenTimerRef = useRef<number | null>(null);
+
+    useEffect(() => () => {
+        if (checkOutOpenTimerRef.current !== null) {
+            window.clearTimeout(checkOutOpenTimerRef.current);
+        }
+    }, []);
 
     // Fechar popovers ao mudar de rota (previne estado travado após Back navigation)
     useEffect(() => {
@@ -128,24 +135,29 @@ export default function SearchWidget({
 
     const handleCheckInSelect = (date: Date | undefined) => {
         setCheckIn(date);
-        if (date && checkOut) {
-            setFieldErrors((prev) => ({ ...prev, dates: undefined }));
-        }
-        setIsCheckInOpen(false); // Fecha o calendário após selecionar
+        setIsCheckInOpen(false);
+        if (!date) return;
 
-        // Automatizar Check-out
-        if (date) {
-            const nextCheckOut = addDays(date, 1);
-            setCheckOut(nextCheckOut);
-            setCheckOutViewMonth(nextCheckOut);
-            refreshResults({ checkIn: date, checkOut: nextCheckOut });
+        const hasValidCheckOut = Boolean(checkOut && isBefore(date, checkOut));
+        if (!hasValidCheckOut) setCheckOut(undefined);
+        setCheckOutViewMonth(hasValidCheckOut && checkOut ? checkOut : date);
+        setFieldErrors((prev) => ({ ...prev, dates: undefined }));
+
+        // Radix precisa encerrar o popover de entrada antes de abrir o de saída,
+        // especialmente em navegadores mobile com eventos de toque.
+        if (checkOutOpenTimerRef.current !== null) {
+            window.clearTimeout(checkOutOpenTimerRef.current);
         }
+        checkOutOpenTimerRef.current = window.setTimeout(() => {
+            setIsCheckOutOpen(true);
+            checkOutOpenTimerRef.current = null;
+        }, 0);
     };
 
     const handleCheckOutOpenChange = (open: boolean) => {
         setIsCheckOutOpen(open);
         if (open) {
-            setCheckOutViewMonth(checkIn || checkOut || today);
+            setCheckOutViewMonth(checkOut || checkIn || today);
         }
     };
 
@@ -619,7 +631,7 @@ export default function SearchWidget({
                     </label>
                     <Popover open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
                     <PopoverTrigger asChild>
-                        <div data-testid="checkin-trigger" className={cn(dateInputClass, !checkIn && (isHeroPreset ? "text-brand-brown-dark/65" : "text-muted-foreground"))}>
+                        <button type="button" data-testid="checkin-trigger" className={cn(dateInputClass, !checkIn && (isHeroPreset ? "text-brand-brown-dark/65" : "text-muted-foreground"))}>
                             {checkIn ? (
                                 isHeroPreset
                                     ? format(checkIn, "dd MMM yyyy", { locale: ptBR })
@@ -628,7 +640,7 @@ export default function SearchWidget({
                                 <span>Selecione uma data</span>
                             )}
                             <CalendarIcon className={cn("ml-auto h-4 w-4 opacity-50", isHeroPreset && "text-[#8f8577]")} />
-                        </div>
+                        </button>
                     </PopoverTrigger>
                         <PopoverContent
                             data-testid="checkin-popover"
@@ -664,7 +676,7 @@ export default function SearchWidget({
                     </label>
                     <Popover open={isCheckOutOpen} onOpenChange={handleCheckOutOpenChange}>
                     <PopoverTrigger asChild>
-                        <div data-testid="checkout-trigger" className={cn(dateInputClass, !checkOut && (isHeroPreset ? "text-brand-brown-dark/65" : "text-muted-foreground"))}>
+                        <button type="button" data-testid="checkout-trigger" className={cn(dateInputClass, !checkOut && (isHeroPreset ? "text-brand-brown-dark/65" : "text-muted-foreground"))}>
                             {checkOut ? (
                                 isHeroPreset
                                     ? format(checkOut, "dd MMM yyyy", { locale: ptBR })
@@ -673,7 +685,7 @@ export default function SearchWidget({
                                 <span>Selecione uma data</span>
                             )}
                             <CalendarIcon className={cn("ml-auto h-4 w-4 opacity-50", isHeroPreset && "text-[#8f8577]")} />
-                        </div>
+                        </button>
                     </PopoverTrigger>
                         <PopoverContent
                             data-testid="checkout-popover"
